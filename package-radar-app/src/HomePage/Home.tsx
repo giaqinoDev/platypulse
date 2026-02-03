@@ -5,6 +5,7 @@ function Home(){
     //Search Term
     const [searchTerm, setSearchTerm] = useState("");
     const [query, setQuery] = useState("");
+    const [loading, setLoading] = useState(false);
 
     //Data Fetching
     const BASE_URL = "https://registry.npmjs.org";
@@ -12,10 +13,12 @@ function Home(){
 
     useEffect(() => {
         const fetchPackage = async () => {
+            setLoading(true);
             //Using CORS Proxy Server
             const response = await fetch('https://corsproxy.io?' + encodeURIComponent(`${BASE_URL}/${query}`));
             const packageInfo = await response.json();
             setQueriedPackage(packageInfo);
+            setLoading(false);
         };
         fetchPackage();
     }, [query]);
@@ -41,6 +44,7 @@ function Home(){
                 <input type="submit"/>
             </form>
 
+            {loading && <div>Loading</div>}
             <div>
                 {queriedPackage && queriedPackage._rev}
             </div>
