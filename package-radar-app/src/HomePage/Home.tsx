@@ -5,19 +5,28 @@ function Home(){
     //Search Term
     const [searchTerm, setSearchTerm] = useState("");
     const [query, setQuery] = useState("");
-    const [loading, setLoading] = useState(false);
 
     //Data Fetching
     const BASE_URL = "https://registry.npmjs.org";
     const [queriedPackage, setQueriedPackage] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState();
 
     useEffect(() => {
         const fetchPackage = async () => {
             setLoading(true);
-            //Using CORS Proxy Server
-            const response = await fetch('https://corsproxy.io?' + encodeURIComponent(`${BASE_URL}/${query}`));
-            const packageInfo = await response.json();
-            setQueriedPackage(packageInfo);
+            try{
+                //Using CORS Proxy Server
+                const response = await fetch('https://corsproxy.io?' + encodeURIComponent(`${BASE_URL}/${query}`));
+                if(!response.ok){
+                    throw new Error("Oh shiiiit")
+                }
+                const packageInfo = await response.json();
+                setQueriedPackage(packageInfo);
+            }
+            catch(error){
+                setError(error);
+            }
             setLoading(false);
         };
         fetchPackage();
@@ -27,7 +36,10 @@ function Home(){
         console.log(queriedPackage);
     }, [queriedPackage])
 
-    function handleSubmit(event){
+    function handleSubmit(event: any){
+        setQueriedPackage(null);
+        setError(null);
+
         event.preventDefault();
         setQuery(searchTerm.trim())
     }
@@ -45,9 +57,10 @@ function Home(){
             </form>
 
             {loading && <div>Loading</div>}
-            <div>
-                {queriedPackage && queriedPackage._rev}
-            </div>
+            {error && <div id="error">AAHAHHA</div>}
+            {queriedPackage && <div id="info">
+                {queriedPackage._rev}
+            </div>}
         </div>
     );
 }
