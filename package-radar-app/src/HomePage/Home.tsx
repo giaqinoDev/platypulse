@@ -10,35 +10,47 @@ function Home(){
     const BASE_URL = "https://registry.npmjs.org";
     const [queriedPackage, setQueriedPackage] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState();
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchPackage = async () => {
+        // Dev Lesson: Defining async functiosn inside useEffect() for data fetchign is common practice as defining it outside of useEffect woudl require the function
+        // to be passed as a parameter i nthe useEffect hook which would then cause an infinite loop as the function is a new instance on each render
+
+        //
+        const fetchNPMPackage = async () => {
             setLoading(true);
+            setQueriedPackage(null);
+            setError(null);
             try{
                 //Using CORS Proxy Server
                 const response = await fetch('https://corsproxy.io?' + encodeURIComponent(`${BASE_URL}/${query}`));
-                if(!response.ok){
-                    throw new Error("Oh shiiiit")
+                if(response.status >= 500){
+                    throw new Error("Server error")
+                }
+                else if(response.status >= 400){
+                    throw new Error("Client error")
                 }
                 const packageInfo = await response.json();
                 setQueriedPackage(packageInfo);
             }
-            catch(error){
-                setError(error);
+            catch(error: any){
+                console.log("erorr caught")
+                setError(error.message);
             }
-            setLoading(false);
+            finally{
+                setLoading(false);
+            }
         };
-        fetchPackage();
+
+        fetchNPMPackage();
     }, [query]);
 
+    //For debugging
     useEffect(() => {
-        console.log(queriedPackage);
+        //console.log(queriedPackage);
     }, [queriedPackage])
 
     function handleSubmit(event: any){
-        setQueriedPackage(null);
-        setError(null);
 
         event.preventDefault();
         setQuery(searchTerm.trim())
@@ -57,7 +69,7 @@ function Home(){
             </form>
 
             {loading && <div>Loading</div>}
-            {error && <div id="error">AAHAHHA</div>}
+            {error && <div id="error">{error}</div>}
             {queriedPackage && <div id="info">
                 {queriedPackage._rev}
             </div>}
