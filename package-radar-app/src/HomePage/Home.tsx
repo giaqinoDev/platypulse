@@ -1,22 +1,26 @@
 import { useState, useEffect } from "react";
+import useNPMFetch from "../NPMFetch/useNPMFetch";
 
 function Home(){
 
     //Search Term
     const [searchTerm, setSearchTerm] = useState("");
     const [query, setQuery] = useState("");
+    const exResult = useNPMFetch({queriedSearch: query});
 
     //Data Fetching
-    const BASE_URL = "https://registry.npmjs.org";
+    //const BASE_URL = "https://registry.npmjs.org";
     const [queriedPackage, setQueriedPackage] = useState(null);
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Dev Lesson: Defining async functiosn inside useEffect() for data fetchign is common practice as defining it outside of useEffect woudl require the function
-        // to be passed as a parameter i nthe useEffect hook which would then cause an infinite loop as the function is a new instance on each render
+        // Dev Lesson: Defining async functiosn inside useEffect() for data fetchign is common practice as defining it outside of useEffect would require the function
+        // to be passed as a parameter in the useEffect hook which would then cause an infinite loop as the function is a new instance on each render
 
-        //
+        //NPM package fetching
+        /*
         const fetchNPMPackage = async () => {
             setLoading(true);
             setQueriedPackage(null);
@@ -31,7 +35,10 @@ function Home(){
                     throw new Error("Client error")
                 }
                 const packageInfo = await response.json();
-                setQueriedPackage(packageInfo);
+                const latest_Release = packageInfo['dist-tags'].latest;
+                const release_date = packageInfo.time[latest_Release];
+                console.log(latest_Release);
+                setQueriedPackage(release_date);
             }
             catch(error: any){
                 console.log("erorr caught")
@@ -43,18 +50,14 @@ function Home(){
         };
 
         fetchNPMPackage();
+        */
     }, [query]);
 
-    //For debugging
-    useEffect(() => {
-        //console.log(queriedPackage);
-    }, [queriedPackage])
-
-    function handleSubmit(event: any){
-
+    function handleSubmit(event){
         event.preventDefault();
         setQuery(searchTerm.trim())
     }
+
     return(
         <div>
             <h1>Package Radar</h1>
@@ -70,9 +73,16 @@ function Home(){
 
             {loading && <div>Loading</div>}
             {error && <div id="error">{error}</div>}
-            {queriedPackage && <div id="info">
-                {queriedPackage._rev}
-            </div>}
+            {/*queriedPackage && <div id="info">
+                {queriedPackage}
+                <p></p>
+            </div>*/}
+            {
+                exResult && <div id="info">
+                    {exResult.queryResult}
+                    <p></p>
+                </div>
+            }
         </div>
     );
 }
