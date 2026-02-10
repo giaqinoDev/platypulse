@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 
-interface NPMFetchProps{
-    queriedSearch: string;
-}
-
-function useNPMFetch({queriedSearch}:NPMFetchProps){
+function useNPMFetch(queriedSearch: string|null){
 
     const BASE_URL ="https://registry.npmjs.org";
     const [queryResult, setQueryResult] = useState();
-    const [error, setError] = useState<string|null|unknown>();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [fetchError, setFetchError] = useState<string|null|Error>();
 
     useEffect(() => {
         if(!queriedSearch){
@@ -16,8 +13,13 @@ function useNPMFetch({queriedSearch}:NPMFetchProps){
         }
 
         const executeFetch = async () => {
-            setError(null);
+            setFetchError(null);
+            setLoading(true);
+
+            // Dev Lesson: Defining async functiosn inside useEffect() for data fetchign is common practice as defining it outside of useEffect would require the function
+            // to be passed as a parameter in the useEffect hook which would then cause an infinite loop as the function is a new instance on each render
             try{
+                //Using CORS Proxy Server
                 const response = await fetch('https://corsproxy.io?' + encodeURIComponent(`${BASE_URL}/${queriedSearch}`));
                 if(response.status >= 500){
                     throw new Error("Server error")
@@ -32,18 +34,21 @@ function useNPMFetch({queriedSearch}:NPMFetchProps){
             }
             catch(responseErorr: unknown){
                 if(responseErorr instanceof Error){
-                    setError(responseErorr);
+                    setFetchError(responseErorr);
                 }
                 else{
-                    setError("Unkown Error");
+                    setFetchError("Unkown Error");
                 }
+            }
+            finally{
+                setLoading(false);
             }
         }
 
         executeFetch();
     }, [queriedSearch])
 
-    return { queryResult, error };
+    return { queryResult, fetchError, loading };
 }
 
 export default useNPMFetch;
