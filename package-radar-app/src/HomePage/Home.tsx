@@ -10,7 +10,7 @@ function Home(){
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
-        setQuery(searchTerm.trim())
+        setQuery(encodeURIComponent(searchTerm.trim()))
     }
 
     return(
