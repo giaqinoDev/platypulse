@@ -26,18 +26,22 @@ function Home(){
                 <input type="submit"/>
             </form>
 
-            {exResult.loading && <div>Loading</div>}
+            {exResult.loading && 
+                <div>Loading</div>
+            }
 
-            {
-                exResult.fetchError && 
+            {exResult.fetchError && 
                 <div id="info">
                     <p>{exResult.fetchError.toString()}</p>
                 </div>
             }
-            {
-                exResult.queryResult && 
+            {exResult.packageData && 
                 <div id="info">
-                    <p>{exResult.queryResult}</p>
+                    {Object.entries(exResult.packageData).map(([key, value]) => (
+                        <div key={key}>
+                            <p>{`${key}: ${String(value)}`}</p>
+                        </div>
+                    ))}
                 </div>
             }
         </div>
