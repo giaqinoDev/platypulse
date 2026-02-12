@@ -49,6 +49,7 @@ function useNPMFetch(queriedSearch: string|null){
                 }
                 const packageInfo = await response.json();
                 const latest_release = packageInfo["dist-tags"].latest;
+                fetchDownloadData(); //NEED TO REFACTOR LOGICAL FLOW OF API CALLS
                 const queriedPackageData: NPMPackage_Data_Primative = {
                     latest_v: latest_release,
                     releases: packageInfo.time,
@@ -124,7 +125,6 @@ function useNPMFetch(queriedSearch: string|null){
 
         setLoading(true);
         fetchPackageData();
-        fetchDownloadData();
         setLoading(false);
     }, [queriedSearch])
 
