@@ -49,7 +49,11 @@ function useNPMFetch(queriedSearch: string|null){
                 }
                 const packageInfo = await response.json();
                 const latest_release = packageInfo["dist-tags"].latest;
-                fetchDownloadData(); //NEED TO REFACTOR LOGICAL FLOW OF API CALLS
+
+
+                await fetchDownloadData(); //NEED TO REFACTOR LOGICAL FLOW OF THIS API CALL
+
+
                 const queriedPackageData: NPMPackage_Data_Primative = {
                     latest_v: latest_release,
                     releases: packageInfo.time,
@@ -63,15 +67,19 @@ function useNPMFetch(queriedSearch: string|null){
             }
             catch(responseErorr: unknown){
                 if(responseErorr instanceof Error){
-                    setFetchError(responseErorr);
+                    setFetchError("fetchPackageData: " + responseErorr);
                 }
                 else{
                     setFetchError("Unkown Error");
                 }
             }
+            finally{
+                setLoading(false);
+            }
         }
 
         const fetchDownloadData = async () => {
+            setLoading(true);
             try{
                 const response = await fetch('https://corsproxy.io?' + encodeURIComponent(`${BASE_DOWNLOAD_URL}/${queriedSearch}`))
                 const downloadsInfo = await response.json();
@@ -115,7 +123,7 @@ function useNPMFetch(queriedSearch: string|null){
             }
             catch(responseError: unknown){
                 if(responseError instanceof Error){
-                    setFetchError(responseError);
+                    setFetchError("fetchDownloadData: " + responseError);
                 }
                 else{
                     setFetchError("Unkown Error");
@@ -123,9 +131,7 @@ function useNPMFetch(queriedSearch: string|null){
             }
         }
 
-        setLoading(true);
         fetchPackageData();
-        setLoading(false);
     }, [queriedSearch])
 
     return { packageData, fetchError, loading };
