@@ -4,7 +4,7 @@ function useNPMFetch(queriedSearch: string|null){
 
     const BASE_PACKAGE_URL ="https://registry.npmjs.org";
     const BASE_DOWNLOAD_URL = "https://api.npmjs.org/downloads/range/last-year";
-    const [queryResult, setQueryResult] = useState(null);
+    //const [queryResult, setQueryResult] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>();
     const [packageData, setPackageData] = useState<NPMPackage_Data_Primative|null>(null);
@@ -34,7 +34,7 @@ function useNPMFetch(queriedSearch: string|null){
 
         const fetchPackageData = async () => {
             setFetchError(null);
-            setQueryResult(null);
+            //setQueryResult(null);
 
             // Dev Lesson: Defining async functiosn inside useEffect() for data fetching is common practice as defining it outside of useEffect would require the function
             // to be passed as a parameter in the useEffect hook which would then cause an infinite loop as the function is a new instance on each render
