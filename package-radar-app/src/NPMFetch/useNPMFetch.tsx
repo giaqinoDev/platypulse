@@ -53,12 +53,18 @@ function useNPMFetch(queriedSearch: string|null){
 
                 await fetchDownloadData(); //NEED TO REFACTOR LOGICAL FLOW OF THIS API CALL
 
-
+                //In the case a package has no dependencies the api response will not include a dependencies obj
+                //this is accoutned for below
+                const arr_of_dependencies = packageInfo.versions[`${latest_release}`].dependencies;
+                let dependency_arr_len = 0;
+                if(arr_of_dependencies){
+                    dependency_arr_len = Object.keys(arr_of_dependencies).length;
+                }
                 const queriedPackageData: NPMPackage_Data_Primative = {
                     latest_v: latest_release,
                     releases: packageInfo.time,
 
-                    dir_dependency_count: Object.keys(packageInfo.versions[`${latest_release}`].dependencies).length,
+                    dir_dependency_count: dependency_arr_len,
                     weekly_downloads_timeline: weekly_download_info
                     
                 }
@@ -68,6 +74,7 @@ function useNPMFetch(queriedSearch: string|null){
             catch(responseErorr: unknown){
                 if(responseErorr instanceof Error){
                     setFetchError("fetchPackageData: " + responseErorr);
+                    console.log(responseErorr.stack)
                 }
                 else{
                     setFetchError("Unkown Error");
