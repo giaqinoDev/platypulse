@@ -15,6 +15,7 @@ function useNPMFetch(queriedSearch: string|null){
     interface NPMPackage_Data_Primative{
         //Package Releases:
         latest_v: string,
+        latest_release_date: string,
         releases: object,
 
         //Dependency Structure:
@@ -64,6 +65,7 @@ function useNPMFetch(queriedSearch: string|null){
                 }
                 const queriedPackageData: NPMPackage_Data_Primative = {
                     latest_v: latest_release,
+                    latest_release_date: packageInfo.time[`${latest_release}`],
                     releases: packageInfo.time,
 
                     dir_dependency_count: dependency_arr_len,
