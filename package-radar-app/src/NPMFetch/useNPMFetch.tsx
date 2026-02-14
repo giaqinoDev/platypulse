@@ -9,7 +9,6 @@ function useNPMFetch(queriedSearch: string|null){
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
     const [packageData, setPackageData] = useState<NPMPackage_Data_Primative|null>(null);
-    const [weekly_download_info, setWeekly_download_info] = useState<WeeklyDownloads[]|null>(null);
     const libIo_dependents = useLibrariesIOFetch({query: queriedSearch, platform: "NPM", setFetchError});
 
     interface NPMPackage_Data_Primative{
@@ -47,6 +46,7 @@ function useNPMFetch(queriedSearch: string|null){
 
         const fetchPackageData = async () => {
             setFetchError(null);
+            setLoading(true);
             //setQueryResult(null);
 
             // Dev Lesson: Defining async functiosn inside useEffect() for data fetching is common practice as defining it outside of useEffect would require the function
@@ -64,15 +64,15 @@ function useNPMFetch(queriedSearch: string|null){
                 const latest_release = packageInfo["dist-tags"].latest;
 
 
-                await fetchDownloadData(); //NEED TO REFACTOR LOGICAL FLOW OF THIS API CALL
+                //await fetchDownloadData(); //NEED TO REFACTOR LOGICAL FLOW OF THIS API CALL
 
                 const queriedPackageData: NPMPackage_Data_Primative = {
                     latest_v: latest_release,
                     latest_release_date: packageInfo.time[`${latest_release}`],
                     releases: packageInfo.time,
+                    
                     dependencies: analyzeDependencies(packageInfo.versions[`${latest_release}`].dependencies),
-
-                    weekly_downloads_timeline: weekly_download_info
+                    weekly_downloads_timeline: await fetchDownloadData()
                     
                 }
                 console.log(queriedPackageData.dependencies)
@@ -94,7 +94,6 @@ function useNPMFetch(queriedSearch: string|null){
         }
 
         const fetchDownloadData = async () => {
-            setLoading(true);
             try{
                 const response = await fetch('https://corsproxy.io?' + encodeURIComponent(`${BASE_DOWNLOAD_URL}/${queriedSearch}`))
                 const downloadsInfo = await response.json();
@@ -103,7 +102,7 @@ function useNPMFetch(queriedSearch: string|null){
                 let weekDay_count = 0;
                 let timeline_index = 0;
                 let downloads_sum = 0;
-                const weekly_timeline : WeeklyDownloads[] = [];
+                const weekly_timeline : WeeklyDownloads[]|null = [];
                 const numWeeks: number = Math.ceil(downloadTimeLine.length/7);
 
                 //Populate timeline with weeks
@@ -132,9 +131,8 @@ function useNPMFetch(queriedSearch: string|null){
                         weekDay_count++;
                     }
                 });
-                console.log(weekly_timeline);
-                setWeekly_download_info(weekly_timeline);
-
+                console.log(weekly_timeline); //Dev debugging
+                return weekly_timeline;
             }
             catch(responseError: unknown){
                 if(responseError instanceof Error){
@@ -143,6 +141,7 @@ function useNPMFetch(queriedSearch: string|null){
                 else{
                     setFetchError("Unkown Error");
                 }
+                return null;
             }
         }
 
