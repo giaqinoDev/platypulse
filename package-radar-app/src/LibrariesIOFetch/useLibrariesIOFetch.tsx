@@ -37,7 +37,7 @@ function useLibrariesIOFetch({query, platform, setFetchError}:UseLibrariesIOFetc
         }
 
         fecthLibrariesIOPackage();
-    }, [query])
+    })
 
     return {num_dependents, num_dependent_repos};
 }
