@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useLibrariesIOFetch from "../LibrariesIOFetch/useLibrariesIOFetch";
 
 function useNPMFetch(queriedSearch: string|null){
 
@@ -6,9 +7,10 @@ function useNPMFetch(queriedSearch: string|null){
     const BASE_DOWNLOAD_URL = "https://api.npmjs.org/downloads/range/last-year";
     //const [queryResult, setQueryResult] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [fetchError, setFetchError] = useState<string|null|Error>();
+    const [fetchError, setFetchError] = useState<string|null|Error>(null);
     const [packageData, setPackageData] = useState<NPMPackage_Data_Primative|null>(null);
     const [weekly_download_info, setWeekly_download_info] = useState<WeeklyDownloads[]|null>(null);
+    const libIo_dependents = useLibrariesIOFetch({query: queriedSearch, platform: "NPM", setFetchError});
 
     interface NPMPackage_Data_Primative{
         //Package Releases:
@@ -141,7 +143,7 @@ function useNPMFetch(queriedSearch: string|null){
         fetchPackageData();
     }, [queriedSearch])
 
-    return { packageData, fetchError, loading };
+    return { packageData, libIo_dependents, fetchError, loading };
 }
 
 export default useNPMFetch;

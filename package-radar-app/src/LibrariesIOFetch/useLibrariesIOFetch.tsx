@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 
-interface FetchErrorProp{
-    setFetchError: React.Dispatch<React.SetStateAction<string|null|Error>>;
+interface UseLibrariesIOFetchProps{
+    query: string|null,
+    platform: string,
+    setFetchError: React.Dispatch<React.SetStateAction<string|null|Error>>
 }
-function useLibrariesIOFetch(query: string, platform: string, {setFetchError}:FetchErrorProp ){
+function useLibrariesIOFetch({query, platform, setFetchError}:UseLibrariesIOFetchProps ){
     //MAKE SURE TO HIDE API KEY!!!!!!!!!!!!!!!!
     const BASE_LIBRARIES_URL = `https://libraries.io/api/${platform}/${query}?api_key=***REMOVED***`;
-    const [num_dependents, setNum_dependents] = useState<number>();
-    const [num_dependent_repos, setNum_dependent_repos] = useState<number>();
+    const [num_dependents, setNum_dependents] = useState<number|null>(null);
+    const [num_dependent_repos, setNum_dependent_repos] = useState<number|null>(null);
     useEffect(() => {
 
         const fecthLibrariesIOPackage = async () => {

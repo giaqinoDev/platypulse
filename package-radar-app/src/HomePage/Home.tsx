@@ -44,6 +44,7 @@ function Home(){
                     ))}
                 </div>
             }
+            <div>{exResult.libIo_dependents.num_dependents}</div>
         </div>
     );
 }
