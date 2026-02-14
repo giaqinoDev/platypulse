@@ -53,7 +53,7 @@ function useNPMFetch(queriedSearch: string|null){
             // to be passed as a parameter in the useEffect hook which would then cause an infinite loop as the function is a new instance on each render
             try{
                 //Using CORS Proxy Server
-                const response = await fetch('https://corsproxy.io?' + encodeURIComponent(`${BASE_PACKAGE_URL}/${queriedSearch}`));
+                const response = await fetch(`${BASE_PACKAGE_URL}/${queriedSearch}`);
                 if(response.status >= 500){
                     throw new Error("Server error")
                 }

@@ -14,7 +14,7 @@ function useLibrariesIOFetch({query, platform, setFetchError}:UseLibrariesIOFetc
 
         const fecthLibrariesIOPackage = async () => {
             try{
-                const response = await fetch('https://corsproxy.io?' + encodeURIComponent(BASE_LIBRARIES_URL));
+                const response = await fetch(BASE_LIBRARIES_URL);
                 if(response.status >= 500){
                     throw new Error("fecthLibrariesIOPackage: Server error");
                 }
