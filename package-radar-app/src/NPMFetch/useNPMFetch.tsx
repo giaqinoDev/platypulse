@@ -19,7 +19,7 @@ function useNPMFetch(queriedSearch: string|null){
         releases: object,
 
         //Dependency Structure:
-        dir_dependency_count: number,
+        dependencies: DependencyPackage_Info|null|undefined,
         weekly_downloads_timeline: WeeklyDownloads[]|null,
         //Depth of dependency tree will be handled by the back end
     }
@@ -28,6 +28,16 @@ function useNPMFetch(queriedSearch: string|null){
         downloads: number|null,
         start_date: string|null,
         end_date: string|null
+    }
+
+    interface DependencyPackage_Info{
+        package_dependencies: DependencyInfo[]|null;
+        num_dependencies: number|null,
+    }
+    interface DependencyInfo{
+        dependency_name: string,
+        dependency_v: string,
+        out_of_date: boolean
     }
 
     useEffect(() => {
@@ -56,22 +66,16 @@ function useNPMFetch(queriedSearch: string|null){
 
                 await fetchDownloadData(); //NEED TO REFACTOR LOGICAL FLOW OF THIS API CALL
 
-                //In the case a package has no dependencies the api response will not include a dependencies obj
-                //this is accoutned for below
-                const arr_of_dependencies = packageInfo.versions[`${latest_release}`].dependencies;
-                let dependency_arr_len = 0;
-                if(arr_of_dependencies){
-                    dependency_arr_len = Object.keys(arr_of_dependencies).length;
-                }
                 const queriedPackageData: NPMPackage_Data_Primative = {
                     latest_v: latest_release,
                     latest_release_date: packageInfo.time[`${latest_release}`],
                     releases: packageInfo.time,
+                    dependencies: analyzeDependencies(packageInfo.versions[`${latest_release}`].dependencies),
 
-                    dir_dependency_count: dependency_arr_len,
                     weekly_downloads_timeline: weekly_download_info
                     
                 }
+                console.log(queriedPackageData.dependencies)
                 
                 setPackageData(queriedPackageData);
             }
@@ -140,6 +144,37 @@ function useNPMFetch(queriedSearch: string|null){
                     setFetchError("Unkown Error");
                 }
             }
+        }
+
+        function analyzeDependencies(dependencies_obj: Record<string,string>){
+            //In the case a package has no dependencies the api response will not include a dependencies obj
+            if(!dependencies_obj){
+                return { 
+                    package_dependencies: null, 
+                    num_dependencies: 0
+                };
+            }
+
+            const dependency_list: DependencyPackage_Info = {
+                package_dependencies: null,
+                num_dependencies: null,
+            };
+            const dependency_info: DependencyInfo[] = [];
+            let dependency_count = 0;
+
+            Object.keys(dependencies_obj).forEach((key: string) => {
+                dependency_info.push({
+                    dependency_name: key,
+                    dependency_v: dependencies_obj[`${key}`],
+                    out_of_date: false
+                });
+                dependency_count++;
+            });
+
+            dependency_list.package_dependencies = dependency_info;
+            dependency_list.num_dependencies = dependency_count;
+
+            return dependency_list;
         }
 
         fetchPackageData();
