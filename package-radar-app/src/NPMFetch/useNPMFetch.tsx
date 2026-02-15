@@ -36,7 +36,12 @@ function useNPMFetch(queriedSearch: string|null){
     interface DependencyInfo{
         dependency_name: string,
         dependency_v: string,
-        out_of_date: boolean
+        version_info: VersionInfo|null
+        //SEMVER: MAJOR.MINOR.PATCH
+    }
+    interface VersionInfo{
+        status: "up-to-date" | "patch-behind" | "minor-behind" | "major-behind"
+        deprecated: boolean,
     }
 
     useEffect(() => {
@@ -52,7 +57,6 @@ function useNPMFetch(queriedSearch: string|null){
             // Dev Lesson: Defining async functiosn inside useEffect() for data fetching is common practice as defining it outside of useEffect would require the function
             // to be passed as a parameter in the useEffect hook which would then cause an infinite loop as the function is a new instance on each render
             try{
-                //Using CORS Proxy Server
                 const response = await fetch(`${BASE_PACKAGE_URL}/${queriedSearch}`);
                 if(response.status >= 500){
                     throw new Error("Server error")
@@ -71,7 +75,7 @@ function useNPMFetch(queriedSearch: string|null){
                     latest_release_date: packageInfo.time[`${latest_release}`],
                     releases: packageInfo.time,
                     
-                    dependencies: analyzeDependencies(packageInfo.versions[`${latest_release}`].dependencies),
+                    dependencies: await analyzeDependencies(packageInfo.versions[`${latest_release}`].dependencies),
                     weekly_downloads_timeline: await fetchDownloadData()
                     
                 }
@@ -95,7 +99,7 @@ function useNPMFetch(queriedSearch: string|null){
 
         const fetchDownloadData = async () => {
             try{
-                const response = await fetch('https://corsproxy.io?' + encodeURIComponent(`${BASE_DOWNLOAD_URL}/${queriedSearch}`))
+                const response = await fetch(`${BASE_DOWNLOAD_URL}/${queriedSearch}`)
                 const downloadsInfo = await response.json();
                 const downloadTimeLine = downloadsInfo.downloads;
 
@@ -145,7 +149,37 @@ function useNPMFetch(queriedSearch: string|null){
             }
         }
 
-        function analyzeDependencies(dependencies_obj: Record<string,string>){
+        async function analyzeDependencies(dependencies_obj: Record<string,string>){
+            
+            async function analyzeVersionStatus(key: string, version_usage: string){
+                try{
+                    const response = await fetch(`${BASE_PACKAGE_URL}/${encodeURI(key)}`)
+                    if(response.status >= 500){
+                        setFetchError("Server side Error")
+                    }
+                    else if(response.status >= 400){
+                        setFetchError("client side error")
+                    }
+                    const packageInfo = await response.json();
+                    const latest_v = packageInfo["dist-tags"].latest;
+                    console.log(key+ ":" + latest_v + " : " + version_usage)
+                    const info: VersionInfo = {
+                        status: "up-to-date",
+                        deprecated: packageInfo[`${version_usage}`].deprecated ? true : false
+                    }
+                    return info;
+                }
+                catch(responsError: unknown){
+                    if(responsError instanceof Error){
+                        setFetchError("outOfDateStatus:" + responsError.message)
+                    }
+                    else{
+                        setFetchError("Unkown Error")
+                    }
+                }
+                return null;
+            }
+
             //In the case a package has no dependencies the api response will not include a dependencies obj
             if(!dependencies_obj){
                 return { 
@@ -161,11 +195,11 @@ function useNPMFetch(queriedSearch: string|null){
             const dependency_info: DependencyInfo[] = [];
             let dependency_count = 0;
 
-            Object.keys(dependencies_obj).forEach((key: string) => {
+            Object.keys(dependencies_obj).forEach(async (key: string) => {
                 dependency_info.push({
                     dependency_name: key,
                     dependency_v: dependencies_obj[`${key}`],
-                    out_of_date: false
+                    version_info: await analyzeVersionStatus(key, dependencies_obj[`${key}`])
                 });
                 dependency_count++;
             });

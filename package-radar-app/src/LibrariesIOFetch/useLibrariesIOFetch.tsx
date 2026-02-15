@@ -5,6 +5,7 @@ interface UseLibrariesIOFetchProps{
     platform: string,
     setFetchError: React.Dispatch<React.SetStateAction<string|null|Error>>
 }
+
 function useLibrariesIOFetch({query, platform, setFetchError}:UseLibrariesIOFetchProps ){
     //MAKE SURE TO HIDE API KEY!!!!!!!!!!!!!!!!
     const BASE_LIBRARIES_URL = `https://libraries.io/api/${platform}/${query}?api_key=***REMOVED***`;
