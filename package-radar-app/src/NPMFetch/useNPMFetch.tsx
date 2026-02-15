@@ -67,9 +67,6 @@ function useNPMFetch(queriedSearch: string|null){
                 const packageInfo = await response.json();
                 const latest_release = packageInfo["dist-tags"].latest;
 
-
-                //await fetchDownloadData(); //NEED TO REFACTOR LOGICAL FLOW OF THIS API CALL
-
                 const queriedPackageData: NPMPackage_Data_Primative = {
                     latest_v: latest_release,
                     latest_release_date: packageInfo.time[`${latest_release}`],
@@ -79,14 +76,12 @@ function useNPMFetch(queriedSearch: string|null){
                     weekly_downloads_timeline: await fetchDownloadData()
                     
                 }
-                console.log(queriedPackageData.dependencies)
                 
                 setPackageData(queriedPackageData);
             }
             catch(responseErorr: unknown){
                 if(responseErorr instanceof Error){
                     setFetchError("fetchPackageData: " + responseErorr);
-                    console.log(responseErorr.stack)
                 }
                 else{
                     setFetchError("Unkown Error");
@@ -135,7 +130,6 @@ function useNPMFetch(queriedSearch: string|null){
                         weekDay_count++;
                     }
                 });
-                console.log(weekly_timeline); //Dev debugging
                 return weekly_timeline;
             }
             catch(responseError: unknown){
@@ -162,10 +156,9 @@ function useNPMFetch(queriedSearch: string|null){
                     }
                     const packageInfo = await response.json();
                     const latest_v = packageInfo["dist-tags"].latest;
-                    console.log(key+ ":" + latest_v + " : " + version_usage)
                     const info: VersionInfo = {
                         status: "up-to-date",
-                        deprecated: packageInfo[`${version_usage}`].deprecated ? true : false
+                        deprecated: packageInfo.versions[`${version_usage}`].deprecated ? true : false
                     }
                     return info;
                 }
@@ -195,24 +188,26 @@ function useNPMFetch(queriedSearch: string|null){
             const dependency_info: DependencyInfo[] = [];
             let dependency_count = 0;
 
-            Object.keys(dependencies_obj).forEach(async (key: string) => {
+            for(const key of Object.keys(dependencies_obj)){
                 dependency_info.push({
                     dependency_name: key,
                     dependency_v: dependencies_obj[`${key}`],
-                    version_info: await analyzeVersionStatus(key, dependencies_obj[`${key}`])
+                    version_info: await analyzeVersionStatus(key, dependencies_obj[`${key}`].slice(1))
                 });
                 dependency_count++;
-            });
+            }
 
             dependency_list.package_dependencies = dependency_info;
             dependency_list.num_dependencies = dependency_count;
 
             return dependency_list;
         }
-
         fetchPackageData();
     }, [queriedSearch])
 
+    if(packageData){
+        //console.log(packageData.dependencies)
+    }
     return { packageData, libIo_dependents, fetchError, loading };
 }
 
