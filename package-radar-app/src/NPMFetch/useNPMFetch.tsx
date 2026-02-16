@@ -19,7 +19,6 @@ function useNPMFetch(queriedSearch: string|null){
 
         //Dependency Structure:
         dependencies: DependencyPackage_Info|null|undefined,
-        dependents: typeof libIo_dependents,
         weekly_downloads_timeline: WeeklyDownloads[]|null,
         //Depth of dependency tree will be handled by the back end
     }
@@ -74,7 +73,6 @@ function useNPMFetch(queriedSearch: string|null){
                     releases: packageInfo.time,
                     
                     dependencies: await analyzeDependencies(packageInfo.versions[`${latest_release}`].dependencies),
-                    dependents: libIo_dependents,
                     weekly_downloads_timeline: await fetchDownloadData()
                     
                 }
@@ -157,7 +155,7 @@ function useNPMFetch(queriedSearch: string|null){
                         setFetchError("client side error")
                     }
                     const packageInfo = await response.json();
-                    const latest_v = packageInfo["dist-tags"].latest;
+                    //const latest_v = packageInfo["dist-tags"].latest;
                     const info: VersionInfo = {
                         status: "up-to-date",
                         deprecated: packageInfo.versions[`${version_usage}`].deprecated ? true : false
@@ -207,10 +205,7 @@ function useNPMFetch(queriedSearch: string|null){
         fetchPackageData();
     }, [queriedSearch])
 
-    if(packageData){
-        //console.log(packageData.dependencies)
-    }
-    return { packageData, fetchError, loading };
+    return { packageData, libIo_dependents, fetchError, loading };
 }
 
 export default useNPMFetch;
