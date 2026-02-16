@@ -19,6 +19,7 @@ function useNPMFetch(queriedSearch: string|null){
 
         //Dependency Structure:
         dependencies: DependencyPackage_Info|null|undefined,
+        dependents: typeof libIo_dependents,
         weekly_downloads_timeline: WeeklyDownloads[]|null,
         //Depth of dependency tree will be handled by the back end
     }
@@ -73,6 +74,7 @@ function useNPMFetch(queriedSearch: string|null){
                     releases: packageInfo.time,
                     
                     dependencies: await analyzeDependencies(packageInfo.versions[`${latest_release}`].dependencies),
+                    dependents: libIo_dependents,
                     weekly_downloads_timeline: await fetchDownloadData()
                     
                 }
@@ -192,7 +194,7 @@ function useNPMFetch(queriedSearch: string|null){
                 dependency_info.push({
                     dependency_name: key,
                     dependency_v: dependencies_obj[`${key}`],
-                    version_info: await analyzeVersionStatus(key, dependencies_obj[`${key}`].slice(1))
+                    version_info: await analyzeVersionStatus(key, dependencies_obj[`${key}`].slice(1)) //.slice(1) to remove "^" character
                 });
                 dependency_count++;
             }
@@ -208,7 +210,7 @@ function useNPMFetch(queriedSearch: string|null){
     if(packageData){
         //console.log(packageData.dependencies)
     }
-    return { packageData, libIo_dependents, fetchError, loading };
+    return { packageData, fetchError, loading };
 }
 
 export default useNPMFetch;
