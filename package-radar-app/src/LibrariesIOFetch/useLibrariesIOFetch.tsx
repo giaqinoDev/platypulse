@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
 
-interface UseLibrariesIOFetchProps{
-    query: string|null,
-    platform: string,
-    setFetchError: React.Dispatch<React.SetStateAction<string|null|Error>>
+interface Dependents{
+    num_dependents: number|null,
+    num_dependent_repos: number|null
 }
 
-function useLibrariesIOFetch({query, platform, setFetchError}:UseLibrariesIOFetchProps ){
+function useLibrariesIOFetch(query: string|null, platform: string, setFetchError: React.Dispatch<React.SetStateAction<string|null|Error>>){//{query, platform, setFetchError}:UseLibrariesIOFetchProps ){
     //MAKE SURE TO HIDE API KEY!!!!!!!!!!!!!!!!
     const BASE_LIBRARIES_URL = `https://libraries.io/api/${platform}/${query}?api_key=***REMOVED***`;
-    const [num_dependents, setNum_dependents] = useState<number|null>(null);
-    const [num_dependent_repos, setNum_dependent_repos] = useState<number|null>(null);
+    const [packageDependents, setPackageDependents] = useState<Dependents|null>(null);
     useEffect(() => {
 
         const fecthLibrariesIOPackage = async () => {
+            if(!query){
+                return;
+            }
             try{
                 const response = await fetch(BASE_LIBRARIES_URL);
                 if(response.status >= 500){
@@ -24,8 +25,11 @@ function useLibrariesIOFetch({query, platform, setFetchError}:UseLibrariesIOFetc
                 }
 
                 const packageInfo = await response.json();
-                setNum_dependents(packageInfo.dependents_count);
-                setNum_dependent_repos(packageInfo.dependent_repos_count)
+                const dependents: Dependents = {
+                    num_dependents: packageInfo.dependents_count,
+                    num_dependent_repos: packageInfo.dependent_repos_count
+                }
+                setPackageDependents(dependents);
             }
             catch(responseError: unknown){
                 if(responseError instanceof Error){
@@ -38,9 +42,9 @@ function useLibrariesIOFetch({query, platform, setFetchError}:UseLibrariesIOFetc
         }
 
         fecthLibrariesIOPackage();
-    })
+    }, [query, platform])
 
-    return {num_dependents, num_dependent_repos};
+    return packageDependents;//{num_dependents, num_dependent_repos};
 }
 
 export default useLibrariesIOFetch;

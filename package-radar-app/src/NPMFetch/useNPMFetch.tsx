@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import useLibrariesIOFetch from "../LibrariesIOFetch/useLibrariesIOFetch";
 
 function useNPMFetch(queriedSearch: string|null){
-
     const BASE_PACKAGE_URL ="https://registry.npmjs.org";
     const BASE_DOWNLOAD_URL = "https://api.npmjs.org/downloads/range/last-year";
     //const [queryResult, setQueryResult] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
     const [packageData, setPackageData] = useState<NPMPackage_Data_Primative|null>(null);
-    const libIo_dependents = useLibrariesIOFetch({query: queriedSearch, platform: "NPM", setFetchError});
+    const libIo_dependents = useLibrariesIOFetch(queriedSearch, "NPM", setFetchError);//{query: queriedSearch, platform: "NPM", setFetchError});
 
     interface NPMPackage_Data_Primative{
         //Package Releases:
@@ -19,6 +18,7 @@ function useNPMFetch(queriedSearch: string|null){
 
         //Dependency Structure:
         dependencies: DependencyPackage_Info|null|undefined,
+        dependents: typeof libIo_dependents,
         weekly_downloads_timeline: WeeklyDownloads[]|null,
         //Depth of dependency tree will be handled by the back end
     }
@@ -73,6 +73,7 @@ function useNPMFetch(queriedSearch: string|null){
                     releases: packageInfo.time,
                     
                     dependencies: await analyzeDependencies(packageInfo.versions[`${latest_release}`].dependencies),
+                    dependents: libIo_dependents,
                     weekly_downloads_timeline: await fetchDownloadData()
                     
                 }
@@ -185,26 +186,32 @@ function useNPMFetch(queriedSearch: string|null){
                 package_dependencies: null,
                 num_dependencies: null,
             };
-            const dependency_info: DependencyInfo[] = [];
+            //const dependency_info: DependencyInfo[] = [];
             let dependency_count = 0;
 
-            for(const key of Object.keys(dependencies_obj)){
-                dependency_info.push({
-                    dependency_name: key,
-                    dependency_v: dependencies_obj[`${key}`],
-                    version_info: await analyzeVersionStatus(key, dependencies_obj[`${key}`].slice(1)) //.slice(1) to remove "^" character
-                });
-                dependency_count++;
-            }
+            //Parallel fetching: starts all requests at once
+            //wait until all promises are finished
+            const dependency_info: DependencyInfo[] = await Promise.all(
+                Object.keys(dependencies_obj).map(async (key) => {
+                    dependency_count++;
+                    return{
+                        dependency_name: key,
+                        dependency_v: dependencies_obj[`${key}`],
+                        version_info: await analyzeVersionStatus(key, dependencies_obj[`${key}`].slice(1)) //.slice(1) to remove "^" character
+                    }
+                })
+            );
 
             dependency_list.package_dependencies = dependency_info;
             dependency_list.num_dependencies = dependency_count;
-
+            console.log(dependency_list.package_dependencies);
             return dependency_list;
         }
         fetchPackageData();
     }, [queriedSearch])
 
+
+    console.log(packageData?.dependents)
     return { packageData, libIo_dependents, fetchError, loading };
 }
 
