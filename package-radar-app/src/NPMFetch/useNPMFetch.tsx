@@ -8,7 +8,7 @@ function useNPMFetch(queriedSearch: string|null){
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
     const [packageData, setPackageData] = useState<NPMPackage_Data_Primative|null>(null);
-    const libIo_dependents = useLibrariesIOFetch(queriedSearch, "NPM", setFetchError);//{query: queriedSearch, platform: "NPM", setFetchError});
+    const libIo_dependents = useLibrariesIOFetch({query: queriedSearch, platform: "NPM", setFetchError});//{query: queriedSearch, platform: "NPM", setFetchError});
 
     interface NPMPackage_Data_Primative{
         //Package Releases:
@@ -20,6 +20,7 @@ function useNPMFetch(queriedSearch: string|null){
         dependencies: DependencyPackage_Info|null|undefined,
         weekly_downloads_timeline: WeeklyDownloads[]|null,
         //Depth of dependency tree will be handled by the back end
+
     }
 
     interface WeeklyDownloads{

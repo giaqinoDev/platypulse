@@ -5,7 +5,13 @@ interface Dependents{
     num_dependent_repos: number|null
 }
 
-function useLibrariesIOFetch(query: string|null, platform: string, setFetchError: React.Dispatch<React.SetStateAction<string|null|Error>>){//{query, platform, setFetchError}:UseLibrariesIOFetchProps ){
+interface UseLibrariesIOFetchProps{
+    query: string|null,
+    platform: string,
+    setFetchError: React.Dispatch<React.SetStateAction<string|null|Error>>
+}
+
+function useLibrariesIOFetch({query, platform, setFetchError}:UseLibrariesIOFetchProps ){//{query, platform, setFetchError}:UseLibrariesIOFetchProps ){
     //MAKE SURE TO HIDE API KEY!!!!!!!!!!!!!!!!
     const BASE_LIBRARIES_URL = `https://libraries.io/api/${platform}/${query}?api_key=***REMOVED***`;
     const [packageDependents, setPackageDependents] = useState<Dependents|null>(null);
