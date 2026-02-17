@@ -10,7 +10,7 @@ function Home(){
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
-        setQuery(encodeURIComponent(searchTerm.trim()))
+        setQuery(encodeURIComponent(searchTerm.trim()));
     }
 
     return(
@@ -44,18 +44,13 @@ function Home(){
                     ))}
                 </div>
             }
-            {/* {exResult.libIo_dependents &&
+            {exResult.libIo_dependents &&
                 <>
                     <div>Dependents (Counts published packages and measures library to library use): {exResult.libIo_dependents.num_dependents}</div>
                     <div>Dependent Repos (Counts code repositories and measures actual project adoption): {exResult.libIo_dependents.num_dependent_repos}</div>
                 </>
-            } */}
-            {(exResult.packageData && exResult.packageData.dependents) &&
-                <>
-                    <div>Dependents (Counts published packages and measures library to library use): {exResult.packageData.dependents.num_dependents}</div>
-                    <div>Dependent Repos (Counts code repositories and measures actual project adoption): {exResult.packageData.dependents.num_dependent_repos}</div>
-                </>
             }
+
             
         </div>
     );

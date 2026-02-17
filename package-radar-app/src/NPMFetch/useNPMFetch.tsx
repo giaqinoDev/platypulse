@@ -18,7 +18,6 @@ function useNPMFetch(queriedSearch: string|null){
 
         //Dependency Structure:
         dependencies: DependencyPackage_Info|null|undefined,
-        dependents: typeof libIo_dependents,
         weekly_downloads_timeline: WeeklyDownloads[]|null,
         //Depth of dependency tree will be handled by the back end
     }
@@ -45,10 +44,12 @@ function useNPMFetch(queriedSearch: string|null){
     }
 
     useEffect(() => {
+        
         if(!queriedSearch){
             return;
         }
 
+        let queriedPackageData: NPMPackage_Data_Primative|null = null;
         const fetchPackageData = async () => {
             setFetchError(null);
             setLoading(true);
@@ -67,18 +68,14 @@ function useNPMFetch(queriedSearch: string|null){
                 const packageInfo = await response.json();
                 const latest_release = packageInfo["dist-tags"].latest;
 
-                const queriedPackageData: NPMPackage_Data_Primative = {
+                queriedPackageData = {
                     latest_v: latest_release,
                     latest_release_date: packageInfo.time[`${latest_release}`],
                     releases: packageInfo.time,
                     
                     dependencies: await analyzeDependencies(packageInfo.versions[`${latest_release}`].dependencies),
-                    dependents: libIo_dependents,
                     weekly_downloads_timeline: await fetchDownloadData()
-                    
                 }
-                
-                setPackageData(queriedPackageData);
             }
             catch(responseErorr: unknown){
                 if(responseErorr instanceof Error){
@@ -89,6 +86,7 @@ function useNPMFetch(queriedSearch: string|null){
                 }
             }
             finally{
+                setPackageData(queriedPackageData);
                 setLoading(false);
             }
         }
@@ -208,10 +206,9 @@ function useNPMFetch(queriedSearch: string|null){
             return dependency_list;
         }
         fetchPackageData();
+        
     }, [queriedSearch])
 
-
-    console.log(packageData?.dependents)
     return { packageData, libIo_dependents, fetchError, loading };
 }
 
