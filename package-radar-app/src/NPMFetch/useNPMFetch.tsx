@@ -77,6 +77,7 @@ function useNPMFetch(queriedSearch: string|null){
                     dependencies: await analyzeDependencies(packageInfo.versions[`${latest_release}`].dependencies),
                     weekly_downloads_timeline: await fetchDownloadData()
                 }
+                console.log(queriedPackageData.releases);
             }
             catch(responseErorr: unknown){
                 if(responseErorr instanceof Error){
