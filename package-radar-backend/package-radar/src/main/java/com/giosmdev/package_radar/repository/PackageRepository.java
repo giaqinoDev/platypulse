@@ -6,7 +6,7 @@ import com.giosmdev.package_radar.model.Report;
 
 @Repository
 public class PackageRepository {
-
+    
     public Report getReport(String pkgName){
         return new Report();
     }
