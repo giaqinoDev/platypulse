@@ -18,7 +18,7 @@ import com.giosmdev.package_radar.model.Report;
 @RequestMapping("/api/packages") //maps http requests to specific controller classes: base url for all endpoints in this controller
 public class PackageController {
 
-    //Constructor injection: preered way over auto injection
+    //Constructor injection: prefered way over auto injection
     private final PackageService packageService;
 
     public PackageController(PackageService packageService){
