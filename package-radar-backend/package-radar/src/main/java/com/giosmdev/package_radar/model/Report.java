@@ -1,7 +1,5 @@
 package com.giosmdev.package_radar.model;
 
-import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

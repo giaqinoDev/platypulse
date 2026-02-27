@@ -1,6 +1,5 @@
 package com.giosmdev.package_radar.controller;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +25,7 @@ public class PackageController {
     }
 
     @GetMapping("/{pkgName}")
-    public ResponseEntity<Report> getReport(@PathVariable String pkgName){
+    public ResponseEntity<String> getReport(@PathVariable String pkgName){
         return new ResponseEntity<>(packageService.getReport(pkgName), HttpStatus.OK);
     }
 

@@ -19,7 +19,14 @@ public class PackageService {
         this.webClient = webClient;
     }
 
-    public Report getReport(String pkgName){
-        return webClient.get().uri("https://registry.npmjs.org/{pkgName}/latest", pkgName).retrieve().bodyToMono(Report.class).block();
+    public String getReport(String pkgName){
+        String response = webClient.get()
+                            .uri("https://registry.npmjs.org/{pkgName}", pkgName)
+                            .header("Accept", "application/vnd.npm.install-v1+json")
+                            .retrieve()
+                            .bodyToMono(String.class)
+                            .block();
+        System.out.println("Response length: " + response.length());
+        return response;
     }
 }
