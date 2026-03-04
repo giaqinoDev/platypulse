@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 //Services
 import com.giosmdev.package_radar.service.PackageService;
 
+import reactor.core.publisher.Mono;
+
 //Models
 import com.giosmdev.package_radar.model.Report;
 
@@ -25,8 +27,8 @@ public class PackageController {
     }
 
     @GetMapping("/{pkgName}")
-    public ResponseEntity<String> getReport(@PathVariable String pkgName){
-        return new ResponseEntity<>(packageService.getReport(pkgName), HttpStatus.OK);
+    public Mono<String> getReport(@PathVariable String pkgName){
+        return packageService.getReport(pkgName);
     }
 
     

@@ -14,8 +14,7 @@ public class WebClientConfig {
     ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(configurer -> configurer.defaultCodecs()
                         .maxInMemorySize(300 * 1024)) // 300 KB
-                .build
-                ();
+                .build();
     @Bean //creates a bean of type WebClient, the beans name is "webClient"
     //tells SB to create an instance of WebClient and manage it in the IoC container
     public WebClient webClient(){

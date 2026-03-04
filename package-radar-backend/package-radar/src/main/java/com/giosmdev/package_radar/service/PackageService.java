@@ -1,5 +1,6 @@
 package com.giosmdev.package_radar.service;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -8,6 +9,9 @@ import com.giosmdev.package_radar.model.Report;
 
 //Repositories
 import com.giosmdev.package_radar.repository.PackageRepository;
+
+import io.micrometer.core.ipc.http.HttpSender.Response;
+import reactor.core.publisher.Mono;
 @Service
 public class PackageService {
     private final PackageRepository packageRepo;
@@ -19,14 +23,16 @@ public class PackageService {
         this.webClient = webClient;
     }
 
-    public String getReport(String pkgName){
-        String response = webClient.get()
-                            .uri("https://registry.npmjs.org/{pkgName}", pkgName)
-                            .header("Accept", "application/vnd.npm.install-v1+json")
-                            .retrieve()
-                            .bodyToMono(String.class)
-                            .block();
-        System.out.println("Response length: " + response.length());
-        return response;
+    public Mono<String> getReport(String pkgName){
+        Mono<String> responseEntityMono = webClient.get()
+                        .uri("https://registry.npmjs.org/{pkgName}", pkgName)
+                        .header("Accept", "application/vnd.npm.install-v1+json")
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .onErrorResume(error -> {
+                            System.out.println("Error occurred: " + error.getMessage());
+                            return Mono.empty();
+                        });
+        return responseEntityMono;
     }
 }
