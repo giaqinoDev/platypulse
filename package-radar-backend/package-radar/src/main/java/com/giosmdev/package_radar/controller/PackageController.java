@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 //Services
-import com.giosmdev.package_radar.service.PackageService;
+import com.giosmdev.package_radar.service.NPMService;
 
 import reactor.core.publisher.Mono;
 
@@ -20,14 +20,14 @@ import com.giosmdev.package_radar.model.Report;
 public class PackageController {
 
     //Constructor injection: prefered way over auto injection
-    private final PackageService packageService;
+    private final NPMService packageService;
 
-    public PackageController(PackageService packageService){
+    public PackageController(NPMService packageService){
         this.packageService = packageService;
     }
 
     @GetMapping("/{pkgName}")
-    public Mono<String> getReport(@PathVariable String pkgName){
+    public Mono<Object> getReport(@PathVariable String pkgName){
         return packageService.getReport(pkgName);
     }
 
