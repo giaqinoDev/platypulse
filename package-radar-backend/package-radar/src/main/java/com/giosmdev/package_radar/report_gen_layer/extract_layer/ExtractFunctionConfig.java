@@ -9,11 +9,11 @@ import reactor.core.publisher.Mono;
 public class ExtractFunctionConfig {
     @Bean
     public ReportContainer extractNPMData(){
-        
+
         return new ReportContainer() {
             @Override
-            public Mono<Object> extract(Mono<Object> rawResponse){
-                return Mono.just("Hello");
+            public Object extract(Object rawResponse){
+                return null;
             }
         };
     }

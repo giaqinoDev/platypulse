@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.giosmdev.package_radar.service.NPMService;
 
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
 
 //Models
 import com.giosmdev.package_radar.model.Report;
+import com.giosmdev.package_radar.model.NPMRegistry.RawNpmResponse;
 
 @RestController //combines @Controller and @ResponseBody: Tells SB this class handles http requests and return JSON
 @RequestMapping("/api/packages") //maps http requests to specific controller classes: base url for all endpoints in this controller
@@ -27,7 +29,7 @@ public class PackageController {
     }
 
     @GetMapping("/{pkgName}")
-    public Mono<Object> getReport(@PathVariable String pkgName){
+    public Mono<RawNpmResponse> getReport(@PathVariable String pkgName){
         return packageService.getReport(pkgName);
     }
 

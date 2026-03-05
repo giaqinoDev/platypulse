@@ -13,7 +13,7 @@ public class WebClientConfig {
     //WebClient to serialize and deserialize request and responses bodies
     ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(configurer -> configurer.defaultCodecs()
-                        .maxInMemorySize(600 * 1024)) // 300 KB
+                        .maxInMemorySize(1 * 1024 * 1024)) // 1MB
                 .build();
     @Bean //creates a bean of type WebClient, the beans name is "webClient"
     //tells SB to create an instance of WebClient and manage it in the IoC container

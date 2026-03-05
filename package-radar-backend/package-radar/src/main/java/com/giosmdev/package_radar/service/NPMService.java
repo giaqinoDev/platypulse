@@ -6,12 +6,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 //Models
 import com.giosmdev.package_radar.model.Report;
+import com.giosmdev.package_radar.model.NPMRegistry.RawNpmResponse;
 import com.giosmdev.package_radar.report_gen_layer.extract_layer.ReportContainer;
 //Repositories
 import com.giosmdev.package_radar.repository.PackageRepository;
 
-import io.micrometer.core.ipc.http.HttpSender.Response;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+
 @Service
 public class NPMService {
     private final PackageRepository packageRepo;
@@ -25,10 +27,10 @@ public class NPMService {
         this.webClient = webClient;
     }
 
-    public Mono<Object> getReport(String pkgName){
-        Mono<Object> responseEntityMono = webClient.get() //builds an http GET request
+    public Mono<RawNpmResponse> getReport(String pkgName){
+        Mono<RawNpmResponse> responseEntityMono = webClient.get() //builds an http GET request
                         .uri("https://registry.npmjs.org/{pkgName}", pkgName) //sets request path
-                        .header("Accept", "application/vnd.npm.install-v1+json")
+                        //.header("Accept", "application/vnd.npm.install-v1+json")
                         .retrieve() // executes the request and prepare to extract the body
                         .onStatus( //handles HTTP status codes before the body is read
                             status -> status.is4xxClientError(),
@@ -38,18 +40,33 @@ public class NPMService {
                             status -> status.is5xxServerError(),
                             response -> Mono.error(new RuntimeException("NPM registery error"))
                         )
-                        .bodyToMono(Object.class) //Convert the response body into a Mono<String>
+                        .bodyToMono(JsonNode.class) //Convert the response body into a Mono<String>
+                        .map(response -> {
+                            String name = response.get("name").asString();
+                            String latest_v = response.get("dist-tags").get("latest").asString();
+                            JsonNode latest_v_info = response.get("versions").get(latest_v);
+
+                            return new RawNpmResponse(name, latest_v, latest_v_info);
+                        })
                         .onErrorResume(error -> {    //Reactive error handling: If any error happend upstream, switch to a fallback Mono
                             if(error.getMessage().contains("Package not found")){
-                                return Mono.just("Oops! Looks like this package doesn't exist.");
+                                return null;//Mono.just("Oops! Looks like this package doesn't exist.");
                             }
                             else if(error.getMessage().contains("NPM registry error")){
-                                return Mono.just("NPM registry is havign some issues, check back later.");
+                                return null;//Mono.just("NPM registry is havign some issues, check back later.");
                             }
                             else{
-                                return Mono.just("An unkown error has occured.");
+                                return null;//Mono.just("An unkown error has occured.");
                             }
                         });
+
+        // Mono<Object> ex = responseEntityMono.map(response -> {
+        //     return extractNPMData.extract(response);
+        // });
+        // .map() is a transform operator in Reactor
+        // It takes the value inside the Mono/Flux once it is emitted
+        // It returns a new value, wrapped in the same reactive type (Mono or flux)
+        // Use when transformation is synchronous
         return responseEntityMono;//extractNPMData.extract(responseEntityMono);
     }
 
