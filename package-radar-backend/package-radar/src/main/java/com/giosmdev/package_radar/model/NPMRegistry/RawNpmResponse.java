@@ -17,4 +17,5 @@ public class RawNpmResponse {
     private String pkge_name;
     private String latest_version;
     private JsonNode latest_version_info;
+    private JsonNode versions_release_info;
 }

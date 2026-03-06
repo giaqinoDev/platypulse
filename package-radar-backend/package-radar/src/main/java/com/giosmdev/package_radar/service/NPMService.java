@@ -28,6 +28,8 @@ public class NPMService {
     }
 
     public Mono<RawNpmResponse> getReport(String pkgName){
+
+        //Call NPM registry
         Mono<RawNpmResponse> responseEntityMono = webClient.get() //builds an http GET request
                         .uri("https://registry.npmjs.org/{pkgName}", pkgName) //sets request path
                         //.header("Accept", "application/vnd.npm.install-v1+json")
@@ -42,11 +44,7 @@ public class NPMService {
                         )
                         .bodyToMono(JsonNode.class) //Convert the response body into a Mono<String>
                         .map(response -> {
-                            String name = response.get("name").asString();
-                            String latest_v = response.get("dist-tags").get("latest").asString();
-                            JsonNode latest_v_info = response.get("versions").get(latest_v);
-
-                            return new RawNpmResponse(name, latest_v, latest_v_info);
+                            return formatReponse(response);
                         })
                         .onErrorResume(error -> {    //Reactive error handling: If any error happend upstream, switch to a fallback Mono
                             if(error.getMessage().contains("Package not found")){
@@ -59,7 +57,7 @@ public class NPMService {
                                 return null;//Mono.just("An unkown error has occured.");
                             }
                         });
-
+        //
         // Mono<Object> ex = responseEntityMono.map(response -> {
         //     return extractNPMData.extract(response);
         // });
@@ -68,6 +66,16 @@ public class NPMService {
         // It returns a new value, wrapped in the same reactive type (Mono or flux)
         // Use when transformation is synchronous
         return responseEntityMono;//extractNPMData.extract(responseEntityMono);
+    }
+
+    private RawNpmResponse formatReponse(JsonNode response){
+        //JsonNode represents a general abstract node in a Json tree structure and allows you to handle Json data dynamicaly
+        String name = response.get("name").asString();
+        String latest_v = response.get("dist-tags").get("latest").asString();
+        JsonNode latest_v_info = response.get("versions").get(latest_v);
+        JsonNode versions_release_info = response.get("time");
+
+        return new RawNpmResponse(name, latest_v, latest_v_info, versions_release_info);
     }
 
 }
