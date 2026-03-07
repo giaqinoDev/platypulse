@@ -11,6 +11,6 @@ import tools.jackson.databind.JsonNode;
 public class PackageInfo {
     private String pkge_name;
     private String latest_version;
-    private JsonNode latest_version_info;
+    private LatestVersionInfo latest_version_info;
     private JsonNode versions_release_info;
 }

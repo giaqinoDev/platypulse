@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
+import com.giosmdev.package_radar.model.NPMRegistry.LatestVersionInfo;
 //Models
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmResponse;
@@ -108,7 +109,9 @@ public class NPMService {
         //JsonNode represents a general abstract node in a Json tree structure and allows you to handle Json data dynamicaly
         String name = response.get("name").asString();
         String latest_v = response.get("dist-tags").get("latest").asString();
-        JsonNode latest_v_info = response.get("versions").get(latest_v);
+        JsonNode repository = response.get("versions").get(latest_v).get("repository");
+        JsonNode dependencies = response.get("versions").get(latest_v).get("dependencies");
+        LatestVersionInfo latest_v_info = new LatestVersionInfo(repository, dependencies);
         JsonNode versions_release_info = response.get("time");
 
         PackageInfo package_info = new PackageInfo(name, latest_v, latest_v_info, versions_release_info);
