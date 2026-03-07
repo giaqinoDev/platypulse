@@ -2,42 +2,39 @@ package com.giosmdev.package_radar.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
 //Models
-import com.giosmdev.package_radar.model.Report;
+import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmResponse;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
-import com.giosmdev.package_radar.report_gen_layer.extract_layer.ReportContainer;
 //Repositories
-import com.giosmdev.package_radar.repository.PackageRepository;
 
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
 
 @Service
 public class NPMService {
-    private final PackageRepository packageRepo;
-    private final ReportContainer extractNPMData;
     private final WebClient webClient;
+    private final BiFunction<String, String, Mono<LibrariesIOResponse>> librariesIOFetch;
 
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
     private String BASE_DOWNLOAD_URL = "https://api.npmjs.org/downloads/range/last-year";
 
     //Spring expects all constructor injections to be done in one consturctor
-    public NPMService(PackageRepository packageRepo, WebClient webClient, ReportContainer extractNPMData){
-        this.extractNPMData = extractNPMData;
-        this.packageRepo = packageRepo;
+    public NPMService(WebClient webClient, BiFunction<String, String, Mono<LibrariesIOResponse>> librariesIOFetch){
         this.webClient = webClient;
+        this.librariesIOFetch = librariesIOFetch;
     }
 
     public Mono<RawNpmResponse> getReport(String pkgName){
 
         //Call NPM registry call
-        Mono<RawNpmResponse> responseEntityMono = webClient.get() //builds an http GET request
+        Mono<PackageInfo> responseEntityMono = webClient.get() //builds an http GET request
                         .uri(BASE_PACKAGE_URL + "/{pkgName}", pkgName) //sets request path
                         //.header("Accept", "application/vnd.npm.install-v1+json")
                         .retrieve() // executes the request and prepare to extract the body
@@ -92,33 +89,30 @@ public class NPMService {
                                     return null;//Mono.just("An unkown error has occured.");
                                 }
                             });
+        
+        //Libraries 
+        Mono<LibrariesIOResponse> libIO_response = librariesIOFetch.apply("npm", pkgName);
 
-
-        //LOOOK MOR INTO THIS: USE ZIP INSTEAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        Mono<RawNpmResponse> NPMResponse = responseEntityMono.flatMap(response -> 
-            downloadsTimeline.map(timeline -> {
-                response.setDownloads_timeline(timeline);
-                return response;
-            })
-        );
-        // Mono<Object> ex = responseEntityMono.map(response -> {
-        //     return extractNPMData.extract(response);
-        // });
-        // .map() is a transform operator in Reactor
-        // It takes the value inside the Mono/Flux once it is emitted
-        // It returns a new value, wrapped in the same reactive type (Mono or flux)
-        // Use when transformation is synchronous
-        return NPMResponse;//extractNPMData.extract(responseEntityMono);
+        // Merge downloads timeline into response
+        Mono<RawNpmResponse> NPMResponse = Mono.zip(responseEntityMono, downloadsTimeline, libIO_response)
+                                        .map(tuple -> {
+                                            PackageInfo package_info = tuple.getT1();
+                                            List<WeeklyDownloads> downloads_timeline = tuple.getT2();
+                                            LibrariesIOResponse libIO_Response = tuple.getT3();
+                                            return new RawNpmResponse(package_info, downloads_timeline, libIO_Response);
+                                        });
+        return NPMResponse;
     }
 
-    private RawNpmResponse formatReponse(JsonNode response){
+    private PackageInfo formatReponse(JsonNode response){
         //JsonNode represents a general abstract node in a Json tree structure and allows you to handle Json data dynamicaly
         String name = response.get("name").asString();
         String latest_v = response.get("dist-tags").get("latest").asString();
         JsonNode latest_v_info = response.get("versions").get(latest_v);
         JsonNode versions_release_info = response.get("time");
 
-        return new RawNpmResponse(name, latest_v, latest_v_info, versions_release_info, null);
+        PackageInfo package_info = new PackageInfo(name, latest_v, latest_v_info, versions_release_info);
+        return package_info;
     }
 
     private List<WeeklyDownloads> formatDownloadsTimeline(JsonNode response){
