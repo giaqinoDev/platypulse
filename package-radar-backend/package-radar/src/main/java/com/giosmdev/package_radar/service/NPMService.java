@@ -199,11 +199,7 @@ public class NPMService {
                                     )
                                     .bodyToMono(JsonNode.class)
                                     .map(response -> {
-                                        Boolean deprecated = false;
-                                        if(!response.get("versions").get(dependency_version).hasNonNull("deprecated")){
-                                            deprecated = true;
-                                        }
-                                        //Boolean deprecated = (response.get("versions").get(dependency_version).get("deprecated") != null) ? true:false;
+                                        Boolean deprecated = (response.get("versions").get(dependency_version).has("deprecated")) ? true:false;
                                         return new DependenciesInfo(dependency_name, dependency_version_raw, deprecated);
                                     });
                         return dependency_info;
