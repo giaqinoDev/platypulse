@@ -1,13 +1,17 @@
 package com.giosmdev.package_radar.service;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 
+import org.springframework.boot.jackson.autoconfigure.JacksonProperties.Json;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
+import com.giosmdev.package_radar.model.NPMRegistry.DependenciesInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.LatestVersionInfo;
 //Models
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
@@ -15,8 +19,10 @@ import com.giosmdev.package_radar.model.NPMRegistry.RawNpmResponse;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
 //Repositories
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
+
 
 @Service
 public class NPMService {
@@ -48,7 +54,7 @@ public class NPMService {
                             response -> Mono.error(new RuntimeException("NPM registery error"))
                         )
                         .bodyToMono(JsonNode.class) //Convert the response body into a Mono<String>
-                        .map(response -> {
+                        .flatMap(response -> {
                             return formatReponse(response);
                         })
                         .onErrorResume(error -> {    //Reactive error handling: If any error happend upstream, switch to a fallback Mono
@@ -105,17 +111,31 @@ public class NPMService {
         return NPMResponse;
     }
 
-    private PackageInfo formatReponse(JsonNode response){
+    private Mono<PackageInfo> formatReponse(JsonNode response){
         //JsonNode represents a general abstract node in a Json tree structure and allows you to handle Json data dynamicaly
         String name = response.get("name").asString();
         String latest_v = response.get("dist-tags").get("latest").asString();
         JsonNode repository = response.get("versions").get(latest_v).get("repository");
-        JsonNode dependencies = response.get("versions").get(latest_v).get("dependencies");
-        LatestVersionInfo latest_v_info = new LatestVersionInfo(repository, dependencies);
+        JsonNode rawDependencies = response.get("versions").get(latest_v).get("dependencies");
+
+        Mono<List<DependenciesInfo>> dependencies = formatDependenciesInfo(rawDependencies);
+        LatestVersionInfo latest_v_info = new LatestVersionInfo(repository, null);
+        Mono<LatestVersionInfo> latest_v_info_result = dependencies.map(tuples -> {
+            latest_v_info.setDependencies(tuples);
+            return latest_v_info;
+        });
+        //latest_v_info_result.subscribe();
+        //dependencies.flatMap(tuples -> latest_v_info = new LatestVersionInfo(repository, tuples));
+        //LatestVersionInfo latest_v_info = new LatestVersionInfo(repository, dependencies);
         JsonNode versions_release_info = response.get("time");
 
-        PackageInfo package_info = new PackageInfo(name, latest_v, latest_v_info, versions_release_info);
-        return package_info;
+        PackageInfo package_info = new PackageInfo(name, latest_v, null, versions_release_info);
+
+        Mono<PackageInfo> package_info_result = latest_v_info_result.map(tuples -> {
+            package_info.setLatest_version_info(tuples);
+            return package_info;
+        });
+        return package_info_result;
     }
 
     private List<WeeklyDownloads> formatDownloadsTimeline(JsonNode response){
@@ -155,4 +175,40 @@ public class NPMService {
         return downloads_timeline;
     }
 
+
+    //SUPER UNREACTIVE!!!! REDESIGN LATER!!!!---------------------------------------------------------------------------
+    private Mono<List<DependenciesInfo>> formatDependenciesInfo(JsonNode dependencies){
+        
+        //Flux.fromIterable() converts argurments into a flux stream
+        Mono<List<DependenciesInfo>> formattedDependencies = Flux.fromIterable(dependencies.propertyNames())
+                .flatMap(name -> {
+                        String dependency_name = name;
+                        String dependency_version_raw = dependencies.get(name).asString();
+                        String dependency_version = dependency_version_raw.substring(1);
+                        System.out.println(dependency_version);
+                        Mono<DependenciesInfo> dependency_info = webClient.get()
+                                    .uri(BASE_PACKAGE_URL + "/{dependency_name}", dependency_name)
+                                    .retrieve()
+                                    .onStatus(
+                                        status -> status.is4xxClientError(),
+                                        response -> Mono.error(new RuntimeException("Package not found"))
+                                    )
+                                    .onStatus(
+                                        status -> status.is5xxServerError(),
+                                        response -> Mono.error(new RuntimeException("NPM Registry Error"))
+                                    )
+                                    .bodyToMono(JsonNode.class)
+                                    .map(response -> {
+                                        Boolean deprecated = false;
+                                        if(!response.get("versions").get(dependency_version).hasNonNull("deprecated")){
+                                            deprecated = true;
+                                        }
+                                        //Boolean deprecated = (response.get("versions").get(dependency_version).get("deprecated") != null) ? true:false;
+                                        return new DependenciesInfo(dependency_name, dependency_version_raw, deprecated);
+                                    });
+                        return dependency_info;
+                    }
+                ).collectList();
+            return formattedDependencies;
+    }
 }
