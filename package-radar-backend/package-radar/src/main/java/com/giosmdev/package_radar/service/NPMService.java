@@ -120,22 +120,27 @@ public class NPMService {
 
         Mono<List<DependenciesInfo>> dependencies = formatDependenciesInfo(rawDependencies);
         LatestVersionInfo latest_v_info = new LatestVersionInfo(repository, null);
-        Mono<LatestVersionInfo> latest_v_info_result = dependencies.map(tuples -> {
-            latest_v_info.setDependencies(tuples);
-            return latest_v_info;
-        });
-        //latest_v_info_result.subscribe();
-        //dependencies.flatMap(tuples -> latest_v_info = new LatestVersionInfo(repository, tuples));
-        //LatestVersionInfo latest_v_info = new LatestVersionInfo(repository, dependencies);
         JsonNode versions_release_info = response.get("time");
-
         PackageInfo package_info = new PackageInfo(name, latest_v, null, versions_release_info);
 
-        Mono<PackageInfo> package_info_result = latest_v_info_result.map(tuples -> {
-            package_info.setLatest_version_info(tuples);
-            return package_info;
-        });
-        return package_info_result;
+        if(dependencies != null){
+            Mono<LatestVersionInfo> latest_v_info_result = dependencies.map(tuples -> {
+                latest_v_info.setDependencies(tuples);
+                return latest_v_info;
+            });
+
+            Mono<PackageInfo> package_info_result = latest_v_info_result.map(tuples -> {
+                package_info.setLatest_version_info(tuples);
+                return package_info;
+            });
+
+            return package_info_result;
+        }
+
+        package_info.setLatest_version_info(latest_v_info);
+        return Mono.just(package_info);
+        
+    
     }
 
     private List<WeeklyDownloads> formatDownloadsTimeline(JsonNode response){
@@ -178,14 +183,15 @@ public class NPMService {
 
     //SUPER UNREACTIVE!!!! REDESIGN LATER!!!!---------------------------------------------------------------------------
     private Mono<List<DependenciesInfo>> formatDependenciesInfo(JsonNode dependencies){
-        
+        if(dependencies == null){
+            return null;
+        }
         //Flux.fromIterable() converts argurments into a flux stream
         Mono<List<DependenciesInfo>> formattedDependencies = Flux.fromIterable(dependencies.propertyNames())
                 .flatMap(name -> {
                         String dependency_name = name;
                         String dependency_version_raw = dependencies.get(name).asString();
                         String dependency_version = dependency_version_raw.substring(1);
-                        System.out.println(dependency_version);
                         Mono<DependenciesInfo> dependency_info = webClient.get()
                                     .uri(BASE_PACKAGE_URL + "/{dependency_name}", dependency_name)
                                     .retrieve()
