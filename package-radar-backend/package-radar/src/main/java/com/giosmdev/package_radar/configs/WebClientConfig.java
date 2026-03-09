@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfig {
     //Within a configuration class @Bean annotations are used to configure and instantiate beans
 
-    //Defiens the configs of codecs (http message readers and writers) for 
+    //Defines the configs of codecs (http message readers and writers) for 
     //WebClient to serialize and deserialize request and responses bodies
     ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(configurer -> configurer.defaultCodecs()

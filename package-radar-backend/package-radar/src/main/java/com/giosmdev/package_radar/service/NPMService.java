@@ -123,6 +123,7 @@ public class NPMService {
         JsonNode versions_release_info = response.get("time");
         PackageInfo package_info = new PackageInfo(name, latest_v, null, versions_release_info);
 
+        //Package Doesnt has dependencies
         if(dependencies != null){
             Mono<LatestVersionInfo> latest_v_info_result = dependencies.map(tuples -> {
                 latest_v_info.setDependencies(tuples);
@@ -139,8 +140,6 @@ public class NPMService {
 
         package_info.setLatest_version_info(latest_v_info);
         return Mono.just(package_info);
-        
-    
     }
 
     private List<WeeklyDownloads> formatDownloadsTimeline(JsonNode response){
@@ -180,8 +179,6 @@ public class NPMService {
         return downloads_timeline;
     }
 
-
-    //SUPER UNREACTIVE!!!! REDESIGN LATER!!!!---------------------------------------------------------------------------
     private Mono<List<DependenciesInfo>> formatDependenciesInfo(JsonNode dependencies){
         if(dependencies == null){
             return null;
@@ -211,6 +208,6 @@ public class NPMService {
                         return dependency_info;
                     }
                 ).collectList();
-            return formattedDependencies;
+        return formattedDependencies;
     }
 }

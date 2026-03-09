@@ -144,6 +144,23 @@ function useNPMFetch(queriedSearch: string|null){
             }
         }
 
+        const fetchFromBackend = async () => {
+            try{
+                const response = await fetch(`http://localhost:8080/api/packages/${queriedSearch}`);
+                console.log(response.status);
+                const info = await response.json();
+                return info;
+            }
+            catch(reponseError: unknown){
+                if(reponseError instanceof Error){
+                    setFetchError("fetchFromBackend: " + reponseError);
+                }
+                else{
+                    setFetchError("Unkown Error");
+                }
+            }
+        }
+
         async function analyzeDependencies(dependencies_obj: Record<string,string>){
             
             async function analyzeVersionStatus(key: string, version_usage: string){
@@ -207,7 +224,8 @@ function useNPMFetch(queriedSearch: string|null){
             console.log(dependency_list.package_dependencies);
             return dependency_list;
         }
-        fetchPackageData();
+        //fetchPackageData();
+        fetchFromBackend();
         
     }, [queriedSearch])
 

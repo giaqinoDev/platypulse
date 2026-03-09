@@ -25,6 +25,7 @@ function Home(){
                 onChange={(event) => {setSearchTerm(event.target.value)}}/>
                 <input type="submit"/>
             </form>
+            
 
             {exResult.loading && 
                 <div>Loading</div>
