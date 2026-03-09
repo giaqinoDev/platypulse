@@ -146,7 +146,7 @@ function useNPMFetch(queriedSearch: string|null){
 
         const fetchFromBackend = async () => {
             try{
-                const response = await fetch(`http://localhost:8080/api/packages/${queriedSearch}`);
+                const response = await fetch(`/bend/api/packages/${queriedSearch}`);
                 console.log(response.status);
                 const info = await response.json();
                 return info;
