@@ -42,17 +42,20 @@ public class LibrariesIOFetchConfig {
                             return new LibrariesIOResponse(dependent_packages_count, dependent_repos_count);
                         })
                         .onErrorResume(error -> {
+                            
                             if(error.getMessage().contains("Package not found")){
-                                return null;
+                                //Place holder
+                                return Mono.just(new LibrariesIOResponse());
                             }
                             else if(error.getMessage().contains("NPM registry error")){
-                                return null;
+                                return Mono.just(new LibrariesIOResponse());
                             }
                             else{
-                                return null;
+                                return Mono.just(new LibrariesIOResponse());
                             }
                         });
-                        
+                    
+                    
                     return package_info;
                 };
     }

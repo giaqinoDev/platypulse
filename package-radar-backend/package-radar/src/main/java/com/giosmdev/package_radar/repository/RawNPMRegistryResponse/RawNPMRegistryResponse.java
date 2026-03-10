@@ -51,13 +51,13 @@ public class RawNPMRegistryResponse {
                         })
                         .onErrorResume(error -> {    //Reactive error handling: If any error happend upstream, switch to a fallback Mono
                             if(error.getMessage().contains("Package not found")){
-                                return null;//Mono.just("Oops! Looks like this package doesn't exist.");
+                                return Mono.just(new PackageInfo());//Mono.just("Oops! Looks like this package doesn't exist.");
                             }
                             else if(error.getMessage().contains("NPM registry error")){
-                                return null;//Mono.just("NPM registry is havign some issues, check back later.");
+                                return Mono.just(new PackageInfo());//Mono.just("NPM registry is havign some issues, check back later.");
                             }
                             else{
-                                return null;//Mono.just("An unkown error has occured.");
+                                return Mono.just(new PackageInfo());//Mono.just("An unkown error has occured.");
                             }
                         });
 
@@ -79,20 +79,22 @@ public class RawNPMRegistryResponse {
                             })
                             .onErrorResume(error -> {
                                 if(error.getMessage().contains("Package not found")){
-                                    return null;//Mono.just("Oops! Looks like this package doesn't exist.");
+                                    return Mono.just(new ArrayList<WeeklyDownloads>());//Mono.just("Oops! Looks like this package doesn't exist.");
                                 }
                                 else if(error.getMessage().contains("NPM Downloads registry error")){
-                                    return null;//Mono.just("NPM registry is havign some issues, check back later.");
+                                    return Mono.just(new ArrayList<WeeklyDownloads>());//Mono.just("NPM registry is havign some issues, check back later.");
                                 }
                                 else{
-                                    return null;//Mono.just("An unkown error has occured.");
+                                    return Mono.just(new ArrayList<WeeklyDownloads>());//Mono.just("An unkown error has occured.");
                                 }
                             });
         
         //Libraries 
         Mono<LibrariesIOResponse> libIO_response = librariesIOFetch.apply("npm", pkgName);
+        //System.out.println(libIO_response + "<---------------------- VALUE!!!");
 
         // Merge downloads timeline into response
+        // if any of the arguements in Mono.zip are Mono.empty() then Mono.zip wil lreturn empty
         Mono<RawNpmResponse> NPMResponse = Mono.zip(responseEntityMono, downloadsTimeline, libIO_response)
                                         .map(tuple -> {
                                             PackageInfo package_info = tuple.getT1();
