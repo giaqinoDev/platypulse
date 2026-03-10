@@ -50,13 +50,17 @@ public class RawNPMRegistryResponse {
                             return formatReponse(response);
                         })
                         .onErrorResume(error -> {    //Reactive error handling: If any error happend upstream, switch to a fallback Mono
+                            
                             if(error.getMessage().contains("Package not found")){
+                                System.out.println("Package not found!!!!!!!!!!!!!!!!!!!!!!!!");
                                 return Mono.just(new PackageInfo());//Mono.just("Oops! Looks like this package doesn't exist.");
                             }
                             else if(error.getMessage().contains("NPM registry error")){
+                                System.out.println("NPM registry error!!!!!!!!!!!!!!!!!!!!!!!!");
                                 return Mono.just(new PackageInfo());//Mono.just("NPM registry is havign some issues, check back later.");
                             }
                             else{
+                                //error.printStackTrace();
                                 return Mono.just(new PackageInfo());//Mono.just("An unkown error has occured.");
                             }
                         });
@@ -121,18 +125,21 @@ public class RawNPMRegistryResponse {
         if(dependencies != null){
             Mono<LatestVersionInfo> latest_v_info_result = dependencies.map(tuples -> {
                 latest_v_info.setDependencies(tuples);
+                System.out.println(latest_v_info);
                 return latest_v_info;
             });
 
             Mono<PackageInfo> package_info_result = latest_v_info_result.map(tuples -> {
+                System.out.println(tuples);
                 package_info.setLatest_version_info(tuples);
+                System.out.println(package_info);
                 return package_info;
-            });
-
+            });            
             return package_info_result;
         }
 
         package_info.setLatest_version_info(latest_v_info);
+        //System.out.println(package_info);
         return Mono.just(package_info);
     }
 
@@ -177,12 +184,15 @@ public class RawNPMRegistryResponse {
         if(dependencies == null){
             return null;
         }
+
+        System.out.println(dependencies.propertyNames());
         //Flux.fromIterable() converts argurments into a flux stream
         Mono<List<DependenciesInfo>> formattedDependencies = Flux.fromIterable(dependencies.propertyNames())
                 .flatMap(name -> {
                         String dependency_name = name;
                         String dependency_version_raw = dependencies.get(name).asString();
                         String dependency_version = dependency_version_raw.substring(1);
+
                         Mono<DependenciesInfo> dependency_info = webClient.get()
                                     .uri(BASE_PACKAGE_URL + "/{dependency_name}", dependency_name)
                                     .retrieve()
@@ -196,7 +206,16 @@ public class RawNPMRegistryResponse {
                                     )
                                     .bodyToMono(JsonNode.class)
                                     .map(response -> {
-                                        Boolean deprecated = (response.get("versions").get(dependency_version).has("deprecated")) ? true:false;
+                                        System.out.println(dependency_version);
+                                        Boolean deprecated;
+                                        //Try catch needed in order to accoutn for "*" version types
+                                        try{
+                                            deprecated = (response.get("versions").get(dependency_version).has("deprecated")) ? true:false;
+                                        }
+                                        catch(Exception error){
+                                            deprecated = false;
+                                        }
+                                        
                                         return new DependenciesInfo(dependency_name, dependency_version_raw, deprecated);
                                     });
                         return dependency_info;
