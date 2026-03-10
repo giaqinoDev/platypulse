@@ -60,7 +60,7 @@ public class RawNPMRegistryResponse {
                                 return Mono.just(new PackageInfo());//Mono.just("NPM registry is havign some issues, check back later.");
                             }
                             else{
-                                //error.printStackTrace();
+                                error.printStackTrace();
                                 return Mono.just(new PackageInfo());//Mono.just("An unkown error has occured.");
                             }
                         });
@@ -125,14 +125,11 @@ public class RawNPMRegistryResponse {
         if(dependencies != null){
             Mono<LatestVersionInfo> latest_v_info_result = dependencies.map(tuples -> {
                 latest_v_info.setDependencies(tuples);
-                System.out.println(latest_v_info);
                 return latest_v_info;
             });
 
             Mono<PackageInfo> package_info_result = latest_v_info_result.map(tuples -> {
-                System.out.println(tuples);
                 package_info.setLatest_version_info(tuples);
-                System.out.println(package_info);
                 return package_info;
             });            
             return package_info_result;
@@ -185,7 +182,6 @@ public class RawNPMRegistryResponse {
             return null;
         }
 
-        System.out.println(dependencies.propertyNames());
         //Flux.fromIterable() converts argurments into a flux stream
         Mono<List<DependenciesInfo>> formattedDependencies = Flux.fromIterable(dependencies.propertyNames())
                 .flatMap(name -> {
@@ -206,7 +202,6 @@ public class RawNPMRegistryResponse {
                                     )
                                     .bodyToMono(JsonNode.class)
                                     .map(response -> {
-                                        System.out.println(dependency_version);
                                         Boolean deprecated;
                                         //Try catch needed in order to accoutn for "*" version types
                                         try{
