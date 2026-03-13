@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.LibrariesIOFetch;
+package com.giosmdev.package_radar.configs.LibrariesIOFetch;
 
 import java.util.function.BiFunction;
 
