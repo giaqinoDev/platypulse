@@ -25,7 +25,15 @@ public class PackageController {
 
     @GetMapping("/{pkgName}")
     public Mono<RawNpmResponse> getReport(@PathVariable String pkgName){
+        //System.out.println(pkgName);
         return packageService.getReport(pkgName);
+    }
+
+    @GetMapping("{scope}/{pkgName}")
+    public Mono<RawNpmResponse> getReport(@PathVariable String scope, @PathVariable String pkgName){
+        //System.out.println(pkgName);
+        String concatenatedQuery = scope + "/" + pkgName;
+        return packageService.getReport(concatenatedQuery);
     }
 
     

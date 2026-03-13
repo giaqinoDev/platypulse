@@ -5,12 +5,19 @@ function Home(){
 
     //Search Term
     const [searchTerm, setSearchTerm] = useState("");
-    const [query, setQuery] = useState<string|null>(null);
+    const [query, setQuery] = useState<string[]|null>(null);
     const exResult = useNPMFetch(query);
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
-        setQuery(encodeURIComponent(searchTerm.trim()));
+        setQuery(parseSearchTerm(searchTerm.trim()));
+        
+        
+    }
+
+    function parseSearchTerm(searchTerm : string){
+        const parsedSearchTerm = searchTerm.split("/")
+        return parsedSearchTerm;
     }
 
     return(

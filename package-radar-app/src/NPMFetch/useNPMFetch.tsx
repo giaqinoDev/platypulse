@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useLibrariesIOFetch from "../LibrariesIOFetch/useLibrariesIOFetch";
 
-function useNPMFetch(queriedSearch: string|null){
+function useNPMFetch(queriedSearch: string[]|null){
     const BASE_PACKAGE_URL ="https://registry.npmjs.org";
     const BASE_DOWNLOAD_URL = "https://api.npmjs.org/downloads/range/last-year";
     //const [queryResult, setQueryResult] = useState(null);
@@ -146,7 +146,13 @@ function useNPMFetch(queriedSearch: string|null){
 
         const fetchFromBackend = async () => {
             try{
-                const response = await fetch(`/bend/api/packages/${queriedSearch}`);
+                let response = null;
+                if(queriedSearch.length == 2){
+                    response = await fetch(`/bend/api/packages/${queriedSearch[0]}/${queriedSearch[1]}`);
+                }
+                else if(queriedSearch.length == 1){
+                    response = await fetch(`/bend/api/packages/${queriedSearch}`);
+                }
                 console.log(response.status);
                 const info = await response.json();
                 return info;
