@@ -52,13 +52,6 @@ function Home(){
                     ))}
                 </div>
             }
-            {exResult.libIo_dependents &&
-                <>
-                    <div>Dependents (Counts published packages and measures library to library use): {exResult.libIo_dependents.num_dependents}</div>
-                    <div>Dependent Repos (Counts code repositories and measures actual project adoption): {exResult.libIo_dependents.num_dependent_repos}</div>
-                </>
-            }
-
             
         </div>
     );

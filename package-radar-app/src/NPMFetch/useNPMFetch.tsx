@@ -44,7 +44,7 @@ function useNPMFetch(queriedSearch: string[]|null){
         if(!queriedSearch){
             return;
         }
-
+        setLoading(true);
         const fetchFromBackend = async () => {
             try{
                 let response = null;
@@ -57,6 +57,7 @@ function useNPMFetch(queriedSearch: string[]|null){
                 console.log(response.status);
                 const info = await response.json();
                 setPackageData(info);
+                setLoading(false);
             }
             catch(reponseError: unknown){
                 if(reponseError instanceof Error){
