@@ -22,6 +22,6 @@ public class NPMService {
 
     public Mono<RawNpmResponse> getReport(String pkgName){
         System.out.println(pkgName);
-        return rawNPMRegResponse.fetchNPMRegistry(pkgName);
+        return rawNPMRegResponse.genRawNPMResponse(pkgName);
     }      
 }

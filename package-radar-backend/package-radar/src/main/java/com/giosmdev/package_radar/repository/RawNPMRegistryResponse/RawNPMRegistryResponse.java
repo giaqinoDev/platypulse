@@ -31,7 +31,7 @@ public class RawNPMRegistryResponse {
         this.librariesIOFetch = librariesIOFetch;
     }
 
-    public Mono<RawNpmResponse> fetchNPMRegistry(String pkgName){
+    public Mono<RawNpmResponse> genRawNPMResponse(String pkgName){
         //Call NPM registry call
         Mono<PackageInfo> responseEntityMono = webClient.get() //builds an http GET request
                         .uri(BASE_PACKAGE_URL + "/{pkgName}", pkgName) //sets request path
@@ -95,7 +95,6 @@ public class RawNPMRegistryResponse {
         
         //Libraries 
         Mono<LibrariesIOResponse> libIO_response = librariesIOFetch.apply("npm", pkgName);
-        //System.out.println(libIO_response + "<---------------------- VALUE!!!");
 
         // Merge downloads timeline into response
         // if any of the arguements in Mono.zip are Mono.empty() then Mono.zip wil lreturn empty

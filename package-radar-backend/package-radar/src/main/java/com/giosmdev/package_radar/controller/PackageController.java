@@ -17,23 +17,23 @@ import com.giosmdev.package_radar.model.NPMRegistry.RawNpmResponse;
 public class PackageController {
 
     //Constructor injection: prefered way over auto injection
-    private final NPMService packageService;
+    private final NPMService npmService;
 
-    public PackageController(NPMService packageService){
-        this.packageService = packageService;
+    public PackageController(NPMService npmService){
+        this.npmService = npmService;
     }
 
     @GetMapping("/{pkgName}")
     public Mono<RawNpmResponse> getReport(@PathVariable String pkgName){
         //System.out.println(pkgName);
-        return packageService.getReport(pkgName);
+        return npmService.getReport(pkgName);
     }
 
     @GetMapping("{scope}/{pkgName}")
     public Mono<RawNpmResponse> getReport(@PathVariable String scope, @PathVariable String pkgName){
         //System.out.println(pkgName);
         String concatenatedQuery = scope + "/" + pkgName;
-        return packageService.getReport(concatenatedQuery);
+        return npmService.getReport(concatenatedQuery);
     }
 
     
