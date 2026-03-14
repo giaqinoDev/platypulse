@@ -122,8 +122,18 @@ public class RawNPMRegistryResponse {
         String license = latest_v_reference.get("license").asString();
         String homepage = latest_v_reference.get("homepage").asString();
 
+        String node_version = latest_v_reference.get("_nodeVersion").asString();
+        String npm_version = latest_v_reference.get("_npmVersion").asString();
         Mono<List<DependenciesInfo>> dependencies = formatDependenciesInfo(rawDependencies);
-        LatestVersionInfo latest_v_info = new LatestVersionInfo(repository, keywords, author, license, homepage, null);
+        LatestVersionInfo latest_v_info = new LatestVersionInfo(
+                                            repository, 
+                                            keywords, 
+                                            author, 
+                                            license, 
+                                            homepage,
+                                            node_version,
+                                            npm_version, 
+                                            null);
         JsonNode versions_release_info = response.get("time");
         PackageInfo package_info = new PackageInfo(name, latest_v, null, versions_release_info);
 

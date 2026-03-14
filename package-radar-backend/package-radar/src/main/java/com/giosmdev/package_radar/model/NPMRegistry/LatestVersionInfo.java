@@ -16,5 +16,7 @@ public class LatestVersionInfo {
     private JsonNode author;
     private String license;
     private String homepage;
+    private String node_version;
+    private String npm_version;
     private List<DependenciesInfo> dependencies;
 }
