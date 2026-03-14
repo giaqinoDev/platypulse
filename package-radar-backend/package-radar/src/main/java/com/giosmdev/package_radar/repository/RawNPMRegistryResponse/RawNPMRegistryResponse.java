@@ -108,16 +108,22 @@ public class RawNPMRegistryResponse {
         return NPMResponse;
     }
 
-    //Packground-Check
+    //Packround-Check
     private Mono<PackageInfo> formatReponse(JsonNode response){
         //JsonNode represents a general abstract node in a Json tree structure and allows you to handle Json data dynamicaly
         String name = response.get("name").asString();
         String latest_v = response.get("dist-tags").get("latest").asString();
-        JsonNode repository = response.get("versions").get(latest_v).get("repository");
-        JsonNode rawDependencies = response.get("versions").get(latest_v).get("dependencies");
+        JsonNode latest_v_reference = response.get("versions").get(latest_v);
+        JsonNode repository = latest_v_reference.get("repository");
+        JsonNode rawDependencies = latest_v_reference.get("dependencies");
+
+        JsonNode keywords = latest_v_reference.get("keywords");
+        JsonNode author = latest_v_reference.get("author");
+        String license = latest_v_reference.get("license").asString();
+        String homepage = latest_v_reference.get("homepage").asString();
 
         Mono<List<DependenciesInfo>> dependencies = formatDependenciesInfo(rawDependencies);
-        LatestVersionInfo latest_v_info = new LatestVersionInfo(repository, null);
+        LatestVersionInfo latest_v_info = new LatestVersionInfo(repository, keywords, author, license, homepage, null);
         JsonNode versions_release_info = response.get("time");
         PackageInfo package_info = new PackageInfo(name, latest_v, null, versions_release_info);
 

@@ -22,7 +22,7 @@ function Home(){
 
     return(
         <div>
-            <h1>Package Radar</h1>
+            <h1>Packround Check</h1>
             <form onSubmit={handleSubmit}>
                 <input 
                 type="search" 

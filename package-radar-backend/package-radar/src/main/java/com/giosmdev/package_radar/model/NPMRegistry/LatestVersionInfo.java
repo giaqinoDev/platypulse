@@ -11,6 +11,10 @@ import tools.jackson.databind.JsonNode;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LatestVersionInfo {
-    private JsonNode repositry;
+    private JsonNode repository;
+    private JsonNode keywords;
+    private JsonNode author;
+    private String license;
+    private String homepage;
     private List<DependenciesInfo> dependencies;
 }

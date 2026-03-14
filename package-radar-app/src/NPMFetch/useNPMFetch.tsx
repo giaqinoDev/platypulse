@@ -66,6 +66,7 @@ function useNPMFetch(queriedSearch: string[]|null){
                 else{
                     setFetchError("Unkown Error");
                 }
+                setLoading(false);
             }
         }
         fetchFromBackend();
