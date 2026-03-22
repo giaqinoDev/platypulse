@@ -2,6 +2,9 @@ package com.giosmdev.package_radar.model.NPMRegistry;
 
 import java.util.List;
 
+import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependenciesInfo;
+import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependencyTree;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,4 +22,5 @@ public class LatestVersionInfo {
     private String node_version;
     private String npm_version;
     private List<DependenciesInfo> dependencies;
+    private DependencyTree dependency_tree;
 }

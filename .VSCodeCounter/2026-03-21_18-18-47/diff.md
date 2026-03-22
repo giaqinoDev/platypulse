@@ -1,0 +1,31 @@
+# Diff Summary
+
+Date : 2026-03-21 18:18:47
+
+Directory c:\\Users\\giosc\\OneDrive\\Documents\\Visual_Studio_Code\\PackageRadar\\package-radar-backend\\package-radar\\src\\main\\java\\com\\giosmdev
+
+Total : 3 files,  6 codes, 54 comments, 12 blanks, all 72 lines
+
+[Summary](results.md) / [Details](details.md) / Diff Summary / [Diff Details](diff-details.md)
+
+## Languages
+| language | files | code | comment | blank | total |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| Java | 2 | 9 | 54 | 13 | 76 |
+| Java Properties | 1 | -3 | 0 | -1 | -4 |
+
+## Directories
+| path | files | code | comment | blank | total |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| . | 3 | 6 | 54 | 12 | 72 |
+| .. | 1 | -3 | 0 | -1 | -4 |
+| ..\\.. | 1 | -3 | 0 | -1 | -4 |
+| ..\\..\\.. | 1 | -3 | 0 | -1 | -4 |
+| ..\\..\\..\\resources | 1 | -3 | 0 | -1 | -4 |
+| package_radar | 2 | 9 | 54 | 13 | 76 |
+| package_radar\\configs | 1 | 6 | 54 | 9 | 69 |
+| package_radar\\configs\\APIResponseLayer | 1 | 6 | 54 | 9 | 69 |
+| package_radar\\repository | 1 | 3 | 0 | 4 | 7 |
+| package_radar\\repository\\RawNPMRegistryResponse | 1 | 3 | 0 | 4 | 7 |
+
+[Summary](results.md) / [Details](details.md) / Diff Summary / [Diff Details](diff-details.md)

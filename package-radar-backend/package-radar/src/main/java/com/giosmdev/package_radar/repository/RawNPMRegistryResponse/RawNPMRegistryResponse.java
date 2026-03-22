@@ -8,10 +8,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
-import com.giosmdev.package_radar.model.NPMRegistry.DependenciesInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.LatestVersionInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmResponse;
+import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependenciesInfo;
+import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependencyTree;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
 
 import reactor.core.publisher.Flux;
@@ -22,13 +23,17 @@ import tools.jackson.databind.JsonNode;
 public class RawNPMRegistryResponse {
     private final WebClient webClient;
     private final BiFunction<String, String, Mono<LibrariesIOResponse>> librariesIOFetch;
+    private BiFunction<String, JsonNode, Mono<DependencyTree>> genDependenciesTree;
 
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
     private String BASE_DOWNLOAD_URL = "https://api.npmjs.org/downloads/range/last-year";
 
-    public RawNPMRegistryResponse(WebClient webClient, BiFunction<String, String, Mono<LibrariesIOResponse>> librariesIOFetch){
+    public RawNPMRegistryResponse(WebClient webClient, 
+                                  BiFunction<String, String, Mono<LibrariesIOResponse>> librariesIOFetch,
+                                  BiFunction<String, JsonNode, Mono<DependencyTree>> genDependenciesTree){
         this.webClient = webClient;
         this.librariesIOFetch = librariesIOFetch;
+        this.genDependenciesTree = genDependenciesTree;
     }
 
     public Mono<RawNpmResponse> genRawNPMResponse(String pkgName){
@@ -124,38 +129,31 @@ public class RawNPMRegistryResponse {
 
         String node_version = latest_v_reference.get("_nodeVersion").asString();
         String npm_version = latest_v_reference.get("_npmVersion").asString();
-        Mono<List<DependenciesInfo>> dependencies = formatDependenciesInfo(rawDependencies);
+
+
         LatestVersionInfo latest_v_info = new LatestVersionInfo(
-                                            repository, 
-                                            keywords, 
-                                            author, 
-                                            license, 
-                                            homepage,
-                                            node_version,
-                                            npm_version, 
-                                            null);
+            repository, keywords, author, license, 
+            homepage,node_version,npm_version, null,null);
+
         JsonNode versions_release_info = response.get("time");
         PackageInfo package_info = new PackageInfo(name, latest_v, null, versions_release_info);
 
-        //Package Doesnt has dependencies
-        if(dependencies != null){
-            Mono<LatestVersionInfo> latest_v_info_result = dependencies.map(tuples -> {
-                latest_v_info.setDependencies(tuples);
-                return latest_v_info;
-            });
-
-            Mono<PackageInfo> package_info_result = latest_v_info_result.map(tuples -> {
-                package_info.setLatest_version_info(tuples);
-                return package_info;
-            });            
-            return package_info_result;
-        }
-
-        package_info.setLatest_version_info(latest_v_info);
-        //System.out.println(package_info);
-        return Mono.just(package_info);
+        return formatDependenciesInfo(rawDependencies).flatMap(deps -> {
+            latest_v_info.setDependencies(deps);
+            return buildLatestVersionDepTree(latest_v_info, name, rawDependencies);
+        })
+        .map(updatedLatest -> {
+            package_info.setLatest_version_info(updatedLatest);
+            return package_info;
+        });
     }
 
+    private Mono<LatestVersionInfo> buildLatestVersionDepTree(LatestVersionInfo latest_v_info, String name, JsonNode rawDependencies){
+        return genDependenciesTree.apply(name, rawDependencies).map(tree -> {
+            latest_v_info.setDependency_tree(tree);
+            return latest_v_info;
+        });
+    }
     private List<WeeklyDownloads> formatDownloadsTimeline(JsonNode response){
         JsonNode downloads = response.get("downloads");
         int weekday_count = 0;
@@ -227,7 +225,7 @@ public class RawNPMRegistryResponse {
                                             deprecated = false;
                                         }
                                         
-                                        return new DependenciesInfo(dependency_name, dependency_version_raw, deprecated);
+                                        return new DependenciesInfo(dependency_name, dependency_version_raw, deprecated, null);
                                     });
                         return dependency_info;
                     }
