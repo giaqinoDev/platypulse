@@ -3,6 +3,8 @@ package com.giosmdev.package_radar.configs.APIResponseLayer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 import org.springframework.context.annotation.Bean;
@@ -21,8 +23,10 @@ public class ProcessDependenciesConfig {
     private WebClient webClient;
     //Prevent processing of duplicate dependencies
     List<String> omitProcessing = new ArrayList<>();
-
+    private int maxDepth = 4;
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
+
+    private Map<String, Mono<List<DependenciesInfo>>> proccessedDeps_cache = new ConcurrentHashMap<>();
     public ProcessDependenciesConfig(WebClient webClient){
         this.webClient = webClient;
     }
@@ -33,9 +37,8 @@ public class ProcessDependenciesConfig {
             System.out.println("Top Layer Dependency Tree fetching");
             //Generate initial top layer dependencies container
             List<DependenciesInfo> processedDependencies = genDependencyContainer(topLayerDependencies);
-
             //Mono<DependencyTree> dependency_tree =  Mono.just(new DependencyTree(pkg_name, 0, getSubDependenciesLayer(processedDependencies)));
-            Mono<DependencyTree> dependency_tree = getSubDependenciesLayer(processedDependencies).map(tree -> {
+            Mono<DependencyTree> dependency_tree = getSubDependenciesLayer(processedDependencies, 0).map(tree -> {
                 return new DependencyTree(pkg_name, 0, tree);
             });
             return dependency_tree;
@@ -43,8 +46,12 @@ public class ProcessDependenciesConfig {
     }
     
     
-    public Mono<List<DependenciesInfo>> getSubDependenciesLayer(List<DependenciesInfo> topDependencies){
-        if (topDependencies == null || topDependencies.isEmpty()) {
+    public Mono<List<DependenciesInfo>> getSubDependenciesLayer(List<DependenciesInfo> topDependencies, int depth){
+        System.out.println(depth);
+        // if(depth > maxDepth){
+        //     return Mono.just(new ArrayList<DependenciesInfo>());
+        // }
+        if (topDependencies == null || topDependencies.isEmpty() || depth > maxDepth) {
             return Mono.just(Collections.emptyList());
         }
 
@@ -52,13 +59,13 @@ public class ProcessDependenciesConfig {
             .flatMap(dep ->
                 fetchSubDependenciesfromReg(dep)
                     .flatMap(subDep ->
-                        getSubDependenciesLayer(subDep)
+                        getSubDependenciesLayer(subDep, depth + 1)
                             .map(processedDeps -> {
                                 dep.setDependencies(processedDeps);
                                 return dep;
                             })
-                    )
-            )
+                    ),
+                10) // Concurrency limit
             .collectList();
     }
         
@@ -66,10 +73,11 @@ public class ProcessDependenciesConfig {
 
         String dependency_name = dep.getDependnecy_name();
         String dependency_version = dep.getDependency_version();
-
+        String key = dependency_name + "@" + dependency_version;
         String version = dependency_version.startsWith("^") ? dependency_version.substring(1) : dependency_version;
 
-        Mono<List<DependenciesInfo>> dependencies_list = webClient.get()
+        return proccessedDeps_cache.computeIfAbsent(key, k -> 
+            webClient.get()
                         .uri(BASE_PACKAGE_URL + "/{dependency_name}", dependency_name)
                         .retrieve()
                         .onStatus(
@@ -92,17 +100,18 @@ public class ProcessDependenciesConfig {
                             //Generate sub dependencies list
                             JsonNode depsNode = response.path("versions").path(version).path("dependencies");
                             if(depsNode.isMissingNode()){
-                                return Collections.emptyList();
+                                return new ArrayList<DependenciesInfo>();
                             }
                             List<DependenciesInfo> sub_dependencies = genDependencyContainer(depsNode);
                             omitProcessing.add(dependency_name);
 
                             if(sub_dependencies == null){
-                                return Collections.emptyList();
+                                return new ArrayList<DependenciesInfo>();
                             }
                             return sub_dependencies;
-                        });
-        return dependencies_list;
+                        })
+                        .cache()
+        );
     }
 
     private List<DependenciesInfo> genDependencyContainer(JsonNode dependencies){
