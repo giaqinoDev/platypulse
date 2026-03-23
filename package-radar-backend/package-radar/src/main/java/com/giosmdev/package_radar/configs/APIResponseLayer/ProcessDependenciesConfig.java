@@ -48,11 +48,8 @@ public class ProcessDependenciesConfig {
     
     public Mono<List<DependenciesInfo>> getSubDependenciesLayer(List<DependenciesInfo> topDependencies, int depth){
         System.out.println(depth);
-        // if(depth > maxDepth){
-        //     return Mono.just(new ArrayList<DependenciesInfo>());
-        // }
         if (topDependencies == null || topDependencies.isEmpty() || depth > maxDepth) {
-            return Mono.just(Collections.emptyList());
+            return Mono.just(new ArrayList<DependenciesInfo>());
         }
 
         return Flux.fromIterable(topDependencies)
@@ -65,7 +62,7 @@ public class ProcessDependenciesConfig {
                                 return dep;
                             })
                     ),
-                10) // Concurrency limit
+                5, 1) // Concurrency limit
             .collectList();
     }
         

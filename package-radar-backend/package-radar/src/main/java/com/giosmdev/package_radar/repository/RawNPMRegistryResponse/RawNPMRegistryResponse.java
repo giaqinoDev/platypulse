@@ -23,7 +23,7 @@ import tools.jackson.databind.JsonNode;
 public class RawNPMRegistryResponse {
     private final WebClient webClient;
     private final BiFunction<String, String, Mono<LibrariesIOResponse>> librariesIOFetch;
-    private BiFunction<String, JsonNode, Mono<DependencyTree>> genDependenciesTree;
+    private final BiFunction<String, JsonNode, Mono<DependencyTree>> genDependenciesTree;
 
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
     private String BASE_DOWNLOAD_URL = "https://api.npmjs.org/downloads/range/last-year";
@@ -144,7 +144,7 @@ public class RawNPMRegistryResponse {
             package_info.setLatest_version_info(latest_v_info);
             return Mono.just(package_info);
         }
-        
+
         return formatDependenciesInfo(rawDependencies).flatMap(deps -> {
             latest_v_info.setDependencies(deps);
             return buildLatestVersionDepTree(latest_v_info, name, rawDependencies);
