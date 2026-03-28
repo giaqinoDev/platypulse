@@ -1,10 +1,12 @@
 package com.giosmdev.package_radar.configs.APIResponseLayer;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
 import org.springframework.context.annotation.Bean;
@@ -23,7 +25,9 @@ public class ProcessDependenciesConfig {
     private WebClient webClient;
     //Prevent processing of duplicate dependencies
     List<String> omitProcessing = new ArrayList<>();
-    private int maxDepth = 4;
+    private final int maxDepth = 1;
+    private final AtomicInteger requestCount = new AtomicInteger(0);
+    private final int maxRequests = 50;
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
 
     private Map<String, Mono<List<DependenciesInfo>>> proccessedDeps_cache = new ConcurrentHashMap<>();
@@ -52,18 +56,25 @@ public class ProcessDependenciesConfig {
             return Mono.just(new ArrayList<DependenciesInfo>());
         }
 
-        return Flux.fromIterable(topDependencies)
-            .flatMap(dep ->
-                fetchSubDependenciesfromReg(dep)
-                    .flatMap(subDep ->
-                        getSubDependenciesLayer(subDep, depth + 1)
-                            .map(processedDeps -> {
-                                dep.setDependencies(processedDeps);
-                                return dep;
-                            })
-                    ),
-                5, 1) // Concurrency limit
-            .collectList();
+        return Flux.fromIterable(topDependencies) //Convert list of dependencies to a Flux stream
+            .flatMap(dep ->  {                      //Each dependency in the current containerS
+                if(requestCount.incrementAndGet() > maxRequests){
+                    return Flux.just(dep);
+                }
+
+                return fetchSubDependenciesfromReg(dep)   // Fetch sub dependencies of dependency
+                    .flatMapMany(Flux::fromIterable) // convert from Mono<List<DependenciesInfo>> to Flux<DependneciesInfo>
+                    .flatMap(subDep ->               // Recursivley call each child of and get their dependency
+                        getSubDependenciesLayer(List.of(subDep), depth + 1)
+                        .flatMapMany(Flux::fromIterable)
+                    )
+                    .collectList()                  //Collect subdependnecies into a list
+                    .flatMapMany(processedDeps -> {         //Itterate over processed subdependnecies and connect them to parent dependnencies
+                        dep.setDependencies(processedDeps);
+                        return Flux.just(dep);
+                    });
+            },1, 1)       //Return Flux<DependenciesInfo>
+            .collectList(); //Collect List and convert from Flux<DependenciesInfo> -> Mono<List<DependenciesInfo>>
     }
         
     private Mono<List<DependenciesInfo>> fetchSubDependenciesfromReg(DependenciesInfo dep){
@@ -86,6 +97,7 @@ public class ProcessDependenciesConfig {
                             response -> Mono.error(new RuntimeException("NPM Registry Error"))
                         )
                         .bodyToMono(JsonNode.class)
+                        .timeout(Duration.ofSeconds(2))
                         .map(response -> {
                             
                             Boolean deprecated;
