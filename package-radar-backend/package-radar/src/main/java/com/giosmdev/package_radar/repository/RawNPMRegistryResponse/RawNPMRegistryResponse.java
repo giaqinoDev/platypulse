@@ -145,8 +145,9 @@ public class RawNPMRegistryResponse {
             return Mono.just(package_info);
         }
 
-        return formatDependenciesInfo(rawDependencies).flatMap(deps -> {
+        return formatDependenciesInfo(rawDependencies).flatMap(deps -> { //use .map when cuttin tree out
             latest_v_info.setDependencies(deps);
+            //return latest_v_info; //Use if you choose to cut out dependency trees as a whole
             return buildLatestVersionDepTree(latest_v_info, name, rawDependencies);
         })
         .map(updatedLatest -> {
