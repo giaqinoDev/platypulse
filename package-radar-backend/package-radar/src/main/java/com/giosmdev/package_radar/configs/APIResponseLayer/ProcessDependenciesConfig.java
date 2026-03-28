@@ -19,6 +19,7 @@ import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.Dependencie
 import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependencyTree;
 
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import tools.jackson.databind.JsonNode;
 
 @Configuration
@@ -49,8 +50,7 @@ public class ProcessDependenciesConfig {
     public BiFunction<String, JsonNode, Mono<DependencyTree>> genDependenciesTree() {
         return (pkgName, topLayerDependencies) ->
             Mono.fromCallable(() -> {  //fromCallable allows you to wrap a value that is possibly a reuslt of a blocking operation
-                                       //into a Mono so that you can incorporate it into existsing reactive pipelines
-                //Blocking BFS pipeline
+                                       //into a Mono. This allows you to incorporate it into existsing reactive pipelines
                 //Prepare chache and request counter through reset
                 requestCount.set(0);
                 proccessedDeps_cache.clear();
@@ -74,7 +74,7 @@ public class ProcessDependenciesConfig {
 
                     requestCount.incrementAndGet();
 
-                    List<DependenciesInfo> children = fetchSubDependencies(node.dep); //blocking operation
+                    List<DependenciesInfo> children = fetchSubDependencies(node.dep); //blocking operation!
 
                     if (children.isEmpty()){
                         continue;
@@ -89,7 +89,7 @@ public class ProcessDependenciesConfig {
 
                 return new DependencyTree(pkgName, 0, roots);
 
-            }).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic());// Moves the entire BFS pipeline to a thread pool designed for blocking operations
+            }).subscribeOn(Schedulers.boundedElastic());//Run blockign code on a thread from the boundedElastic pool
     }
     
     private List<DependenciesInfo> fetchSubDependencies(DependenciesInfo dep) {
@@ -108,9 +108,10 @@ public class ProcessDependenciesConfig {
                         .bodyToMono(JsonNode.class)
                         .timeout(Duration.ofSeconds(2))
                         .onErrorResume(e -> Mono.empty())
-                        .cache()
+                        .cache() //ensures subsequent subscribers share the same Mono instead of calling API again
                 )
-                .block();
+                .block(); //essentially completes the Mono, extracting the JsonNode out of Mono<JsonNode> and returning it
+                
 
             if (response == null){
                 return Collections.emptyList();
