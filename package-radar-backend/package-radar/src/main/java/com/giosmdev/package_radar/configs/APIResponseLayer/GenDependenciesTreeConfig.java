@@ -23,7 +23,7 @@ import reactor.core.scheduler.Schedulers;
 import tools.jackson.databind.JsonNode;
 
 @Configuration
-public class ProcessDependenciesConfig {
+public class GenDependenciesTreeConfig {
     private WebClient webClient;
 
     private final int maxDepth = 5;
@@ -33,7 +33,7 @@ public class ProcessDependenciesConfig {
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
 
     Map<String, Mono<JsonNode>> proccessedDeps_cache = new ConcurrentHashMap<>();
-    public ProcessDependenciesConfig(WebClient webClient){
+    public GenDependenciesTreeConfig(WebClient webClient){
         this.webClient = webClient;
     }
 
@@ -89,7 +89,8 @@ public class ProcessDependenciesConfig {
 
                 return new DependencyTree(pkgName, 0, roots);
 
-            }).subscribeOn(Schedulers.boundedElastic());//Run blockign code on a thread from the boundedElastic pool
+            }).subscribeOn(Schedulers.boundedElastic());//Run blockign code on a thread from the boundedElastic pool 
+                                                        //(handles blocking operations without blocking reactive threads)
     }
     
     private List<DependenciesInfo> fetchSubDependencies(DependenciesInfo dep) {
