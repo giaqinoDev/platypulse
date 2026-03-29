@@ -1,5 +1,6 @@
 package com.giosmdev.package_radar.configs.LibrariesIOFetch;
 
+import java.time.Duration;
 import java.util.function.BiFunction;
 
 import org.springframework.context.annotation.Bean;
@@ -35,6 +36,7 @@ public class LibrariesIOFetchConfig {
                             response -> Mono.error(new RuntimeException("Libraries IO error"))
                         )
                         .bodyToMono(JsonNode.class)
+                        .timeout(Duration.ofSeconds(3))
                         .map(response -> {
                             int dependent_packages_count = response.get("dependents_count").asInt();
                             int dependent_repos_count = response.get("dependent_repos_count").asInt();

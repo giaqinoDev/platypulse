@@ -1,5 +1,6 @@
 package com.giosmdev.package_radar.repository.RawNPMRegistryResponse;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -51,6 +52,7 @@ public class RawNPMRegistryResponse {
                             response -> Mono.error(new RuntimeException("NPM registery error"))
                         )
                         .bodyToMono(JsonNode.class) //Convert the response body into a Mono<String>
+                        .timeout(Duration.ofSeconds(3))
                         .flatMap(response -> {
                             return formatReponse(response);
                         })
@@ -83,6 +85,7 @@ public class RawNPMRegistryResponse {
                                 response -> Mono.error(new RuntimeException("NPM Downloads Registry Error"))
                             )
                             .bodyToMono(JsonNode.class)
+                            .timeout(Duration.ofSeconds(3))
                             .map(response -> {
                                 return formatDownloadsTimeline(response);
                             })
