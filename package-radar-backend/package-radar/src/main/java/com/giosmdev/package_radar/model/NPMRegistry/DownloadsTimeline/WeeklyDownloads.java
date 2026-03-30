@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WeeklyDownloads{
-    private int volume;
+    private Integer volume = null;
     private String start_date;
     private String end_date;
 }

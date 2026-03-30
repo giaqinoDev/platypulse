@@ -1,4 +1,5 @@
 package com.giosmdev.package_radar.service;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 //Models
@@ -20,7 +21,7 @@ public class NPMService {
         this.rawNPMRegResponse = rawNPMRegResponse;
     }
 
-    public Mono<RawNpmResponse> getReport(String pkgName){
+    public Mono<ResponseEntity<RawNpmResponse>> getReport(String pkgName){
         System.out.println(pkgName);
         return rawNPMRegResponse.genRawNPMResponse(pkgName);
     }      

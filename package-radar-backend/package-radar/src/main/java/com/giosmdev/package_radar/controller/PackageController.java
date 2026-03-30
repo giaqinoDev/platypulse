@@ -1,4 +1,5 @@
 package com.giosmdev.package_radar.controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,13 +25,13 @@ public class PackageController {
     }
 
     @GetMapping("/{pkgName}")
-    public Mono<RawNpmResponse> getReport(@PathVariable String pkgName){
+    public Mono<ResponseEntity<RawNpmResponse>> getReport(@PathVariable String pkgName){
         //System.out.println(pkgName);
         return npmService.getReport(pkgName);
     }
 
     @GetMapping("{scope}/{pkgName}")
-    public Mono<RawNpmResponse> getReport(@PathVariable String scope, @PathVariable String pkgName){
+    public Mono<ResponseEntity<RawNpmResponse>> getReport(@PathVariable String scope, @PathVariable String pkgName){
         //System.out.println(pkgName);
         String concatenatedQuery = scope + "/" + pkgName;
         return npmService.getReport(concatenatedQuery);

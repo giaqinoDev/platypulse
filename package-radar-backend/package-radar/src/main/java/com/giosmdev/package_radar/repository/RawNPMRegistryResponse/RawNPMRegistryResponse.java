@@ -1,11 +1,14 @@
 package com.giosmdev.package_radar.repository.RawNPMRegistryResponse;
 
+import java.io.ObjectInputFilter.Status;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -42,9 +45,9 @@ public class RawNPMRegistryResponse {
         this.genDependenciesTree = genDependenciesTree;
     }
 
-    public Mono<RawNpmResponse> genRawNPMResponse(String pkgName){
+    public Mono<ResponseEntity<RawNpmResponse>> genRawNPMResponse(String pkgName){
         //Call NPM registry call
-        Mono<PackageInfo> responseEntityMono = webClient.get() //builds an http GET request
+        Mono<PackageInfo> npm_reg_response = webClient.get() //builds an http GET request
                         .uri(BASE_PACKAGE_URL + "/{pkgName}", pkgName) //sets request path
                         //.header("Accept", "application/vnd.npm.install-v1+json")
                         .retrieve() // executes the request and prepare to extract the body
@@ -62,11 +65,11 @@ public class RawNPMRegistryResponse {
                             return formatReponse(response);
                         });
         //Handle Any Errors
-        Mono<ResponseEntity<PackageInfo>> npmRegResult = handleErrors(responseEntityMono);
-                        
+        Mono<ResponseEntity<PackageInfo>> npm_reg_call_result = handleErrors(npm_reg_response);
+
 
         //NPM Registry Package downloads range call
-        Mono<List<WeeklyDownloads>> downloadsTimeline = webClient.get()
+        Mono<List<WeeklyDownloads>> npm_reg_dwnld_timeline = webClient.get()
                             .uri(BASE_DOWNLOAD_URL + "/{pkgName}", pkgName)
                             .retrieve()
                             .onStatus(
@@ -82,7 +85,7 @@ public class RawNPMRegistryResponse {
                             .map(response -> {
                                 return formatDownloadsTimeline(response);
                             });
-        Mono<ResponseEntity<List<WeeklyDownloads>>> downloadsTimeline_result = handleErrors(downloadsTimeline);
+        Mono<ResponseEntity<List<WeeklyDownloads>>> dwnld_timeline_result = handleErrors(npm_reg_dwnld_timeline);
         
         //Libraries 
         Mono<LibrariesIOResponse> libIO_response = librariesIOFetch.apply("npm", pkgName);
@@ -90,12 +93,29 @@ public class RawNPMRegistryResponse {
 
         // Merge downloads timeline into response
         // if any of the arguements in Mono.zip are Mono.empty() then Mono.zip will return empty
-        Mono<RawNpmResponse> NPMResponse = Mono.zip(responseEntityMono, downloadsTimeline, libIO_response)
+        Mono<ResponseEntity<RawNpmResponse>> NPMResponse = Mono.zip(npm_reg_call_result, dwnld_timeline_result, libIO_result)
                                         .map(tuple -> {
-                                            PackageInfo package_info = tuple.getT1();
-                                            List<WeeklyDownloads> downloads_timeline = tuple.getT2();
-                                            LibrariesIOResponse libIO_Response = tuple.getT3();
-                                            return new RawNpmResponse(package_info, downloads_timeline, libIO_Response);
+                                            PackageInfo package_info = tuple.getT1().getBody();
+                                            HttpStatusCode package_info_status = tuple.getT1().getStatusCode();
+                                            System.out.println("npm_reg_call_result: " + tuple.getT1().getStatusCode());
+
+                                            List<WeeklyDownloads> downloads_timeline = tuple.getT2().getBody();
+                                            System.out.println("downloads_timeline: " + tuple.getT2().getStatusCode());
+
+                                            LibrariesIOResponse libIO_Response = tuple.getT3().getBody();
+                                            System.out.println("libIO_Response: " + tuple.getT3().getStatusCode());
+
+                                            if(package_info_status.value() == 404){
+                                                return ResponseEntity.notFound().build();
+                                            }
+                                            else if(package_info_status.value() == 503){
+                                                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+                                            }
+                                            else if(package_info_status.value() == 500){
+                                                return ResponseEntity.internalServerError().build();
+                                            }
+
+                                            return ResponseEntity.ok(new RawNpmResponse(package_info, downloads_timeline, libIO_Response));
                                         });
         return NPMResponse;
     }
