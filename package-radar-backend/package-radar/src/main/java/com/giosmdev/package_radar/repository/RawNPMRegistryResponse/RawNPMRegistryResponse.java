@@ -1,35 +1,22 @@
 package com.giosmdev.package_radar.repository.RawNPMRegistryResponse;
 
-import java.io.ObjectInputFilter.Status;
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
-import java.util.function.BiFunction;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.configs.APIResponseLayer.ApiStatus;
 import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
-import com.giosmdev.package_radar.model.NPMRegistry.LatestVersionInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmResponse;
-import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependenciesInfo;
-import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependencyTree;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
 import com.giosmdev.package_radar.service.NPMLayerApis.LibrariesIoAPI;
 import com.giosmdev.package_radar.service.NPMLayerApis.NPMRegistryAPI;
 
-import io.micrometer.core.ipc.http.HttpSender.Response;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import tools.jackson.databind.JsonNode;
 
 @Component
 public class RawNPMRegistryResponse {
