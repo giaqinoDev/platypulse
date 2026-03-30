@@ -3,11 +3,15 @@ package com.giosmdev.package_radar.repository.RawNPMRegistryResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
+import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
 import com.giosmdev.package_radar.model.NPMRegistry.LatestVersionInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
@@ -16,6 +20,7 @@ import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.Dependencie
 import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependencyTree;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
 
+import io.micrometer.core.ipc.http.HttpSender.Response;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
@@ -45,32 +50,20 @@ public class RawNPMRegistryResponse {
                         .retrieve() // executes the request and prepare to extract the body
                         .onStatus( //handles HTTP status codes before the body is read
                             status -> status.is4xxClientError(),
-                            response -> Mono.error(new RuntimeException("Package not found"))
+                            response -> Mono.error(new PackageNotFoundException())
                         )
                         .onStatus(
                             status -> status.is5xxServerError(),
-                            response -> Mono.error(new RuntimeException("NPM registery error"))
+                            response -> Mono.error(new RegistryException())
                         )
                         .bodyToMono(JsonNode.class) //Convert the response body into a Mono<String>
                         .timeout(Duration.ofSeconds(3))
                         .flatMap(response -> {
                             return formatReponse(response);
-                        })
-                        .onErrorResume(error -> {    //Reactive error handling: If any error happend upstream, switch to a fallback Mono
-                            
-                            if(error.getMessage().contains("Package not found")){
-                                System.out.println("Package not found!!!!!!!!!!!!!!!!!!!!!!!!");
-                                return Mono.just(new PackageInfo());//Mono.just("Oops! Looks like this package doesn't exist.");
-                            }
-                            else if(error.getMessage().contains("NPM registry error")){
-                                System.out.println("NPM registry error!!!!!!!!!!!!!!!!!!!!!!!!");
-                                return Mono.just(new PackageInfo());//Mono.just("NPM registry is havign some issues, check back later.");
-                            }
-                            else{
-                                error.printStackTrace();
-                                return Mono.just(new PackageInfo());//Mono.just("An unkown error has occured.");
-                            }
                         });
+        //Handle Any Errors
+        Mono<ResponseEntity<PackageInfo>> npmRegResult = handleErrors(responseEntityMono);
+                        
 
         //NPM Registry Package downloads range call
         Mono<List<WeeklyDownloads>> downloadsTimeline = webClient.get()
@@ -88,24 +81,15 @@ public class RawNPMRegistryResponse {
                             .timeout(Duration.ofSeconds(3))
                             .map(response -> {
                                 return formatDownloadsTimeline(response);
-                            })
-                            .onErrorResume(error -> {
-                                if(error.getMessage().contains("Package not found")){
-                                    return Mono.just(new ArrayList<WeeklyDownloads>());//Mono.just("Oops! Looks like this package doesn't exist.");
-                                }
-                                else if(error.getMessage().contains("NPM Downloads registry error")){
-                                    return Mono.just(new ArrayList<WeeklyDownloads>());//Mono.just("NPM registry is havign some issues, check back later.");
-                                }
-                                else{
-                                    return Mono.just(new ArrayList<WeeklyDownloads>());//Mono.just("An unkown error has occured.");
-                                }
                             });
+        Mono<ResponseEntity<List<WeeklyDownloads>>> downloadsTimeline_result = handleErrors(downloadsTimeline);
         
         //Libraries 
         Mono<LibrariesIOResponse> libIO_response = librariesIOFetch.apply("npm", pkgName);
+        Mono<ResponseEntity<LibrariesIOResponse>> libIO_result = handleErrors(libIO_response);
 
         // Merge downloads timeline into response
-        // if any of the arguements in Mono.zip are Mono.empty() then Mono.zip wil lreturn empty
+        // if any of the arguements in Mono.zip are Mono.empty() then Mono.zip will return empty
         Mono<RawNpmResponse> NPMResponse = Mono.zip(responseEntityMono, downloadsTimeline, libIO_response)
                                         .map(tuple -> {
                                             PackageInfo package_info = tuple.getT1();
@@ -203,6 +187,7 @@ public class RawNPMRegistryResponse {
     }
 
     private Mono<List<DependenciesInfo>> formatDependenciesInfo(JsonNode dependencies){
+
         if(dependencies == null){
             return null;
         }
@@ -242,5 +227,21 @@ public class RawNPMRegistryResponse {
                     }
                 ).collectList();
         return formattedDependencies;
+    }
+
+    private <T> Mono<ResponseEntity<T>> handleErrors(Mono<T> response){
+        return response.map(data -> ResponseEntity.ok(data))
+                        .onErrorResume(PackageNotFoundException.class, error ->
+                            Mono.just(ResponseEntity.status(404).build())
+                        )
+                        .onErrorResume(RegistryException.class, error ->
+                            Mono.just(ResponseEntity.status(503).build())
+                        )
+                        .onErrorResume(TimeoutException.class, error ->
+                            Mono.just(ResponseEntity.status(504).build())
+                        )
+                        .onErrorResume(error ->
+                            Mono.just(ResponseEntity.status(500).build())
+                        );
     }
 }
