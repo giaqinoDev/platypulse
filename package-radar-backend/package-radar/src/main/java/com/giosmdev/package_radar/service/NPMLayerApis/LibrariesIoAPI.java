@@ -15,11 +15,11 @@ import tools.jackson.databind.JsonNode;
 
 @Service
 public class LibrariesIoAPI {
-    private String BASE_LIBRARIES_URL = "https://libraries.io/api/{platform}/{package_name}?api_key=***REMOVED***";
+    //private String BASE_LIBRARIES_URL = "https://libraries.io/api/{platform}/{package_name}?api_key={API_KEY}";
     
     private WebClient webClient;
     private ApiErrorHandler apiErrorHandler;
-
+    private final String API_KEY = System.getenv("LIBRARIES_IO_API_KEY");
     public LibrariesIoAPI(WebClient webClient, ApiErrorHandler apiErrorHandler){
         this.webClient = webClient;
         this.apiErrorHandler = apiErrorHandler;
@@ -27,7 +27,13 @@ public class LibrariesIoAPI {
 
     public Mono<ApiStatus<LibrariesIOResponse>> fetch(String platform, String package_name){
         Mono<LibrariesIOResponse> package_info = webClient.get()
-                        .uri(BASE_LIBRARIES_URL, platform, package_name)
+                        .uri(uriBuilder -> uriBuilder
+                            .scheme("https")
+                            .host("libraries.io")
+                            .path("/api/{platform}/{package_name}")
+                            .queryParam("api_key", API_KEY)
+                            .build(platform, package_name)
+                        )
                         .retrieve()
                         .onStatus(
                             status -> status.is4xxClientError(),
