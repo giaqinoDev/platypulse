@@ -5,6 +5,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.giosmdev.package_radar.configs.APIResponseLayer.ApiStatus;
 import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
@@ -18,7 +19,7 @@ import com.giosmdev.package_radar.service.NPMLayerApis.NPMRegistryAPI;
 
 import reactor.core.publisher.Mono;
 
-@Component
+@Service
 public class RawNPMRegistryResponse {
 
     //API Calls
