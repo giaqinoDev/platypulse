@@ -1,0 +1,4 @@
+# Root-level ignores
+**/.env
+node_modules/
+build/
