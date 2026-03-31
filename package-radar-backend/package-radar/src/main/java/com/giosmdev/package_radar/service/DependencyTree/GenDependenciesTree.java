@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.configs.APIResponseLayer;
+package com.giosmdev.package_radar.service.DependencyTree;
 
 import java.time.Duration;
 import java.util.ArrayDeque;
@@ -9,10 +9,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependenciesInfo;
@@ -22,8 +19,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import tools.jackson.databind.JsonNode;
 
-@Configuration
-public class GenDependenciesTreeConfig {
+@Service
+public class GenDependenciesTree {
     private WebClient webClient;
 
     private final int maxDepth = 5;
@@ -33,7 +30,7 @@ public class GenDependenciesTreeConfig {
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
 
     Map<String, Mono<JsonNode>> proccessedDeps_cache = new ConcurrentHashMap<>();
-    public GenDependenciesTreeConfig(WebClient webClient){
+    public GenDependenciesTree(WebClient webClient){
         this.webClient = webClient;
     }
 
@@ -46,10 +43,8 @@ public class GenDependenciesTreeConfig {
             this.depth = depth;
         }
     }
-    @Bean
-    public BiFunction<String, JsonNode, Mono<DependencyTree>> genDependenciesTree() {
-        return (pkgName, topLayerDependencies) ->
-            Mono.fromCallable(() -> {  //fromCallable allows you to wrap a value that is possibly a reuslt of a blocking operation
+    public Mono<DependencyTree> generate(String pkgName, JsonNode topLayerDependencies) {
+           return Mono.fromCallable(() -> {  //fromCallable allows you to wrap a value that is possibly a reuslt of a blocking operation
                                        //into a Mono. This allows you to incorporate it into existsing reactive pipelines
                 //Prepare chache and request counter through reset
                 requestCount.set(0);

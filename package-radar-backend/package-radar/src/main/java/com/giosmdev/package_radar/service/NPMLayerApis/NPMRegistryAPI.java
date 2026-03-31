@@ -17,6 +17,7 @@ import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.Dependencie
 import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependencyTree;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
 import com.giosmdev.package_radar.service.ApiErrorHandling.ApiErrorHandler;
+import com.giosmdev.package_radar.service.DependencyTree.GenDependenciesTree;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,12 +26,12 @@ import tools.jackson.databind.JsonNode;
 @Service
 public class NPMRegistryAPI {
     private final WebClient webClient;
-    private final BiFunction<String, JsonNode, Mono<DependencyTree>> genDependenciesTree;
+    private final GenDependenciesTree genDependenciesTree;
     private final ApiErrorHandler apiErrorHandler;
     private final String BASE_PACKAGE_URL = "https://registry.npmjs.org";
     private final String BASE_DOWNLOAD_URL = "https://api.npmjs.org/downloads/range/last-year";
 
-    public NPMRegistryAPI(WebClient webClient, BiFunction<String, JsonNode, Mono<DependencyTree>> genDependenciesTree, ApiErrorHandler apiErrorHandler){
+    public NPMRegistryAPI(WebClient webClient, GenDependenciesTree genDependenciesTree, ApiErrorHandler apiErrorHandler){
         this.webClient = webClient;
         this.genDependenciesTree = genDependenciesTree;
         this.apiErrorHandler = apiErrorHandler;
@@ -127,7 +128,7 @@ public class NPMRegistryAPI {
     }
 
     private Mono<LatestVersionInfo> buildLatestVersionDepTree(LatestVersionInfo latest_v_info, String name, JsonNode rawDependencies){
-        return genDependenciesTree.apply(name, rawDependencies).map(tree -> {
+        return genDependenciesTree.generate(name, rawDependencies).map(tree -> {
             latest_v_info.setDependency_tree(tree);
             return latest_v_info;
         });
