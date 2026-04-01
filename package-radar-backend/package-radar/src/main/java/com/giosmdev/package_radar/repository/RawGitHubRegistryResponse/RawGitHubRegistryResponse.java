@@ -1,19 +1,21 @@
 package com.giosmdev.package_radar.repository.RawGitHubRegistryResponse;
 
-import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.stereotype.Service;
+
+import com.giosmdev.package_radar.service.GitHubLayerApis.GitHubRegistryAPI;
 
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
 
-@Component
+@Service
 public class RawGitHubRegistryResponse {
-    private WebClient webClient;
+    private GitHubRegistryAPI gitHubRegistryAPI;
 
-    public RawGitHubRegistryResponse(WebClient webClient){
-        this.webClient = webClient;
+    public RawGitHubRegistryResponse(GitHubRegistryAPI gitHubRegistryAPI){
+        this.gitHubRegistryAPI = gitHubRegistryAPI;
     }
 
-    public <T> Mono<T> getGitHubThing(){
-        return null;
+    public Mono<JsonNode> genRawGitHubResponse(String group, String repo){
+        return gitHubRegistryAPI.fetch("greatSumini", "react-facebook-login");
     }
 }
