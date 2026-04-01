@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useNPMFetch from "../NPMFetch/useNPMFetch";
+import useTestFetch from "../NPMFetch/useTestFetch";
 
 function Home(){
 
@@ -7,7 +8,7 @@ function Home(){
     const [searchTerm, setSearchTerm] = useState("");
     const [query, setQuery] = useState<string[]|null>(null);
     const exResult = useNPMFetch(query);
-
+    const {a, b, c, triggerFetch} = useTestFetch();
     function handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
         setQuery(parseSearchTerm(searchTerm.trim()));
@@ -32,7 +33,13 @@ function Home(){
                 onChange={(event) => {setSearchTerm(event.target.value)}}/>
                 <input type="submit"/>
             </form>
-            
+            <button onClick={() => {
+                triggerFetch();
+                console.log("Pressed");
+            }
+            }>
+                Test GitHub Registry Response
+            </button>
 
             {exResult.loading && 
                 <div>Loading</div>
