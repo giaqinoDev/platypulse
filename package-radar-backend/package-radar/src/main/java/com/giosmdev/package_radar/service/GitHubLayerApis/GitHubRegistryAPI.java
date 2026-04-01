@@ -2,6 +2,10 @@ package com.giosmdev.package_radar.service.GitHubLayerApis;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -55,7 +59,11 @@ public class GitHubRegistryAPI {
                             Instant created_at = Instant.parse(response.get("created_at").asString());
                             Instant updated_at = Instant.parse(response.get("updated_at").asString());
 
-                            return new PackageRepoInfo(stars_count, forks_count, open_issues_count, isArchived, pushed_at, created_at, updated_at);
+                            Instant curr_date = Instant.now();
+                            long repo_age = ChronoUnit.DAYS.between(created_at, curr_date);
+                            long days_since_last_commit = ChronoUnit.DAYS.between(pushed_at, curr_date);
+                            
+                            return new PackageRepoInfo(stars_count, forks_count, open_issues_count, isArchived, pushed_at, created_at, updated_at, repo_age, days_since_last_commit);
 
                         });
         return gitHubPAI_res;
