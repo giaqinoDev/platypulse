@@ -19,15 +19,16 @@ import tools.jackson.databind.JsonNode;
 
 
 @Service
-public class GitHubRegistryAPI {
+public class GitHubRepoAPI {
     private final WebClient webClient;
     //private final String BASE_GITHUB_URL = "https://api.github.com/repos";
 
-    public GitHubRegistryAPI(WebClient webClient){
+    public GitHubRepoAPI(WebClient webClient){
         this.webClient = webClient;
     }
     
     public Mono<PackageRepoInfo> fetch(String group, String repo){
+        //Priority API Call
         Mono<PackageRepoInfo> gitHubPAI_res = webClient.get()
                         .uri(uriBuilder -> uriBuilder
                             .scheme("https")
@@ -64,7 +65,6 @@ public class GitHubRegistryAPI {
                             long days_since_last_commit = ChronoUnit.DAYS.between(pushed_at, curr_date);
                             
                             return new PackageRepoInfo(stars_count, forks_count, open_issues_count, isArchived, pushed_at, created_at, updated_at, repo_age, days_since_last_commit);
-
                         });
         return gitHubPAI_res;
     }
