@@ -15,7 +15,7 @@ import tools.jackson.databind.JsonNode;
 @Service
 public class GitHubRegistryAPI {
     private final WebClient webClient;
-    private final String BASE_GITHUB_URL = "https://api.github.com/repos";
+    //private final String BASE_GITHUB_URL = "https://api.github.com/repos";
 
     public GitHubRegistryAPI(WebClient webClient){
         this.webClient = webClient;
