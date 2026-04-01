@@ -3,10 +3,10 @@ package com.giosmdev.package_radar.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.giosmdev.package_radar.model.GitHubRegistry.PackageRepoInfo;
 import com.giosmdev.package_radar.service.GitHubService;
 
 import reactor.core.publisher.Mono;
-import tools.jackson.databind.JsonNode;
 
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -20,7 +20,7 @@ public class TestController {
         this.gitHubService = gitHubService;
     }
     @GetMapping("github-reg-test")
-    public Mono<JsonNode> getGitHubRes() {
+    public Mono<PackageRepoInfo> getGitHubRes() {
         return gitHubService.getGitHubResponse("blah", "blah");
     }
     

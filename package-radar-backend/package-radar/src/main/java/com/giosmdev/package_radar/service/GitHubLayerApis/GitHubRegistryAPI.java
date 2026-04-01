@@ -1,12 +1,14 @@
 package com.giosmdev.package_radar.service.GitHubLayerApis;
 
 import java.time.Duration;
+import java.time.Instant;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
+import com.giosmdev.package_radar.model.GitHubRegistry.PackageRepoInfo;
 
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
@@ -21,8 +23,8 @@ public class GitHubRegistryAPI {
         this.webClient = webClient;
     }
     
-    public Mono<JsonNode> fetch(String group, String repo){
-        Mono<JsonNode> gitHubPAI_res = webClient.get()
+    public Mono<PackageRepoInfo> fetch(String group, String repo){
+        Mono<PackageRepoInfo> gitHubPAI_res = webClient.get()
                         .uri(uriBuilder -> uriBuilder
                             .scheme("https")
                             .host("api.github.com")
@@ -42,7 +44,20 @@ public class GitHubRegistryAPI {
                             response -> Mono.error(new RegistryException())
                         )
                         .bodyToMono(JsonNode.class)
-                        .timeout(Duration.ofSeconds(7));
+                        .timeout(Duration.ofSeconds(7))
+                        .map(response -> {
+                            int stars_count = response.get("stargazers_count").asInt();
+                            int forks_count = response.get("forks_count").asInt();
+                            int open_issues_count = response.get("open_issues_count").asInt();
+                            boolean isArchived = response.get("archived").asBoolean();
+
+                            Instant pushed_at = Instant.parse(response.get("pushed_at").asString());
+                            Instant created_at = Instant.parse(response.get("created_at").asString());
+                            Instant updated_at = Instant.parse(response.get("updated_at").asString());
+
+                            return new PackageRepoInfo(stars_count, forks_count, open_issues_count, isArchived, pushed_at, created_at, updated_at);
+
+                        });
         return gitHubPAI_res;
     }
 }

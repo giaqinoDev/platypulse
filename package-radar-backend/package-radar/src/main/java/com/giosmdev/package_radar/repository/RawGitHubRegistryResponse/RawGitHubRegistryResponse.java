@@ -2,6 +2,7 @@ package com.giosmdev.package_radar.repository.RawGitHubRegistryResponse;
 
 import org.springframework.stereotype.Service;
 
+import com.giosmdev.package_radar.model.GitHubRegistry.PackageRepoInfo;
 import com.giosmdev.package_radar.service.GitHubLayerApis.GitHubRegistryAPI;
 
 import reactor.core.publisher.Mono;
@@ -15,7 +16,7 @@ public class RawGitHubRegistryResponse {
         this.gitHubRegistryAPI = gitHubRegistryAPI;
     }
 
-    public Mono<JsonNode> genRawGitHubResponse(String group, String repo){
+    public Mono<PackageRepoInfo> genRawGitHubResponse(String group, String repo){
         return gitHubRegistryAPI.fetch("greatSumini", "react-facebook-login");
     }
 }
