@@ -29,7 +29,7 @@ public class GitHubRepoAPI {
     
     public Mono<PackageRepoInfo> fetch(String group, String repo){
         //Priority API Call
-        Mono<PackageRepoInfo> gitHubPAI_res = webClient.get()
+        Mono<PackageRepoInfo> gitHubAPI_res = webClient.get()
                         .uri(uriBuilder -> uriBuilder
                             .scheme("https")
                             .host("api.github.com")
@@ -66,6 +66,6 @@ public class GitHubRepoAPI {
                             
                             return new PackageRepoInfo(stars_count, forks_count, open_issues_count, isArchived, pushed_at, created_at, updated_at, repo_age, days_since_last_commit);
                         });
-        return gitHubPAI_res;
+        return gitHubAPI_res;
     }
 }
