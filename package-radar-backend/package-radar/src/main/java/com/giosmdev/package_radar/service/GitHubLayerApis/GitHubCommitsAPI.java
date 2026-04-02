@@ -30,6 +30,7 @@ public class GitHubCommitsAPI {
     }
 
     public Mono<ApiStatus<RepoCommitInfo>> fetch(String group, String repo){
+        System.out.println("Fetchign commit info from api");
         Mono<RepoCommitInfo> commit_info = webClient.get()
                             .uri(uriBuilder -> uriBuilder
                                 .scheme("https")
@@ -48,7 +49,8 @@ public class GitHubCommitsAPI {
                             )
                             .onStatus(
                                 status -> status.is5xxServerError(),
-                                response -> Mono.error(new RegistryException())
+                                response -> {System.out.println("AAHHAHAH");
+                                return Mono.error(new RegistryException());}
                             )
                             .bodyToMono(JsonNode.class)
                             .timeout(Duration.ofSeconds(7))
@@ -88,6 +90,7 @@ public class GitHubCommitsAPI {
             return new RepoCommitInfo(commit_timeline, commit_timeline_volume, commits_last_30_days, commits_last_90_days);
         }
         catch(Exception error){
+            System.out.println("Some Error on commti info level");
             throw new RegistryException();
         }
     }

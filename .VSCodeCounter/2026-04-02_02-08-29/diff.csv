@@ -1,0 +1,10 @@
+"filename", "language", "Java", "Java Properties", "comment", "blank", "total"
+"c:\Users\giosc\OneDrive\Documents\Visual_Studio_Code\PackageRadar\package-radar-backend\package-radar\src\main\java\com\giosmdev\package_radar\model\GitHubRegistry\PackageRepoInfo.java", "Java", 19, 0, 1, 6, 26
+"c:\Users\giosc\OneDrive\Documents\Visual_Studio_Code\PackageRadar\package-radar-backend\package-radar\src\main\java\com\giosmdev\package_radar\model\GitHubRegistry\RepoCommitInfo.java", "Java", 16, 0, 0, 5, 21
+"c:\Users\giosc\OneDrive\Documents\Visual_Studio_Code\PackageRadar\package-radar-backend\package-radar\src\main\java\com\giosmdev\package_radar\repository\RawGitHubRegistryResponse\RawGitHubRegistryResponse.java", "Java", 1, 0, 0, 0, 1
+"c:\Users\giosc\OneDrive\Documents\Visual_Studio_Code\PackageRadar\package-radar-backend\package-radar\src\main\java\com\giosmdev\package_radar\service\GitHubLayerApis\GitHubCommitsAPI.java", "Java", 79, 0, 2, 14, 95
+"c:\Users\giosc\OneDrive\Documents\Visual_Studio_Code\PackageRadar\package-radar-backend\package-radar\src\main\java\com\giosmdev\package_radar\service\GitHubLayerApis\GitHubRegistryAPI.java", "Java", -39, 0, -1, -9, -49
+"c:\Users\giosc\OneDrive\Documents\Visual_Studio_Code\PackageRadar\package-radar-backend\package-radar\src\main\java\com\giosmdev\package_radar\service\GitHubLayerApis\GitHubRepoAPI.java", "Java", 58, 0, 2, 12, 72
+"c:\Users\giosc\OneDrive\Documents\Visual_Studio_Code\PackageRadar\package-radar-backend\package-radar\src\main\resources\application.properties", "Java Properties", 0, 3, 0, 1, 4
+"c:\Users\giosc\OneDrive\Documents\Visual_Studio_Code\PackageRadar\package-radar-backend\package-radar\src\test\java\com\giosmdev\package_radar\PackageRadarApplicationTests.java", "Java", 9, 0, 0, 5, 14
+"Total", "-", 143, 3, 4, 34, 184

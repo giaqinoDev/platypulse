@@ -2,10 +2,7 @@ package com.giosmdev.package_radar.service.GitHubLayerApis;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -28,6 +25,7 @@ public class GitHubRepoAPI {
     }
     
     public Mono<PackageRepoInfo> fetch(String group, String repo){
+        System.out.println("Github rpo api call");
         //Priority API Call
         Mono<PackageRepoInfo> gitHubAPI_res = webClient.get()
                         .uri(uriBuilder -> uriBuilder

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RepoCommitInfo {
     private List<Instant> commit_timeline;
-    private Map<Instant, Integer> commit_timeline_freq;
+    private Map<Instant, Integer> commit_timeline_volume;
     
     private long commits_last_30_days;
     private long commits_last_90_days;
