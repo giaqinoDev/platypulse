@@ -3,7 +3,6 @@ package com.giosmdev.package_radar.service.NPMLayerApis;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,7 +13,6 @@ import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.NPMRegistry.LatestVersionInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependenciesInfo;
-import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependencyTree;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
 import com.giosmdev.package_radar.service.ApiErrorHandling.ApiErrorHandler;
 import com.giosmdev.package_radar.service.DependencyTree.GenDependenciesTree;
