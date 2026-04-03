@@ -6,6 +6,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.configs.APIResponseLayer.ApiStatus;
 import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
+import com.giosmdev.package_radar.configs.custom_exceptions.ProcessingException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
 import com.giosmdev.package_radar.service.ApiErrorHandling.ApiErrorHandler;
@@ -46,10 +47,15 @@ public class LibrariesIoAPI {
                         .bodyToMono(JsonNode.class)
                         .timeout(Duration.ofSeconds(3))
                         .map(response -> {
-                            int dependent_packages_count = response.get("dependents_count").asInt();
-                            int dependent_repos_count = response.get("dependent_repos_count").asInt();
+                            try{
+                                int dependent_packages_count = response.get("dependents_count").asInt();
+                                int dependent_repos_count = response.get("dependent_repos_count").asInt();
 
-                            return new LibrariesIOResponse(dependent_packages_count, dependent_repos_count);
+                                return new LibrariesIOResponse(dependent_packages_count, dependent_repos_count);
+                            }
+                            catch(Exception error){
+                                throw new ProcessingException(error.getStackTrace());
+                            }
                         });
         Mono<ApiStatus<LibrariesIOResponse>> wrapped_result = apiErrorHandler.handle(package_info);
         return wrapped_result;

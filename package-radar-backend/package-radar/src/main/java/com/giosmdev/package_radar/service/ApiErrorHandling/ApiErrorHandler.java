@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.giosmdev.package_radar.configs.APIResponseLayer.ApiStatus;
 import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
+import com.giosmdev.package_radar.configs.custom_exceptions.ProcessingException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 
 import reactor.core.publisher.Mono;
@@ -23,6 +24,9 @@ public class ApiErrorHandler {
                         )
                         .onErrorResume(TimeoutException.class, error ->
                             Mono.just(new ApiStatus<>(null, 504, HttpStatus.GATEWAY_TIMEOUT, false))
+                        )
+                        .onErrorResume(ProcessingException.class, error -> 
+                            Mono.just(new ApiStatus<>(null, 500, error.getStack_Trace(), false))
                         )
                         .onErrorResume(error ->
                             Mono.just(new ApiStatus<>(null, 500, HttpStatus.INTERNAL_SERVER_ERROR, false))

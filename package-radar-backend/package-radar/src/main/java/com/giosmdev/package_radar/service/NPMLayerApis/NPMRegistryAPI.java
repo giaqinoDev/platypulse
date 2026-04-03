@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.configs.APIResponseLayer.ApiStatus;
 import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
+import com.giosmdev.package_radar.configs.custom_exceptions.ProcessingException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.NPMRegistry.LatestVersionInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
@@ -84,45 +85,50 @@ public class NPMRegistryAPI {
     }
     // Package Info Utility Functions-------------------------------------------------------------------------------------------------
     private Mono<PackageInfo> formatReponse(JsonNode response){
-        //JsonNode represents a general abstract node in a Json tree structure and allows you to handle Json data dynamicaly
-        String name = response.get("name").asString();
-        String latest_v = response.get("dist-tags").get("latest").asString();
-        JsonNode latest_v_reference = response.get("versions").get(latest_v);
-        JsonNode repository = latest_v_reference.get("repository");
-        JsonNode rawDependencies = latest_v_reference.get("dependencies");
+        try{    
+            //JsonNode represents a general abstract node in a Json tree structure and allows you to handle Json data dynamicaly
+            String name = response.get("name").asString();
+            String latest_v = response.get("dist-tags").get("latest").asString();
+            JsonNode latest_v_reference = response.get("versions").get(latest_v);
+            JsonNode repository = latest_v_reference.get("repository");
+            JsonNode rawDependencies = latest_v_reference.get("dependencies");
 
-        JsonNode keywords = latest_v_reference.get("keywords");
-        JsonNode author = latest_v_reference.get("author");
-        String license = latest_v_reference.get("license").asString();
-        String homepage = latest_v_reference.get("homepage").asString();
+            JsonNode keywords = latest_v_reference.get("keywords");
+            JsonNode author = latest_v_reference.get("author");
+            String license = latest_v_reference.get("license").asString();
+            String homepage = latest_v_reference.get("homepage").asString();
 
-        String node_version = latest_v_reference.get("_nodeVersion").asString();
-        String npm_version = latest_v_reference.get("_npmVersion").asString();
+            String node_version = latest_v_reference.get("_nodeVersion").asString();
+            String npm_version = latest_v_reference.get("_npmVersion").asString();
 
 
-        LatestVersionInfo latest_v_info = new LatestVersionInfo(
-            repository, keywords, author, license, 
-            homepage,node_version,npm_version, null,null);
+            LatestVersionInfo latest_v_info = new LatestVersionInfo(
+                repository, keywords, author, license, 
+                homepage,node_version,npm_version, null,null);
 
-        JsonNode versions_release_info = response.get("time");
-        PackageInfo package_info = new PackageInfo(name, latest_v, null, versions_release_info);
-        
-        if(rawDependencies == null){
-            latest_v_info.setDependencies(null);
-            latest_v_info.setDependency_tree(null);
-            package_info.setLatest_version_info(latest_v_info);
-            return Mono.just(package_info);
+            JsonNode versions_release_info = response.get("time");
+            PackageInfo package_info = new PackageInfo(name, latest_v, null, versions_release_info);
+            
+            if(rawDependencies == null){
+                latest_v_info.setDependencies(null);
+                latest_v_info.setDependency_tree(null);
+                package_info.setLatest_version_info(latest_v_info);
+                return Mono.just(package_info);
+            }
+
+            return formatDependenciesInfo(rawDependencies).flatMap(deps -> { //use .map when cuttin tree out
+                latest_v_info.setDependencies(deps);
+                //return latest_v_info; //Use if you choose to cut out dependency trees as a whole
+                return buildLatestVersionDepTree(latest_v_info, name, rawDependencies);
+            })
+            .map(updatedLatest -> {
+                package_info.setLatest_version_info(updatedLatest);
+                return package_info;
+            });
         }
-
-        return formatDependenciesInfo(rawDependencies).flatMap(deps -> { //use .map when cuttin tree out
-            latest_v_info.setDependencies(deps);
-            //return latest_v_info; //Use if you choose to cut out dependency trees as a whole
-            return buildLatestVersionDepTree(latest_v_info, name, rawDependencies);
-        })
-        .map(updatedLatest -> {
-            package_info.setLatest_version_info(updatedLatest);
-            return package_info;
-        });
+        catch(Exception error){
+            throw new ProcessingException(error.getStackTrace());
+        }
     }
 
     private Mono<LatestVersionInfo> buildLatestVersionDepTree(LatestVersionInfo latest_v_info, String name, JsonNode rawDependencies){
@@ -177,39 +183,44 @@ public class NPMRegistryAPI {
 
     // Package Downloads Timeline Utility Functions-----------------------------------------------------------------------------------
     private List<WeeklyDownloads> formatDownloadsTimeline(JsonNode response){
-        JsonNode downloads = response.get("downloads");
-        int weekday_count = 0;
-        int timeline_index = 0;
-        int downloads_sum = 0;
+        try{
+            JsonNode downloads = response.get("downloads");
+            int weekday_count = 0;
+            int timeline_index = 0;
+            int downloads_sum = 0;
 
-        //Calculate number of weeks based off available timeline
-        int num_weeks = (int) Math.ceil((double) downloads.size()/7);
-        List<WeeklyDownloads> downloads_timeline = new ArrayList<WeeklyDownloads>(num_weeks);
-        
-        //Populate timeline
-        for(int index = 0; index < num_weeks; ++index){
-            downloads_timeline.add(new WeeklyDownloads());
+            //Calculate number of weeks based off available timeline
+            int num_weeks = (int) Math.ceil((double) downloads.size()/7);
+            List<WeeklyDownloads> downloads_timeline = new ArrayList<WeeklyDownloads>(num_weeks);
+            
+            //Populate timeline
+            for(int index = 0; index < num_weeks; ++index){
+                downloads_timeline.add(new WeeklyDownloads());
+            }
+
+            //Insert into timeline
+            for(int index = 0; index < downloads.size(); ++index){
+                downloads_sum += downloads.get(index).get("downloads").asInt();
+                if(weekday_count == 0){
+                    downloads_timeline.get(timeline_index).setStart_date(downloads.get(index).get("day").asString());
+                    weekday_count++;
+                }
+                else if(weekday_count == 6){
+                    downloads_timeline.get(timeline_index).setEnd_date(downloads.get(index).get("day").asString());
+                    downloads_timeline.get(timeline_index).setVolume(downloads_sum);
+                    downloads_sum = 0;
+                    timeline_index++;
+                    weekday_count = 0;
+                }
+                else{
+                    weekday_count++;
+                }
+            }
+
+            return downloads_timeline;
         }
-
-        //Insert into timeline
-        for(int index = 0; index < downloads.size(); ++index){
-            downloads_sum += downloads.get(index).get("downloads").asInt();
-            if(weekday_count == 0){
-                downloads_timeline.get(timeline_index).setStart_date(downloads.get(index).get("day").asString());
-                weekday_count++;
-            }
-            else if(weekday_count == 6){
-                downloads_timeline.get(timeline_index).setEnd_date(downloads.get(index).get("day").asString());
-                downloads_timeline.get(timeline_index).setVolume(downloads_sum);
-                downloads_sum = 0;
-                timeline_index++;
-                weekday_count = 0;
-            }
-            else{
-                weekday_count++;
-            }
+        catch(Exception error){
+            throw new ProcessingException(error.getStackTrace());
         }
-
-        return downloads_timeline;
     }
 }
