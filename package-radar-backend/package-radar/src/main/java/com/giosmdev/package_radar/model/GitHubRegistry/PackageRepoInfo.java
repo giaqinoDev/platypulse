@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class PackageRepoInfo {
     private int stars_count;
     private int forks_count;
-    private int open_issues_count;
     private boolean isArchived; 
 
     private Instant pushed_at;

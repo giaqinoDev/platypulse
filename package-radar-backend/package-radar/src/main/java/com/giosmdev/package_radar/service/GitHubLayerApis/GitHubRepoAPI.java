@@ -51,7 +51,6 @@ public class GitHubRepoAPI {
                         .map(response -> {
                             int stars_count = response.get("stargazers_count").asInt();
                             int forks_count = response.get("forks_count").asInt();
-                            int open_issues_count = response.get("open_issues_count").asInt();
                             boolean isArchived = response.get("archived").asBoolean();
 
                             Instant pushed_at = Instant.parse(response.get("pushed_at").asString());
@@ -62,7 +61,7 @@ public class GitHubRepoAPI {
                             long repo_age = ChronoUnit.DAYS.between(created_at, curr_date);
                             long days_since_last_push = ChronoUnit.DAYS.between(pushed_at, curr_date);
                             
-                            return new PackageRepoInfo(stars_count, forks_count, open_issues_count, isArchived, pushed_at, created_at, updated_at, repo_age, days_since_last_push);
+                            return new PackageRepoInfo(stars_count, forks_count, isArchived, pushed_at, created_at, updated_at, repo_age, days_since_last_push);
                         });
         return gitHubAPI_res;
     }
