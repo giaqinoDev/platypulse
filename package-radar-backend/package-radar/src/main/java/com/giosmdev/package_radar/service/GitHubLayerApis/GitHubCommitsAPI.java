@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.configs.APIResponseLayer.ApiStatus;
 import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
+import com.giosmdev.package_radar.configs.custom_exceptions.ProcessingException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.GitHubRegistry.RepoCommitInfo;
 import com.giosmdev.package_radar.service.ApiErrorHandling.ApiErrorHandler;
@@ -91,7 +92,7 @@ public class GitHubCommitsAPI {
         }
         catch(Exception error){
             System.out.println("Some Error on commti info level");
-            throw new RegistryException();
+            throw new ProcessingException(error.getStackTrace());
         }
     }
 }

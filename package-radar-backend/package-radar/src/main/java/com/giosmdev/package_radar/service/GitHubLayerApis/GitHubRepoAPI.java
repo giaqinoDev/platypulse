@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
+import com.giosmdev.package_radar.configs.custom_exceptions.ProcessingException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.GitHubRegistry.PackageRepoInfo;
 
@@ -49,19 +50,24 @@ public class GitHubRepoAPI {
                         .bodyToMono(JsonNode.class)
                         .timeout(Duration.ofSeconds(7))
                         .map(response -> {
-                            int stars_count = response.get("stargazers_count").asInt();
-                            int forks_count = response.get("forks_count").asInt();
-                            boolean isArchived = response.get("archived").asBoolean();
+                            try{
+                                int stars_count = response.get("stargazers_count").asInt();
+                                int forks_count = response.get("forks_count").asInt();
+                                boolean isArchived = response.get("archived").asBoolean();
 
-                            Instant pushed_at = Instant.parse(response.get("pushed_at").asString());
-                            Instant created_at = Instant.parse(response.get("created_at").asString());
-                            Instant updated_at = Instant.parse(response.get("updated_at").asString());
+                                Instant pushed_at = Instant.parse(response.get("pushed_at").asString());
+                                Instant created_at = Instant.parse(response.get("created_at").asString());
+                                Instant updated_at = Instant.parse(response.get("updated_at").asString());
 
-                            Instant curr_date = Instant.now();
-                            long repo_age = ChronoUnit.DAYS.between(created_at, curr_date);
-                            long days_since_last_push = ChronoUnit.DAYS.between(pushed_at, curr_date);
-                            
-                            return new PackageRepoInfo(stars_count, forks_count, isArchived, pushed_at, created_at, updated_at, repo_age, days_since_last_push);
+                                Instant curr_date = Instant.now();
+                                long repo_age = ChronoUnit.DAYS.between(created_at, curr_date);
+                                long days_since_last_push = ChronoUnit.DAYS.between(pushed_at, curr_date);
+                                
+                                return new PackageRepoInfo(stars_count, forks_count, isArchived, pushed_at, created_at, updated_at, repo_age, days_since_last_push);
+                            }
+                            catch(Exception error){
+                                throw new ProcessingException(error.getStackTrace());
+                            }
                         });
         return gitHubAPI_res;
     }
