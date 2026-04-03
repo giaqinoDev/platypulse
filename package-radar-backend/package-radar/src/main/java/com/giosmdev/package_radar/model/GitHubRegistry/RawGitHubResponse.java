@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class RawGitHubResponse {
     private PackageRepoInfo repo_info;
     private RepoCommitInfo commit_info;
+    private RepoContributorsInfo contributors_info;
 }

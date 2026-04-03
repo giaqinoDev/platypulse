@@ -60,9 +60,9 @@ public class GitHubRepoAPI {
 
                             Instant curr_date = Instant.now();
                             long repo_age = ChronoUnit.DAYS.between(created_at, curr_date);
-                            long days_since_last_commit = ChronoUnit.DAYS.between(pushed_at, curr_date);
+                            long days_since_last_push = ChronoUnit.DAYS.between(pushed_at, curr_date);
                             
-                            return new PackageRepoInfo(stars_count, forks_count, open_issues_count, isArchived, pushed_at, created_at, updated_at, repo_age, days_since_last_commit);
+                            return new PackageRepoInfo(stars_count, forks_count, open_issues_count, isArchived, pushed_at, created_at, updated_at, repo_age, days_since_last_push);
                         });
         return gitHubAPI_res;
     }

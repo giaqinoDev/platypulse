@@ -11,37 +11,41 @@ import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.GitHubRegistry.PackageRepoInfo;
 import com.giosmdev.package_radar.model.GitHubRegistry.RawGitHubResponse;
 import com.giosmdev.package_radar.model.GitHubRegistry.RepoCommitInfo;
+import com.giosmdev.package_radar.model.GitHubRegistry.RepoContributorsInfo;
 import com.giosmdev.package_radar.service.GitHubLayerApis.GitHubCommitsAPI;
 import com.giosmdev.package_radar.service.GitHubLayerApis.GitHubRepoAPI;
+import com.giosmdev.package_radar.service.GitHubLayerApis.GitHubRepoContributorsAPI;
 
 import reactor.core.publisher.Mono;
-import tools.jackson.databind.JsonNode;
 
 @Service
 public class RawGitHubRegistryResponse {
     private final GitHubRepoAPI gitHubRegistryAPI;
     private final GitHubCommitsAPI gitHubCommitsAPI;
+    private final GitHubRepoContributorsAPI gitHubRepoContributorsAPI;
 
-    public RawGitHubRegistryResponse(GitHubRepoAPI gitHubRegistryAPI, GitHubCommitsAPI gitHubCommitsAPI){
+    public RawGitHubRegistryResponse(GitHubRepoAPI gitHubRegistryAPI, GitHubCommitsAPI gitHubCommitsAPI, GitHubRepoContributorsAPI gitHubRepoContributorsAPI){
         this.gitHubRegistryAPI = gitHubRegistryAPI;
         this.gitHubCommitsAPI = gitHubCommitsAPI;
+        this.gitHubRepoContributorsAPI = gitHubRepoContributorsAPI;
     }
 
     public Mono<ResponseEntity<RawGitHubResponse>> genRawGitHubResponse(String group, String repo){
-        Mono<PackageRepoInfo> repo_response = gitHubRegistryAPI.fetch("greatSumini", "react-facebook-login");
+        Mono<PackageRepoInfo> repo_response = gitHubRegistryAPI.fetch(group, repo);
 
-        Mono<ApiStatus<RepoCommitInfo>> commits_info_response = gitHubCommitsAPI.fetch("greatSumini", "react-facebook-login");
+        Mono<ApiStatus<RepoCommitInfo>> commits_info_response = gitHubCommitsAPI.fetch(group, repo);
+
+        Mono<ApiStatus<RepoContributorsInfo>> contributors_info_response = gitHubRepoContributorsAPI.fetch(group, repo);
+        
         System.out.println("raw git");
         return repo_response.flatMap(response -> {
             System.out.println("flating");
-            return Mono.zip(commits_info_response, Mono.just(new RepoCommitInfo()))
-                                .map(tuple -> {
-                                    RepoCommitInfo commit_info = tuple.getT1().getData();
-
-                                    return ResponseEntity.ok(new RawGitHubResponse(response, commit_info));
-                                });
-                            }
-        )
+            return Mono.zip(commits_info_response, contributors_info_response).map(tuple -> {
+                        RepoCommitInfo commit_info = tuple.getT1().getData();
+                        RepoContributorsInfo contributor_info = tuple.getT2().getData();
+                        return ResponseEntity.ok(new RawGitHubResponse(response, commit_info, contributor_info));
+                    });
+            })
         .onErrorResume(PackageNotFoundException.class, error ->
             Mono.just(ResponseEntity.status(404).build())
          )
@@ -52,7 +56,8 @@ public class RawGitHubRegistryResponse {
             Mono.just(ResponseEntity.status(504).build())
         )
         .onErrorResume(error ->
-            Mono.just(ResponseEntity.status(500).build())
+            {System.out.println("Error");
+            return Mono.just(ResponseEntity.status(500).build());}
         );
     }
 }

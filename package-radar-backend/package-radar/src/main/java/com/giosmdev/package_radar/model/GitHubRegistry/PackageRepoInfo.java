@@ -21,5 +21,5 @@ public class PackageRepoInfo {
 
     //Derived Signals
     private long repo_age;
-    private long days_since_last_commit;
+    private long days_since_last_push;
 }
