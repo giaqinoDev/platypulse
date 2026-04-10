@@ -73,7 +73,7 @@ public class GitHubCommitsAPI {
             response.forEach(commit_log -> {
                 Instant commit_date = Instant.parse(commit_log.get("commit").get("author").get("date").asString());
                 Instant commit_date_truncated = commit_date.truncatedTo(ChronoUnit.DAYS);
-                //populate timeline
+                //populate timeline: Used to calcualte commit freq in last 30-90 days
                 commit_timeline.add(commit_date);
 
                 //populate timeline frequency
@@ -88,7 +88,8 @@ public class GitHubCommitsAPI {
 
             commits_last_30_days = commit_timeline.stream().filter(commit -> ChronoUnit.DAYS.between(commit, currDate) <= 30).count();
             commits_last_90_days = commit_timeline.stream().filter(commit -> ChronoUnit.DAYS.between(commit, currDate) <= 90).count();
-            return new RepoCommitInfo(commit_timeline, commit_timeline_volume, commits_last_30_days, commits_last_90_days);
+            return new RepoCommitInfo(commit_timeline_volume, commits_last_30_days, commits_last_90_days);
+            //return new RepoCommitInfo(commit_timeline, commit_timeline_volume, commits_last_30_days, commits_last_90_days);
         }
         catch(Exception error){
             System.out.println("Some Error on commti info level");

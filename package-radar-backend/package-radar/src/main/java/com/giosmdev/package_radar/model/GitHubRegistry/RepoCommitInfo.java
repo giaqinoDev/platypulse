@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RepoCommitInfo {
-    private List<Instant> commit_timeline;
+    //commit timeline is not needed (its a helper field computed in api layer)
+    //private List<Instant> commit_timeline;
     private Map<Instant, Integer> commit_timeline_volume;
     
     private long commits_last_30_days;
