@@ -1,7 +1,6 @@
 package com.giosmdev.package_radar.model.GitHubRegistry;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
