@@ -29,7 +29,10 @@ public class ApiErrorHandler {
                             Mono.just(new ApiStatus<>(null, 500, error.getStack_Trace(), false))
                         )
                         .onErrorResume(error ->
-                            Mono.just(new ApiStatus<>(null, 500, HttpStatus.INTERNAL_SERVER_ERROR, false))
+                            {
+                                error.printStackTrace();
+                                return Mono.just(new ApiStatus<>(null, 500, HttpStatus.INTERNAL_SERVER_ERROR, false));
+                            }
                         );
     }
 }

@@ -26,7 +26,7 @@ public class GitHubRepoAPI {
     }
     
     public Mono<PackageRepoInfo> fetch(String group, String repo){
-        System.out.println("Github rpo api call");
+        System.out.println("Github repo api call");
         //Priority API Call
         Mono<PackageRepoInfo> gitHubAPI_res = webClient.get()
                         .uri(uriBuilder -> uriBuilder
@@ -41,7 +41,10 @@ public class GitHubRepoAPI {
                         .retrieve()
                         .onStatus(
                             status -> status.is4xxClientError(),
-                            response -> Mono.error(new PackageNotFoundException())
+                            response -> {
+                                System.out.println("GttHub Repo 404 Error");
+                                return Mono.error(new PackageNotFoundException());
+                            }
                         )
                         .onStatus(
                             status -> status.is5xxServerError(),

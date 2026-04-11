@@ -27,6 +27,7 @@ public class GitHubRepoContributorsAPI {
     }
 
     public Mono<ApiStatus<RepoContributorsInfo>> fetch(String group, String repo){
+        System.out.println("Fetching GItHub Repo contributors info from api");
         Mono<RepoContributorsInfo> contributors_info = webClient.get()
                                     .uri(uriBuilder -> uriBuilder
                                         .scheme("https")
@@ -41,7 +42,10 @@ public class GitHubRepoContributorsAPI {
                                     .retrieve()
                                     .onStatus(
                                         status -> status.is4xxClientError(),
-                                        response -> Mono.error(new PackageNotFoundException())
+                                        response -> {
+                                            System.out.println("GItHub Contributors 404 error");
+                                            return Mono.error(new PackageNotFoundException());
+                                        }
                                     )
                                     .onStatus(
                                         status -> status.is5xxServerError(),

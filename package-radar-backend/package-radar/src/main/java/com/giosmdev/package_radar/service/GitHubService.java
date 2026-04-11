@@ -1,5 +1,7 @@
 package com.giosmdev.package_radar.service;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +19,7 @@ public class GitHubService {
     
     public Mono<ResponseEntity<RawGitHubResponse>> getGitHubResponse(String group, String repo){
         if(group == null || repo == null){
-            return Mono.just(new ResponseEntity<RawGitHubResponse>(null));
+            return Mono.just(ResponseEntity.status(HttpStatus.NO_CONTENT).body(null));
         }
         return rawGitHubResponse.genRawGitHubResponse(group, repo);
     }

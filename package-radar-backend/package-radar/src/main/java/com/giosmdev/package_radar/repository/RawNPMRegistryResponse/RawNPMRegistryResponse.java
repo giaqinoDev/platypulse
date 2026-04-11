@@ -19,6 +19,7 @@ import com.giosmdev.package_radar.service.NPMLayerApis.LibrariesIoAPI;
 import com.giosmdev.package_radar.service.NPMLayerApis.NPMRegistryAPI;
 
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
 
 @Service
 public class RawNPMRegistryResponse {
@@ -46,16 +47,27 @@ public class RawNPMRegistryResponse {
         // Merge downloads timeline into response
         // if any of the arguements in Mono.zip are Mono.empty() then Mono.zip will return empty
         Mono<ResponseEntity<RawNpmResponse>> NPMResponse = npm_reg_response.flatMap(package_info -> {
-            String repo_url = package_info.getLatest_version_info().getRepository().get("url").asString();
-            String[] segments = repo_url.split("/");
-            String group = segments[segments.length - 2];
-            String repo = segments[segments.length - 1].substring(0, segments[segments.length - 1].indexOf("."));
-
+            System.out.println("DO IT!");
+            String group = null;
+            String repo = null;
+            try{
+                JsonNode repo_node = package_info.getLatest_version_info().getRepository();
+                if(repo_node != null){
+                    String repo_url = repo_node.path("url").asString(null);
+                    String[] segments = repo_url.split("/");
+                    group = segments[segments.length - 2];
+                    repo = segments[segments.length - 1].substring(0, segments[segments.length - 1].indexOf("."));
+                }
+            }
+            catch(Exception error){
+                error.printStackTrace();
+            }
+            //System.out.println(group + "/" + repo);
             Mono<ResponseEntity<RawGitHubResponse>> gitHubApiResponse = gitHubService.getGitHubResponse(group, repo);
             return Mono.zip(npm_reg_dwnld_timeline, libIO_response, gitHubApiResponse)
                     .map(tuple -> {
-                        //System.out.println("npm_reg_response: " + package_info.getStatus());
                         RawGitHubResponse gitHub_response = tuple.getT3().getBody();
+                        System.out.println("github api repsonse status: " + tuple.getT3().getStatusCode());
 
                         List<WeeklyDownloads> downloads_timeline = tuple.getT1().getData();
                         System.out.println("downloads_timeline: " + tuple.getT1().getStatus());
@@ -76,9 +88,10 @@ public class RawNPMRegistryResponse {
                         .onErrorResume(TimeoutException.class, error ->
                             Mono.just(ResponseEntity.status(504).build())
                         )
-                        .onErrorResume(error ->
-                            Mono.just(ResponseEntity.status(500).build())
-                        );
+                        .onErrorResume(error -> {
+                            error.printStackTrace();
+                            return Mono.just(ResponseEntity.status(500).build());
+                        });
         return NPMResponse;
     }
 

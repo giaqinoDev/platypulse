@@ -103,7 +103,9 @@ public class GenDependenciesTree {
                         .retrieve()
                         .bodyToMono(JsonNode.class)
                         .timeout(Duration.ofSeconds(2))
-                        .onErrorResume(e -> Mono.empty()) //DOnt care enough to properly catch error and bubble it up
+                        .onErrorResume(e -> {
+                            System.out.println("Dep Tree error");
+                            return Mono.empty();}) //DOnt care enough to properly catch error and bubble it up
                         .cache() //ensures subsequent subscribers share the same Mono instead of calling API again
                 )
                 .block(); //essentially completes the Mono, extracting the JsonNode out of Mono<JsonNode> and returning it

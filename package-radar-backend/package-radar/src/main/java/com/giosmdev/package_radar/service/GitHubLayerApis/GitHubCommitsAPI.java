@@ -31,7 +31,7 @@ public class GitHubCommitsAPI {
     }
 
     public Mono<ApiStatus<RepoCommitInfo>> fetch(String group, String repo){
-        System.out.println("Fetchign commit info from api");
+        System.out.println("Fetching GitHub Repo commit info from api");
         Mono<RepoCommitInfo> commit_info = webClient.get()
                             .uri(uriBuilder -> uriBuilder
                                 .scheme("https")
@@ -46,7 +46,10 @@ public class GitHubCommitsAPI {
                             .retrieve()
                             .onStatus(
                                 status -> status.is4xxClientError(),
-                                reponse -> Mono.error(new PackageNotFoundException())
+                                reponse -> {
+                                    System.out.println("GitHub Commits 404 error");
+                                    return Mono.error(new PackageNotFoundException());
+                                }
                             )
                             .onStatus(
                                 status -> status.is5xxServerError(),

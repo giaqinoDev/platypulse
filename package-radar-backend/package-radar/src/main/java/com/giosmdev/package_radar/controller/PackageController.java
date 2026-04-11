@@ -26,13 +26,11 @@ public class PackageController {
 
     @GetMapping("/{pkgName}")
     public Mono<ResponseEntity<RawNpmResponse>> getReport(@PathVariable String pkgName){
-        //System.out.println(pkgName);
         return npmService.getReport(pkgName);
     }
 
     @GetMapping("{scope}/{pkgName}")
     public Mono<ResponseEntity<RawNpmResponse>> getReport(@PathVariable String scope, @PathVariable String pkgName){
-        //System.out.println(pkgName);
         String concatenatedQuery = scope + "/" + pkgName;
         return npmService.getReport(concatenatedQuery);
     }

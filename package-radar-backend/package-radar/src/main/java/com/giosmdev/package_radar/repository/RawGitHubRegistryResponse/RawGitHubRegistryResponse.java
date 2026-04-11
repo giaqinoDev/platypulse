@@ -37,9 +37,9 @@ public class RawGitHubRegistryResponse {
 
         Mono<ApiStatus<RepoContributorsInfo>> contributors_info_response = gitHubRepoContributorsAPI.fetch(group, repo);
         
-        System.out.println("raw git");
+
         return repo_response.flatMap(response -> {
-            System.out.println("flating");
+            System.out.println("VERYFYING");
             return Mono.zip(commits_info_response, contributors_info_response).map(tuple -> {
                         RepoCommitInfo commit_info = tuple.getT1().getData();
                         RepoContributorsInfo contributor_info = tuple.getT2().getData();

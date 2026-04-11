@@ -37,6 +37,7 @@ public class NPMRegistryAPI {
     }
 
     public Mono<PackageInfo> getPackageInfo(String pkgName){
+        System.out.println(pkgName);
         Mono<PackageInfo> npm_package_info = webClient.get() //builds an http GET request
                         .uri(BASE_PACKAGE_URL + "/{pkgName}", pkgName) //sets request path
                         //.header("Accept", "application/vnd.npm.install-v1+json")
@@ -51,7 +52,7 @@ public class NPMRegistryAPI {
                         .onStatus(
                             status -> status.is5xxServerError(),
                             response -> {
-                                System.out.println("500 LEvel Error");
+                                System.out.println("500 Level Error");
                                 return Mono.error(new RegistryException());
                             }
                         )
@@ -59,8 +60,8 @@ public class NPMRegistryAPI {
                         .timeout(Duration.ofSeconds(3))
                         .flatMap(response -> formatReponse(response));
         return npm_package_info;
-        // Mono<ApiStatus<PackageInfo>> wrapped_result = apiErrorHandler.handle(npm_package_info);
-        // return wrapped_result;
+        //Mono<ApiStatus<PackageInfo>> wrapped_result = apiErrorHandler.handle(npm_package_info);
+        //return wrapped_result;
     }
 
     public Mono<ApiStatus<List<WeeklyDownloads>>> getDownloadsTimeline(String pkgName){
@@ -87,19 +88,19 @@ public class NPMRegistryAPI {
     private Mono<PackageInfo> formatReponse(JsonNode response){
         try{    
             //JsonNode represents a general abstract node in a Json tree structure and allows you to handle Json data dynamicaly
-            String name = response.get("name").asString();
-            String latest_v = response.get("dist-tags").get("latest").asString();
+            String name = response.path("name").asString(null);
+            String latest_v = response.path("dist-tags").path("latest").asString(null);
             JsonNode latest_v_reference = response.get("versions").get(latest_v);
             JsonNode repository = latest_v_reference.get("repository");
             JsonNode rawDependencies = latest_v_reference.get("dependencies");
 
             JsonNode keywords = latest_v_reference.get("keywords");
             JsonNode author = latest_v_reference.get("author");
-            String license = latest_v_reference.get("license").asString();
-            String homepage = latest_v_reference.get("homepage").asString();
+            String license = latest_v_reference.path("license").asString(null);
+            String homepage = latest_v_reference.path("homepage").asString(null);
 
-            String node_version = latest_v_reference.get("_nodeVersion").asString();
-            String npm_version = latest_v_reference.get("_npmVersion").asString();
+            String node_version = latest_v_reference.path("_nodeVersion").asString(null);
+            String npm_version = latest_v_reference.path("_npmVersion").asString(null);
 
 
             LatestVersionInfo latest_v_info = new LatestVersionInfo(
@@ -127,6 +128,7 @@ public class NPMRegistryAPI {
             });
         }
         catch(Exception error){
+            error.printStackTrace();
             throw new ProcessingException(error.getStackTrace());
         }
     }
@@ -220,6 +222,7 @@ public class NPMRegistryAPI {
             return downloads_timeline;
         }
         catch(Exception error){
+            System.out.println("Processing Exception formatDownloadsTimeline");
             throw new ProcessingException(error.getStackTrace());
         }
     }

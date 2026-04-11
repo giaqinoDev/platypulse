@@ -22,8 +22,7 @@ public class TestController {
     }
     @GetMapping("github-reg-test")
     public Mono<ResponseEntity<RawGitHubResponse>> getGitHubRes() {
-        System.out.println("TEst called");
-        return gitHubService.getGitHubResponse("axios", "axios");
+        return gitHubService.getGitHubResponse("bat", "shit");
     }
     
 }
