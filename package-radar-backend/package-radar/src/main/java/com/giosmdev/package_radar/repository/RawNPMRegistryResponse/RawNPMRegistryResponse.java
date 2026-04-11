@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 import com.giosmdev.package_radar.configs.APIResponseLayer.ApiStatus;
 import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
+import com.giosmdev.package_radar.model.GitHubRegistry.RawGitHubResponse;
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmResponse;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
+import com.giosmdev.package_radar.service.GitHubService;
 import com.giosmdev.package_radar.service.NPMLayerApis.LibrariesIoAPI;
 import com.giosmdev.package_radar.service.NPMLayerApis.NPMRegistryAPI;
 
@@ -24,10 +26,12 @@ public class RawNPMRegistryResponse {
     //API Calls
     private final NPMRegistryAPI npmRegistryAPI;
     private final LibrariesIoAPI librariesIOResponse;
+    private final GitHubService gitHubService;
 
-    public RawNPMRegistryResponse(NPMRegistryAPI npmRegistryAPI, LibrariesIoAPI librariesIOResponse){
+    public RawNPMRegistryResponse(NPMRegistryAPI npmRegistryAPI, LibrariesIoAPI librariesIOResponse, GitHubService gitHubService){
         this.npmRegistryAPI = npmRegistryAPI;
         this.librariesIOResponse = librariesIOResponse;
+        this.gitHubService = gitHubService;
     }
 
     public Mono<ResponseEntity<RawNpmResponse>> genRawNPMResponse(String pkgName){
@@ -41,17 +45,27 @@ public class RawNPMRegistryResponse {
 
         // Merge downloads timeline into response
         // if any of the arguements in Mono.zip are Mono.empty() then Mono.zip will return empty
-        Mono<ResponseEntity<RawNpmResponse>> NPMResponse = npm_reg_response.flatMap(package_info -> Mono.zip(npm_reg_dwnld_timeline, libIO_response)
-                                        .map(tuple -> {
-                                            //System.out.println("npm_reg_response: " + package_info.getStatus());
-                                            List<WeeklyDownloads> downloads_timeline = tuple.getT1().getData();
-                                            System.out.println("downloads_timeline: " + tuple.getT1().getStatus());
+        Mono<ResponseEntity<RawNpmResponse>> NPMResponse = npm_reg_response.flatMap(package_info -> {
+            String repo_url = package_info.getLatest_version_info().getRepository().get("url").asString();
+            String[] segments = repo_url.split("/");
+            String group = segments[segments.length - 2];
+            String repo = segments[segments.length - 1].substring(0, segments[segments.length - 1].indexOf("."));
 
-                                            LibrariesIOResponse libIO_Response = tuple.getT2().getData();
-                                            System.out.println("libIO_Response: " + tuple.getT2().getStatus());
+            Mono<ResponseEntity<RawGitHubResponse>> gitHubApiResponse = gitHubService.getGitHubResponse(group, repo);
+            return Mono.zip(npm_reg_dwnld_timeline, libIO_response, gitHubApiResponse)
+                    .map(tuple -> {
+                        //System.out.println("npm_reg_response: " + package_info.getStatus());
+                        RawGitHubResponse gitHub_response = tuple.getT3().getBody();
 
-                                            return ResponseEntity.ok(new RawNpmResponse(package_info, downloads_timeline, libIO_Response));
-                                        })
+                        List<WeeklyDownloads> downloads_timeline = tuple.getT1().getData();
+                        System.out.println("downloads_timeline: " + tuple.getT1().getStatus());
+
+                        LibrariesIOResponse libIO_Response = tuple.getT2().getData();
+                        System.out.println("libIO_Response: " + tuple.getT2().getStatus());
+
+                        return ResponseEntity.ok(new RawNpmResponse(package_info, downloads_timeline, libIO_Response, gitHub_response));
+                    });
+            }
         )
         .onErrorResume(PackageNotFoundException.class, error ->
                             Mono.just(ResponseEntity.status(404).build())

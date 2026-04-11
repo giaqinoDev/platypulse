@@ -16,6 +16,9 @@ public class GitHubService {
     }
     
     public Mono<ResponseEntity<RawGitHubResponse>> getGitHubResponse(String group, String repo){
+        if(group == null || repo == null){
+            return Mono.just(new ResponseEntity<RawGitHubResponse>(null));
+        }
         return rawGitHubResponse.genRawGitHubResponse(group, repo);
     }
 }
