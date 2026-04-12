@@ -10,7 +10,7 @@ import io.github.bucket4j.Bucket;
 @Configuration
 public class RateLimitConfig {
     @Bean
-    public Bucket rateBucket(Integer size, Integer rate){
+    public Bucket rateBucket(){
         return Bucket.builder()
                 .addLimit(limit -> limit.capacity(10).refillGreedy(10, Duration.ofSeconds(1))) //Small window for burst limiting
                 .addLimit(limit -> limit.capacity(60).refillGreedy(60, Duration.ofMinutes(1))) //medium window
