@@ -1,4 +1,6 @@
 package com.giosmdev.package_radar.controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -7,6 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 //Services
 import com.giosmdev.package_radar.service.NPMService;
+
+import io.github.bucket4j.Bucket;
+import io.micrometer.core.ipc.http.HttpSender.Response;
 import reactor.core.publisher.Mono;
 
 //Models
@@ -19,20 +24,28 @@ public class PackageController {
 
     //Constructor injection: prefered way over auto injection
     private final NPMService npmService;
+    private final Bucket requestBucket;
 
-    public PackageController(NPMService npmService){
+    public PackageController(NPMService npmService, Bucket requestBucket){
         this.npmService = npmService;
+        this.requestBucket = requestBucket;
     }
 
     @GetMapping("/{pkgName}")
     public Mono<ResponseEntity<RawNpmResponse>> getReport(@PathVariable String pkgName){
-        return npmService.getReport(pkgName);
+        if(requestBucket.tryConsume(1)){
+            return npmService.getReport(pkgName);
+        }
+        return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }
 
     @GetMapping("{scope}/{pkgName}")
     public Mono<ResponseEntity<RawNpmResponse>> getReport(@PathVariable String scope, @PathVariable String pkgName){
         String concatenatedQuery = scope + "/" + pkgName;
-        return npmService.getReport(concatenatedQuery);
+        if(requestBucket.tryConsume(1)){
+            return npmService.getReport(concatenatedQuery);
+        }
+        return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }
 
     
