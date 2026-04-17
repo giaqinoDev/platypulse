@@ -29,7 +29,7 @@ public class GenDependenciesTree {
 
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
 
-    Map<String, Mono<JsonNode>> proccessedDeps_cache = new ConcurrentHashMap<>();
+    Map<String, Mono<JsonNode>> proccessedDeps_Map = new ConcurrentHashMap<>();
     public GenDependenciesTree(WebClient webClient){
         this.webClient = webClient;
     }
@@ -48,7 +48,7 @@ public class GenDependenciesTree {
                                        //into a Mono. This allows you to incorporate it into existsing reactive pipelines
                 //Prepare chache and request counter through reset
                 requestCount.set(0);
-                proccessedDeps_cache.clear();
+                proccessedDeps_Map.clear();
 
                 //Gen top layer dependnecies (aka direct dependnecies of queried package)
                 List<DependenciesInfo> roots = genDependencyContainer(topLayerDependencies);
@@ -96,7 +96,7 @@ public class GenDependenciesTree {
         String key = name + "@" + version;
 
         try {
-            JsonNode response = proccessedDeps_cache
+            JsonNode response = proccessedDeps_Map
                 .computeIfAbsent(key, k ->
                     webClient.get()
                         .uri(BASE_PACKAGE_URL + "/{name}", name)
@@ -106,8 +106,7 @@ public class GenDependenciesTree {
                         .onErrorResume(e -> {
                             System.out.println("Dep Tree error");
                             return Mono.empty();}) //DOnt care enough to properly catch error and bubble it up
-                        .cache() //ensures subsequent subscribers share the same Mono instead of calling API again
-                )
+                )//computerIfAbsent automatically adds Mono to map
                 .block(); //essentially completes the Mono, extracting the JsonNode out of Mono<JsonNode> and returning it
                 
 

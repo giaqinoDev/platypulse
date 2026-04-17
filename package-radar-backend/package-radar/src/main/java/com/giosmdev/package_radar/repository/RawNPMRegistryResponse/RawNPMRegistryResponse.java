@@ -64,6 +64,7 @@ public class RawNPMRegistryResponse {
             }
             //System.out.println(group + "/" + repo);
             Mono<ResponseEntity<RawGitHubResponse>> gitHubApiResponse = gitHubService.getGitHubResponse(group, repo);
+            
             return Mono.zip(npm_reg_dwnld_timeline, libIO_response, gitHubApiResponse)
                     .map(tuple -> {
                         RawGitHubResponse gitHub_response = tuple.getT3().getBody();
