@@ -14,8 +14,9 @@ import io.github.bucket4j.Bucket;
 import io.micrometer.core.ipc.http.HttpSender.Response;
 import reactor.core.publisher.Mono;
 
+import com.giosmdev.package_radar.model.NPMRegistry.RawHealthSignals;
 //Models
-import com.giosmdev.package_radar.model.NPMRegistry.RawNpmResponse;
+import com.giosmdev.package_radar.model.NPMRegistry.RawHealthSignals;
 
 //@CrossOrigin(origins = "http://localhost:5173")
 @RestController //combines @Controller and @ResponseBody: Tells SB this class handles http requests and return JSON
@@ -32,7 +33,7 @@ public class PackageController {
     }
 
     @GetMapping("/{pkgName}")
-    public Mono<ResponseEntity<RawNpmResponse>> getReport(@PathVariable String pkgName){
+    public Mono<ResponseEntity<RawHealthSignals>> getReport(@PathVariable String pkgName){
         if(requestBucket.tryConsume(1)){
             return npmService.getReport(pkgName);
         }
@@ -40,7 +41,7 @@ public class PackageController {
     }
 
     @GetMapping("{scope}/{pkgName}")
-    public Mono<ResponseEntity<RawNpmResponse>> getReport(@PathVariable String scope, @PathVariable String pkgName){
+    public Mono<ResponseEntity<RawHealthSignals>> getReport(@PathVariable String scope, @PathVariable String pkgName){
         String concatenatedQuery = scope + "/" + pkgName;
         if(requestBucket.tryConsume(1)){
             return npmService.getReport(concatenatedQuery);
