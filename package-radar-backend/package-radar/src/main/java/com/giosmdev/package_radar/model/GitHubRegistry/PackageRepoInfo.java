@@ -18,6 +18,9 @@ public class PackageRepoInfo {
     private Instant created_at;
     private Instant updated_at;
 
+    private Integer closed_issues_count;
+    private Integer open_issues_count;
+    
     //Derived Signals
     private long repo_age;
     private long days_since_last_push;
