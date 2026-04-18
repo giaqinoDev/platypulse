@@ -1,6 +1,5 @@
 package com.giosmdev.package_radar.controller;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,11 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.giosmdev.package_radar.service.NPMService;
 
 import io.github.bucket4j.Bucket;
-import io.micrometer.core.ipc.http.HttpSender.Response;
 import reactor.core.publisher.Mono;
 
-import com.giosmdev.package_radar.model.NPMRegistry.RawHealthSignals;
-//Models
 import com.giosmdev.package_radar.model.NPMRegistry.RawHealthSignals;
 
 //@CrossOrigin(origins = "http://localhost:5173")

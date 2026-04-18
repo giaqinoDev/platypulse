@@ -6,8 +6,6 @@ import com.giosmdev.package_radar.model.NPMRegistry.RawHealthSignals;
 
 //Models
 
-import com.giosmdev.package_radar.model.NPMRegistry.RawHealthSignals;
-
 //Repositories
 import com.giosmdev.package_radar.repository.RawNPMRegistryResponse.RawNPMRegistryResponse;
 
