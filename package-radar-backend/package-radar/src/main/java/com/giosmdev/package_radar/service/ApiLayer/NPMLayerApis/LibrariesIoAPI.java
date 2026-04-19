@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.service.NPMLayerApis;
+package com.giosmdev.package_radar.service.ApiLayer.NPMLayerApis;
 
 import java.time.Duration;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundExcep
 import com.giosmdev.package_radar.configs.custom_exceptions.ProcessingException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
-import com.giosmdev.package_radar.service.ApiErrorHandling.ApiErrorHandler;
+import com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling.ApiErrorHandler;
 
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;

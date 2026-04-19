@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.service.GitHubLayerApis;
+package com.giosmdev.package_radar.service.ApiLayer.GitHubLayerApis;
 
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,7 +11,7 @@ import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundExcep
 import com.giosmdev.package_radar.configs.custom_exceptions.ProcessingException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.GitHubRegistry.RepoContributorsInfo;
-import com.giosmdev.package_radar.service.ApiErrorHandling.ApiErrorHandler;
+import com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling.ApiErrorHandler;
 
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;

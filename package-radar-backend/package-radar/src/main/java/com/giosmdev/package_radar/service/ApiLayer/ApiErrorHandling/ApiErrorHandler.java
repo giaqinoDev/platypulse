@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.service.ApiErrorHandling;
+package com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling;
 
 import java.util.concurrent.TimeoutException;
 

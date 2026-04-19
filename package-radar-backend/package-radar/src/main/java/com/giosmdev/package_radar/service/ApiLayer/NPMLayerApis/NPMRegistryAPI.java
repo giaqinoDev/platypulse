@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.service.NPMLayerApis;
+package com.giosmdev.package_radar.service.ApiLayer.NPMLayerApis;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -15,8 +15,8 @@ import com.giosmdev.package_radar.model.NPMRegistry.LatestVersionInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependenciesInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
-import com.giosmdev.package_radar.service.ApiErrorHandling.ApiErrorHandler;
-import com.giosmdev.package_radar.service.DependencyTree.GenDependenciesTree;
+import com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling.ApiErrorHandler;
+import com.giosmdev.package_radar.service.ApiLayer.DependencyTree.GenDependenciesTree;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

@@ -12,9 +12,9 @@ import com.giosmdev.package_radar.model.GitHubRegistry.PackageRepoInfo;
 import com.giosmdev.package_radar.model.GitHubRegistry.RawGitHubResponse;
 import com.giosmdev.package_radar.model.GitHubRegistry.RepoCommitInfo;
 import com.giosmdev.package_radar.model.GitHubRegistry.RepoContributorsInfo;
-import com.giosmdev.package_radar.service.GitHubLayerApis.GitHubCommitsAPI;
-import com.giosmdev.package_radar.service.GitHubLayerApis.GitHubRepoAPI;
-import com.giosmdev.package_radar.service.GitHubLayerApis.GitHubRepoContributorsAPI;
+import com.giosmdev.package_radar.service.ApiLayer.GitHubLayerApis.GitHubCommitsAPI;
+import com.giosmdev.package_radar.service.ApiLayer.GitHubLayerApis.GitHubRepoAPI;
+import com.giosmdev.package_radar.service.ApiLayer.GitHubLayerApis.GitHubRepoContributorsAPI;
 
 import reactor.core.publisher.Mono;
 
