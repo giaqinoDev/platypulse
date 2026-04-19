@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RawHealthSignals {
+public class RawNpmPayload {
 
     private PackageInfo package_info;
     private List<WeeklyDownloads> downloads_timeline;

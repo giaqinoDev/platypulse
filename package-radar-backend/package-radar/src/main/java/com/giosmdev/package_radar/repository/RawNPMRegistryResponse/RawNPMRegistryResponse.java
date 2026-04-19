@@ -12,7 +12,7 @@ import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.GitHubRegistry.RawGitHubResponse;
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
-import com.giosmdev.package_radar.model.NPMRegistry.RawHealthSignals;
+import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
 import com.giosmdev.package_radar.service.GitHubService;
 import com.giosmdev.package_radar.service.NPMLayerApis.LibrariesIoAPI;
@@ -35,7 +35,7 @@ public class RawNPMRegistryResponse {
         this.gitHubService = gitHubService;
     }
 
-    public Mono<ResponseEntity<RawHealthSignals>> genRawNPMResponse(String pkgName){
+    public Mono<ResponseEntity<RawNpmPayload>> genRawNPMResponse(String pkgName){
         //Call NPM registry call
         Mono<PackageInfo> npm_reg_response = npmRegistryAPI.getPackageInfo(pkgName);
 
@@ -46,7 +46,7 @@ public class RawNPMRegistryResponse {
 
         // Merge downloads timeline into response
         // if any of the arguements in Mono.zip are Mono.empty() then Mono.zip will return empty
-        Mono<ResponseEntity<RawHealthSignals>> NPMResponse = npm_reg_response.flatMap(package_info -> {
+        Mono<ResponseEntity<RawNpmPayload>> NPMResponse = npm_reg_response.flatMap(package_info -> {
             System.out.println("DO IT!");
             String group = null;
             String repo = null;
@@ -76,7 +76,7 @@ public class RawNPMRegistryResponse {
                         LibrariesIOResponse libIO_Response = tuple.getT2().getData();
                         System.out.println("libIO_Response: " + tuple.getT2().getStatus());
 
-                        return ResponseEntity.ok(new RawHealthSignals(package_info, downloads_timeline, libIO_Response, gitHub_response));
+                        return ResponseEntity.ok(new RawNpmPayload(package_info, downloads_timeline, libIO_Response, gitHub_response));
                     });
             }
         )

@@ -2,9 +2,8 @@ package com.giosmdev.package_radar.service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.giosmdev.package_radar.model.NPMRegistry.RawHealthSignals;
+import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 
-//Models
 
 //Repositories
 import com.giosmdev.package_radar.repository.RawNPMRegistryResponse.RawNPMRegistryResponse;
@@ -21,7 +20,7 @@ public class NPMService {
         this.rawNPMRegResponse = rawNPMRegResponse;
     }
 
-    public Mono<ResponseEntity<RawHealthSignals>> getReport(String pkgName){
+    public Mono<ResponseEntity<RawNpmPayload>> getReport(String pkgName){
         return rawNPMRegResponse.genRawNPMResponse(pkgName);
     }
 }
