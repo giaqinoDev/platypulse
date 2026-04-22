@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.giosmdev.package_radar.model.GitHubRegistry.RawGitHubResponse;
-import com.giosmdev.package_radar.service.GitHubService;
+import com.giosmdev.package_radar.service.ApiLayer.GitHubService;
 
 import reactor.core.publisher.Mono;
 

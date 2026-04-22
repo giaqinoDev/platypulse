@@ -6,13 +6,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-//Services
-import com.giosmdev.package_radar.service.NPMService;
-
 import io.github.bucket4j.Bucket;
 import reactor.core.publisher.Mono;
 
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
+import com.giosmdev.package_radar.service.ApiLayer.NPMService;
 
 //@CrossOrigin(origins = "http://localhost:5173")
 @RestController //combines @Controller and @ResponseBody: Tells SB this class handles http requests and return JSON

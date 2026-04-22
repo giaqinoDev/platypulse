@@ -14,7 +14,7 @@ import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
-import com.giosmdev.package_radar.service.GitHubService;
+import com.giosmdev.package_radar.service.ApiLayer.GitHubService;
 import com.giosmdev.package_radar.service.ApiLayer.NPMLayerApis.LibrariesIoAPI;
 import com.giosmdev.package_radar.service.ApiLayer.NPMLayerApis.NPMRegistryAPI;
 
