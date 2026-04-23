@@ -23,10 +23,10 @@ import tools.jackson.databind.JsonNode;
 public class GenDependenciesTree {
     private WebClient webClient;
 
-    private final int maxDepth = 5;
+    private final int maxDepth = 6;
     private final AtomicInteger requestCount = new AtomicInteger(0);
     private final int maxRequests = 100;
-
+    private DepNode final_leaf;
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
 
     Map<String, Mono<JsonNode>> proccessedDeps_Map = new ConcurrentHashMap<>();
@@ -74,7 +74,7 @@ public class GenDependenciesTree {
                     if (children.isEmpty()){
                         continue;
                     }
-
+                    final_leaf = node;
                     node.dep.setDependencies(children);
 
                     for (DependenciesInfo child : children) {
@@ -82,7 +82,7 @@ public class GenDependenciesTree {
                     }
                 }
 
-                return new DependencyTree(pkgName, 0, roots);
+                return new DependencyTree(pkgName, final_leaf.depth + 1, roots);
 
             }).subscribeOn(Schedulers.boundedElastic());//Run blockign code on a thread from the boundedElastic pool 
                                                         //(handles blocking operations without blocking reactive threads)

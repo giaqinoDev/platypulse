@@ -10,6 +10,7 @@ import io.github.bucket4j.Bucket;
 import reactor.core.publisher.Mono;
 
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
+import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
 import com.giosmdev.package_radar.service.ApiLayer.NPMService;
 
 //@CrossOrigin(origins = "http://localhost:5173")
