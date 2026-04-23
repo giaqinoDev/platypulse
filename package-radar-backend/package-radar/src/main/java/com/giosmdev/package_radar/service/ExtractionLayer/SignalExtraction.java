@@ -48,7 +48,7 @@ public class SignalExtraction {
         Double closed_issues; //
 
         //Contributors
-        Double contributors_count;
+        Double contributors_count;//
         Double commits_count; //
         Double top_contributor_commit_ratio; //
 

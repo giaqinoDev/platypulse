@@ -111,7 +111,6 @@ public class GitHubRepoContributorsAPI {
 
     private int findContributorCount(HttpHeaders header){
         String header_link = header.getFirst("Link");
-        System.out.println(header_link);
         Pattern header_pattern = Pattern.compile("page=(\\d+)>; rel=\"last\"");
         Matcher header_matcher = header_pattern.matcher(header_link);
 
