@@ -16,21 +16,23 @@ public class UniversalPackageFeatures{
 
     //Releases:
     private Double releases_per_year;
+    private Double total_releases; //optional
 
     //Popularity
-    private Double downloads_per_week;
+    private Double downloads_per_week; //optional
     private Double stars;
     private Double forks;
-    private Double dependents;
+    private Double dependent_repos; //preferred
+    private Double dependent_packages; //fall back
 
     //Issues
     private Double open_issues;
     private Double closed_issues;
-    private Double issue_close_rate;
 
     //Contributors
     private Double contributors_count;
-    private Double top_contributors_ratio;
+    private Double commits_count;
+    private Double top_contributor_commit_ratio;
 
     //Dependencies
     private Double dependencies_count;
@@ -39,5 +41,5 @@ public class UniversalPackageFeatures{
 
     //Repo Info
     private Double repo_age_days;
-    private Double isArchived;
+    private Boolean isArchived;
 }
