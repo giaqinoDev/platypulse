@@ -11,8 +11,8 @@ public class UniversalPackageFeatures{
     //Time based:
     private Double days_since_last_release;
     private Double days_since_last_commit;
-    private Double commit_last_90_days;
-    private Double commit_last_30_days;
+    private Double commits_last_90_days;
+    private Double commits_last_30_days;
 
     //Releases:
     private Double releases_per_year;
@@ -35,9 +35,9 @@ public class UniversalPackageFeatures{
     private Double top_contributor_commit_ratio;
 
     //Dependencies
-    private Double dependencies_count;
+    private Double direct_dependencies_count;
+    private Double direct_deprecated_dependnecies;
     private Double dependencies_depth;
-    private Double depreciated_dependency_ratio;
 
     //Repo Info
     private Double repo_age_days;
