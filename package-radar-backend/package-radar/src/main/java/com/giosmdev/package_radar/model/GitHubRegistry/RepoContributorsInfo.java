@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RepoContributorsInfo {
     private int total_commits;
+    private int contributors_count;
     private int top_contributor_commits;
     private double top_commits_ratio;
 }
