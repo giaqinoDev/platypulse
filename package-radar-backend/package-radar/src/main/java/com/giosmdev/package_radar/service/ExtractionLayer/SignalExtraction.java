@@ -91,7 +91,7 @@ public class SignalExtraction {
 
             commits_count = (double) git_response.getContributors_info().getTotal_commits();
             top_contributor_commit_ratio = (double) git_response.getContributors_info().getTop_commits_ratio();
-            
+            contributors_count = (double) git_response.getContributors_info().getContributors_count();
             repo_age_days = (double) git_response.getRepo_info().getRepo_age();
             isArchived = git_response.getRepo_info().isArchived();
 
