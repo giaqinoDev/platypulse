@@ -82,7 +82,7 @@ public class SignalExtraction {
                 dependencies_depth = (double) dependency_tree.getTree_depth();
             }
 
-            releases_per_year = calcReleasesPerYear(pkg_info.getVersions_release_info(),release_date);
+            releases_per_year = calcReleasesPerYear(pkg_info.getVersions_release_info(), release_date);
         }
 
         if (git_response != null) {
