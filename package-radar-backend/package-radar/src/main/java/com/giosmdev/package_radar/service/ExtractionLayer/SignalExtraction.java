@@ -50,7 +50,7 @@ public class SignalExtraction {
         //Contributors
         Double contributors_count;//
         Double commits_count; //
-        Double top_contributor_commit_ratio; //
+        Double top_contributor_commit_count; //
 
         //Dependencies
         Double direct_dependencies_count = 0.0; //
@@ -90,7 +90,7 @@ public class SignalExtraction {
             closed_issues = (double) git_response.getRepo_info().getClosed_issues_count();
 
             commits_count = (double) git_response.getContributors_info().getTotal_commits();
-            top_contributor_commit_ratio = (double) git_response.getContributors_info().getTop_commits_ratio();
+            top_contributor_commit_count = (double) git_response.getContributors_info().getTop_contributor_commits();
             contributors_count = (double) git_response.getContributors_info().getContributors_count();
             repo_age_days = (double) git_response.getRepo_info().getRepo_age();
             isArchived = git_response.getRepo_info().isArchived();

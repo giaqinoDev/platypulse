@@ -32,7 +32,7 @@ public class UniversalPackageFeatures{
     //Contributors
     private Double contributors_count;
     private Double commits_count;
-    private Double top_contributor_commit_ratio;
+    private Double top_contributor_commit_count;
 
     //Dependencies
     private Double direct_dependencies_count;
