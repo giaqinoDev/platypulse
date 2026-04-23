@@ -1,8 +1,12 @@
 package com.giosmdev.package_radar.service.ExtractionLayer;
 
+import static org.junit.jupiter.api.DynamicTest.stream;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -12,6 +16,7 @@ import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependenciesInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependencyTree;
+import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDownloads;
 import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
 
 import tools.jackson.databind.JsonNode;
@@ -65,6 +70,7 @@ public class SignalExtraction {
         PackageInfo pkg_info = payload.getPackage_info();
         RawGitHubResponse git_response = payload.getGit_hub_reg();
         LibrariesIOResponse libIo_response = payload.getDependents_count();
+        List<WeeklyDownloads> downloads_timeline = payload.getDownloads_timeline();
 
         if (pkg_info != null) {
             String latest_version = pkg_info.getLatest_version();
@@ -84,7 +90,9 @@ public class SignalExtraction {
 
             releases_per_year = calcReleasesPerYear(pkg_info.getVersions_release_info(), release_date);
         }
-
+        if(downloads_timeline != null){
+            downloads_per_week = calcDownloadsPerWeek(downloads_timeline);
+        }
         if (git_response != null) {
             days_since_last_commit = (double) git_response.getRepo_info().getDays_since_last_push();
             commits_last_30_days = (double) git_response.getCommit_info().getCommits_last_30_days();
@@ -108,10 +116,26 @@ public class SignalExtraction {
         return null; // Temp code
     }
 
+    //--------------------------------------------Helper Functions-------------------------------------------------------------------------------------------------
     private double calcReleasesPerYear(JsonNode v_release_info, Instant latest_v_release_date){
         Instant first_release_date = Instant.parse(v_release_info.path(3).toString());
         Double release_timeline = (double) ChronoUnit.DAYS.between(latest_v_release_date, first_release_date)/365;
         int total_releases = v_release_info.size();
         return total_releases/release_timeline;
+    }
+
+    private double calcDownloadsPerWeek(List<WeeklyDownloads> downloads_timeline){
+        int timeline_length = downloads_timeline.size();
+        //int total_downloads;
+        //Trim spikes over the last 8 weeks
+        List<WeeklyDownloads> eight_week_timeline = downloads_timeline.subList(timeline_length - 9, timeline_length-1);
+        eight_week_timeline.stream().sorted(Comparator.comparing(WeeklyDownloads::getVolume)).collect(Collectors.toList());
+        eight_week_timeline.remove(0);
+        eight_week_timeline.remove(eight_week_timeline.size()-1);
+
+        double total_downloads = eight_week_timeline.stream().mapToInt(wkDwnld -> wkDwnld.getVolume()).sum();
+        //List<Integer> sub_downloads_timeline = eight_week_timeline.stream().map(wkDwnld -> wkDwnld.getVolume()).toList();
+        //sub_downloads_timeline.forEach(volume -> {total_downloads + volume});
+        return total_downloads/8.0;
     }
 }
