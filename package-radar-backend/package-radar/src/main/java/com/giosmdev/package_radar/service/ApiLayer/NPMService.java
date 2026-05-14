@@ -10,6 +10,7 @@ import com.giosmdev.package_radar.repository.RawNPMRegistryResponse.RawNPMRegist
 import com.giosmdev.package_radar.service.ExtractionLayer.SignalExtraction;
 
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 
 @Service
@@ -24,7 +25,7 @@ public class NPMService {
     }
 
     public Mono<ResponseEntity<UniversalPackageFeatures>> getReport(String pkgName){
-        Mono<ResponseEntity<RawNpmPayload>> raw_response =  rawNPMRegResponse.genRawNPMResponse(pkgName);
+        Mono<ResponseEntity<RawNpmPayload>> raw_response = rawNPMRegResponse.genRawNPMResponse(pkgName);
         Mono<ResponseEntity<UniversalPackageFeatures>> extracted_signals = raw_response.map((response) -> {
             return ResponseEntity.ok(signalExtractor.extractSignals(response.getBody()));
         });

@@ -82,13 +82,13 @@ public class SignalExtraction {
             DependencyTree dependency_tree = pkg_info.getLatest_version_info().getDependency_tree();
             if (dependencies != null) {
                 direct_dependencies_count = (double) dependencies.size();
-                direct_deprecated_dependencies = (double) dependencies.stream().filter(dep -> !dep.getDepreciated())
+                direct_deprecated_dependencies = (double) dependencies.stream().filter(dep -> dep.getDepreciated() == true)
                         .count();
             }
             if (dependency_tree != null) {
                 dependencies_depth = (double) dependency_tree.getTree_depth();
             }
-
+            total_releases = (double) pkg_info.getVersions_release_info().size() - 2;
             releases_per_year = calcReleasesPerYear(pkg_info.getVersions_release_info(), release_date);
         }
         if(downloads_timeline != null){
@@ -100,6 +100,7 @@ public class SignalExtraction {
             commits_last_90_days = (double) git_response.getCommit_info().getCommits_last_90_days();
             stars = (double) git_response.getRepo_info().getStars_count();
             forks = (double) git_response.getRepo_info().getForks_count();
+            open_issues = (double) git_response.getRepo_info().getOpen_issues_count();
             closed_issues = (double) git_response.getRepo_info().getClosed_issues_count();
 
             commits_count = (double) git_response.getContributors_info().getTotal_commits();
@@ -146,14 +147,14 @@ public class SignalExtraction {
         Instant first_release_date = Instant.parse(v_release_info.path("created").asString());
         Double release_timeline = (double) ChronoUnit.DAYS.between(first_release_date, latest_v_release_date)/365;
 
-        int total_releases = v_release_info.size();
+        int total_releases_count = v_release_info.size();
 
         System.out.println("first_release_date: " + first_release_date);
         System.out.println("latest_v_release_date: " + latest_v_release_date);
         System.out.println("release_timeline: " + release_timeline);
-        System.out.println("total_releases: " + total_releases);
+        System.out.println("total_releases: " + total_releases_count);
 
-        return total_releases/release_timeline;
+        return total_releases_count/release_timeline;
     }
 
     private double calcDownloadsPerWeek(List<WeeklyDownloads> downloads_timeline){
