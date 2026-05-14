@@ -28,7 +28,7 @@ public class PackageController {
     }
 
     @GetMapping("/{pkgName}")
-    public Mono<ResponseEntity<RawNpmPayload>> getReport(@PathVariable String pkgName){
+    public Mono<ResponseEntity<UniversalPackageFeatures>> getReport(@PathVariable String pkgName){
         if(requestBucket.tryConsume(1)){
             return npmService.getReport(pkgName);
         }
@@ -36,7 +36,7 @@ public class PackageController {
     }
 
     @GetMapping("{scope}/{pkgName}")
-    public Mono<ResponseEntity<RawNpmPayload>> getReport(@PathVariable String scope, @PathVariable String pkgName){
+    public Mono<ResponseEntity<UniversalPackageFeatures>> getReport(@PathVariable String scope, @PathVariable String pkgName){
         String concatenatedQuery = scope + "/" + pkgName;
         if(requestBucket.tryConsume(1)){
             return npmService.getReport(concatenatedQuery);

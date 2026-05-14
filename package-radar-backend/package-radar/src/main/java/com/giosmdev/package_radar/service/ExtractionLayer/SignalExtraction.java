@@ -1,9 +1,10 @@
 package com.giosmdev.package_radar.service.ExtractionLayer;
 
-import static org.junit.jupiter.api.DynamicTest.stream;
+//import static org.junit.jupiter.api.DynamicTest.stream;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,39 +34,39 @@ public class SignalExtraction {
     public UniversalPackageFeatures extractSignals(RawNpmPayload payload) {
         // JsonNode payload_tree = objMapper.valueToTree(payload);
         // Time based:
-        Double days_since_last_release; //
-        Double days_since_last_commit; //
-        Double commits_last_90_days; //
-        Double commits_last_30_days; //
+        Double days_since_last_release = null; //
+        Double days_since_last_commit = null; //
+        Double commits_last_90_days = null; //
+        Double commits_last_30_days = null; //
 
         // Releases:
-        Double releases_per_year; // <---------------------------Look into
-        Double total_releases;
+        Double releases_per_year = null; // <---------------------------Look into
+        Double total_releases = null;
 
         // Popularity
-        Double downloads_per_week; // Optional <---------------------------Look into
-        Double stars; //
-        Double forks; //
-        Double dependent_repos; //
-        Double dependent_packages; //
+        Double downloads_per_week = null; // Optional <---------------------------Look into
+        Double stars = null; //
+        Double forks = null; //
+        Double dependent_repos = null; //
+        Double dependent_packages = null; //
 
         // Issues
-        Double open_issues; //
-        Double closed_issues; //
+        Double open_issues = null; //
+        Double closed_issues = null; //
 
         // Contributors
-        Double contributors_count;//
-        Double commits_count; //
-        Double top_contributor_commit_count; //
+        Double contributors_count = null;//
+        Double commits_count = null; //
+        Double top_contributor_commit_count = null; //
 
         // Dependencies
         Double direct_dependencies_count = 0.0; //
-        Double direct_deprecated_dependnecies = 0.0; //
+        Double direct_deprecated_dependencies = 0.0; //
         Double dependencies_depth = 0.0; //
 
         // Repo Info
-        Double repo_age_days; //
-        Boolean isArchived; //
+        Double repo_age_days = null; //
+        Boolean isArchived = false; //
 
         PackageInfo pkg_info = payload.getPackage_info();
         RawGitHubResponse git_response = payload.getGit_hub_reg();
@@ -81,7 +82,7 @@ public class SignalExtraction {
             DependencyTree dependency_tree = pkg_info.getLatest_version_info().getDependency_tree();
             if (dependencies != null) {
                 direct_dependencies_count = (double) dependencies.size();
-                direct_deprecated_dependnecies = (double) dependencies.stream().filter(dep -> !dep.getDepreciated())
+                direct_deprecated_dependencies = (double) dependencies.stream().filter(dep -> !dep.getDepreciated())
                         .count();
             }
             if (dependency_tree != null) {
@@ -113,14 +114,45 @@ public class SignalExtraction {
             dependent_repos = (double) libIo_response.getDependent_repos_count();
             dependent_packages = (double) libIo_response.getDependent_packages_count();
         }
-        return null; // Temp code
+
+        return new UniversalPackageFeatures(
+            days_since_last_release,
+            days_since_last_commit,
+            commits_last_90_days,
+            commits_last_30_days,
+            releases_per_year,
+            total_releases,
+            downloads_per_week,
+            stars,
+            forks,
+            dependent_repos,
+            dependent_packages,
+            open_issues,
+            closed_issues,
+            contributors_count,
+            commits_count,
+            top_contributor_commit_count,
+            direct_dependencies_count,
+            direct_deprecated_dependencies,
+            dependencies_depth,
+            repo_age_days,
+            isArchived
+        );
     }
 
     //--------------------------------------------Helper Functions-------------------------------------------------------------------------------------------------
     private double calcReleasesPerYear(JsonNode v_release_info, Instant latest_v_release_date){
-        Instant first_release_date = Instant.parse(v_release_info.path(3).toString());
-        Double release_timeline = (double) ChronoUnit.DAYS.between(latest_v_release_date, first_release_date)/365;
+        //List<String> dicToList = ArrayList<>(v_release_info)
+        Instant first_release_date = Instant.parse(v_release_info.path("created").asString());
+        Double release_timeline = (double) ChronoUnit.DAYS.between(first_release_date, latest_v_release_date)/365;
+
         int total_releases = v_release_info.size();
+
+        System.out.println("first_release_date: " + first_release_date);
+        System.out.println("latest_v_release_date: " + latest_v_release_date);
+        System.out.println("release_timeline: " + release_timeline);
+        System.out.println("total_releases: " + total_releases);
+
         return total_releases/release_timeline;
     }
 

@@ -23,11 +23,12 @@ public class NPMService {
         this.signalExtractor = signalExtractor;
     }
 
-    public Mono<ResponseEntity<RawNpmPayload>> getReport(String pkgName){
+    public Mono<ResponseEntity<UniversalPackageFeatures>> getReport(String pkgName){
         Mono<ResponseEntity<RawNpmPayload>> raw_response =  rawNPMRegResponse.genRawNPMResponse(pkgName);
         Mono<ResponseEntity<UniversalPackageFeatures>> extracted_signals = raw_response.map((response) -> {
             return ResponseEntity.ok(signalExtractor.extractSignals(response.getBody()));
         });
-        return raw_response;
+        return extracted_signals;
+        //return raw_response;
     }
 }
