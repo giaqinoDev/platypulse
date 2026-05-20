@@ -44,6 +44,9 @@ public class GenDependenciesTree {
         }
     }
     public Mono<DependencyTree> generate(String pkgName, JsonNode topLayerDependencies) {
+        if(topLayerDependencies == null){
+            return Mono.just(null);
+        }
            return Mono.fromCallable(() -> {  //fromCallable allows you to wrap a value that is possibly a reuslt of a blocking operation
                                        //into a Mono. This allows you to incorporate it into existsing reactive pipelines
                 //Prepare chache and request counter through reset

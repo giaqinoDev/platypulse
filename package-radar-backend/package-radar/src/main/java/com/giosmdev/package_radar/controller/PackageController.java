@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 import io.github.bucket4j.Bucket;
 import reactor.core.publisher.Mono;
 
-import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
-import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
+import com.giosmdev.package_radar.model.HealthScoreReport.HealthScoreReport;
+//import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
+//import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
 import com.giosmdev.package_radar.service.ApiLayer.NPMService;
 
 //@CrossOrigin(origins = "http://localhost:5173")
@@ -28,7 +29,7 @@ public class PackageController {
     }
 
     @GetMapping("/{pkgName}")
-    public Mono<ResponseEntity<UniversalPackageFeatures>> getReport(@PathVariable String pkgName){
+    public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String pkgName){
         if(requestBucket.tryConsume(1)){
             return npmService.getReport(pkgName);
         }
@@ -36,7 +37,7 @@ public class PackageController {
     }
 
     @GetMapping("{scope}/{pkgName}")
-    public Mono<ResponseEntity<UniversalPackageFeatures>> getReport(@PathVariable String scope, @PathVariable String pkgName){
+    public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String scope, @PathVariable String pkgName){
         String concatenatedQuery = scope + "/" + pkgName;
         if(requestBucket.tryConsume(1)){
             return npmService.getReport(concatenatedQuery);

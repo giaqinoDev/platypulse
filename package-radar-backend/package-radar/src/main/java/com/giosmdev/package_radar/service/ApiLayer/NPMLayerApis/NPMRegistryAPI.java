@@ -110,7 +110,7 @@ public class NPMRegistryAPI {
             JsonNode versions_release_info = response.get("time");
             PackageInfo package_info = new PackageInfo(name, latest_v, null, versions_release_info);
             
-            if(rawDependencies == null){
+            if(rawDependencies == null || rawDependencies.isEmpty()){
                 latest_v_info.setDependencies(null);
                 latest_v_info.setDependency_tree(null);
                 package_info.setLatest_version_info(latest_v_info);

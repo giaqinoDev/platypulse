@@ -1,8 +1,11 @@
 package com.giosmdev.package_radar.service.ScoringLayer;
 
+import org.springframework.stereotype.Service;
+
 import com.giosmdev.package_radar.model.HealthScoreReport.HealthScoreReport;
 import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
 
+@Service
 public class PackageHealthScoringService {
 
     public HealthScoreReport score(UniversalPackageFeatures features){
@@ -12,50 +15,32 @@ public class PackageHealthScoringService {
         double adoption = calculateAdoptionScore(features);
         double risk =calculateRiskScore(features);
 
-        double overall =
-                weightedAverage(
-                        new double[]{
-                                activity,
-                                maintenance,
-                                adoption,
-                                risk
-                        },
-                        new double[]{
-                                0.25,
-                                0.30,
-                                0.25,
-                                0.20
-                        }
+        //Overall signal categorization weights
+        double overall = weightedAverage(
+                    new double[]{activity, maintenance, adoption, risk},
+                    new double[]{0.25, 0.30, 0.25, 0.20}
                 );
 
         return new HealthScoreReport(
-                round(overall),
-                round(activity),
-                round(maintenance),
-                round(adoption),
-                round(risk)
+            round(overall),
+            round(activity),
+            round(maintenance),
+            round(adoption),
+            round(risk)
         );
     }
 
      
     //activity scoring
     private double calculateActivityScore(UniversalPackageFeatures features){
-
         double commitRecency = scoreCommitRecency(features.getDays_since_last_commit());
         double releaseRecency = scoreReleaseRecency(features.getDays_since_last_release());
         double commitVolume = scoreCommitVolume(features.getCommits_last_30_days());
 
+        //Sub category weighting
         return weightedAverage(
-                new double[]{
-                        commitRecency,
-                        releaseRecency,
-                        commitVolume
-                },
-                new double[]{
-                        0.40,
-                        0.35,
-                        0.25
-                }
+            new double[]{commitRecency, releaseRecency, commitVolume},
+            new double[]{0.40, 0.35, 0.25}
         );
     }
 
@@ -66,40 +51,24 @@ public class PackageHealthScoringService {
         double busFactor = scoreBusFactor(features.getCommits_count(), features.getTop_contributor_commit_count());
         double releaseCadence = scoreReleaseCadence(features.getReleases_per_year());
 
+        //Sub Category weighting
         return weightedAverage(
-                new double[]{
-                        issueResponsiveness,
-                        busFactor,
-                        releaseCadence
-                },
-                new double[]{
-                        0.40,
-                        0.35,
-                        0.25
-                }
+            new double[]{issueResponsiveness, busFactor, releaseCadence},
+            new double[]{0.40, 0.35, 0.25}
         );
     }
-
 
     //Adoption scoring
     private double calculateAdoptionScore(UniversalPackageFeatures features){
 
         double downloads = scoreDownloads(features.getDownloads_per_week());
         double dependents = scoreDependents(features.getDependent_repos(), features.getDependent_packages());
-
         double community = scoreCommunity(features.getStars(), features.getForks());
 
+        //Sub category weighting
         return weightedAverage(
-                new double[]{
-                        downloads,
-                        dependents,
-                        community
-                },
-                new double[]{
-                        0.50,
-                        0.30,
-                        0.20
-                }
+            new double[]{downloads, dependents, community},
+            new double[]{0.50, 0.30, 0.20}
         );
     }
 
@@ -110,48 +79,59 @@ public class PackageHealthScoringService {
         double dependencyDepth = scoreDependencyDepth(features.getDependencies_depth());
         double deprecatedDependencies = scoreDeprecatedDependencies(features.getDirect_deprecated_dependnecies(), features.getDirect_dependencies_count());
 
+        //Sub category weighting
         return weightedAverage(
-                new double[]{
-                        archived,
-                        dependencyDepth,
-                        deprecatedDependencies
-                },
-                new double[]{
-                        0.40,
-                        0.35,
-                        0.25
-                }
+            new double[]{archived, dependencyDepth, deprecatedDependencies},
+            new double[]{0.40, 0.35, 0.25}
         );
     }
 
 
 //Signal Scoring ---------------------------------------------------------------------------------------------------------------------
     private double scoreCommitRecency(Double days){
-        if(days == null) return -1;
-
-        if(days <= 7) return 100;
-        if(days <= 30) return 85;
-        if(days <= 90) return 60;
-        if(days <= 180) return 30;
-
+        if(days == null){
+            return -1;
+        }
+        if(days <= 7){
+            return 100;
+        }
+        if(days <= 30){
+            return 85;
+        }
+        if(days <= 90){
+            return 60;
+        }
+        if(days <= 180){
+            return 30;
+        }
         return 0;
     }
 
     private double scoreReleaseRecency(Double days){
 
-        if(days == null) return -1;
-
-        if(days <= 30) return 100;
-        if(days <= 90) return 80;
-        if(days <= 180) return 60;
-        if(days <= 365) return 30;
-
+        if(days == null){
+            return -1;
+        }
+        if(days <= 30){
+            return 100;
+        }
+        if(days <= 90){
+            return 80;
+        }
+        if(days <= 180){
+            return 60;
+        }
+        if(days <= 365){
+            return 30;
+        }
         return 0;
     }
 
     private double scoreCommitVolume(Double commits){
 
-        if(commits == null) return -1;
+        if(commits == null){
+            return -1;
+        }
 
         double score = commits * 2;
 
@@ -177,8 +157,7 @@ public class PackageHealthScoringService {
 
     private double scoreBusFactor(Double totalCommits, Double topContributorCommits){
 
-        if(totalCommits == null
-                || topContributorCommits == null) {
+        if(totalCommits == null || topContributorCommits == null) {
             return -1;
         }
 
@@ -186,8 +165,7 @@ public class PackageHealthScoringService {
             return 0;
         }
 
-        double dominance =
-                topContributorCommits / totalCommits;
+        double dominance = topContributorCommits / totalCommits;
 
         return (1 - dominance) * 100;
     }
@@ -209,8 +187,7 @@ public class PackageHealthScoringService {
             return -1;
         }
 
-        double score =
-                (Math.log10(downloads + 1) / 7.0) * 100;
+        double score = (Math.log10(downloads + 1) / 7.0) * 100;
 
         return Math.min(score, 100);
     }
@@ -227,8 +204,7 @@ public class PackageHealthScoringService {
             return -1;
         }
 
-        double score =
-                (Math.log10(value + 1) / 5.0) * 100;
+        double score = (Math.log10(value + 1) / 5.0) * 100;
 
         return Math.min(score, 100);
     }
@@ -243,24 +219,22 @@ public class PackageHealthScoringService {
         double forksScore = 0;
 
         if(stars != null) {
-            starsScore =
-                    (Math.log10(stars + 1) / 5.0) * 100;
+            starsScore = (Math.log10(stars + 1) / 5.0) * 100;
         }
 
         if(forks != null) {
-            forksScore =
-                    (Math.log10(forks + 1) / 4.0) * 100;
+            forksScore = (Math.log10(forks + 1) / 4.0) * 100;
         }
 
         return weightedAverage(
-                new double[]{
-                        starsScore,
-                        forksScore
-                },
-                new double[]{
-                        0.70,
-                        0.30
-                }
+            new double[]{
+                starsScore,
+                forksScore
+            },
+            new double[]{
+                0.70,
+                0.30
+            }
         );
     }
 
@@ -271,7 +245,6 @@ public class PackageHealthScoringService {
         }
 
         double score = 100 - (depth * 10);
-
         return Math.max(score, 0);
     }
 
@@ -286,7 +259,6 @@ public class PackageHealthScoringService {
         }
 
         double ratio = deprecated / total;
-
         return (1 - ratio) * 100;
     }
 

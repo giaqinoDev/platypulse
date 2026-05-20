@@ -1,5 +1,6 @@
 package com.giosmdev.package_radar.service.ApiLayer.GitHubLayerApis;
 
+import com.giosmdev.package_radar.service.ApiLayer.DependencyTree.GenDependenciesTree;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -79,12 +80,16 @@ public class GitHubRepoContributorsAPI {
     }
 
     private RepoContributorsInfo proccessResponse(JsonNode contributors, HttpHeaders header){
+        if(contributors == null || contributors.isEmpty()){
+            return new RepoContributorsInfo(0, 0, 0, 0);
+        }
+        System.out.println(contributors);
         System.out.println("processing Contirbutors");
         AtomicInteger total_commits = new AtomicInteger();
         int top_contributor_commits = contributors.get(0).get("contributions").asInt();
         double top_commits_ratio;
 
-        int contributors_count = findContributorCount(header);
+        //int contributors_count = findContributorCount(header);
 
         try{
             contributors.forEach(contributor -> {
@@ -100,7 +105,7 @@ public class GitHubRepoContributorsAPI {
             });
 
             top_commits_ratio = top_contributor_commits / (double) total_commits.get();
-
+            int contributors_count = contributors.size(); // filtered out bots from contributors list
             return new RepoContributorsInfo(total_commits.get(), contributors_count, top_contributor_commits, top_commits_ratio);
         }
         catch(Exception error){
@@ -109,8 +114,15 @@ public class GitHubRepoContributorsAPI {
         }
     }
 
+    //Deprecated Function----------------------------------------------
     private int findContributorCount(HttpHeaders header){
-        String header_link = header.getFirst("Link");
+        String header_link = header.getFirst("Link"); //Only works when pagination is implemented (i.e for multiple lists of contributors)
+        // ^ above returns null if a header link explicitly defining pagenation does not exists
+        //Requried a pagination check
+        if(header_link == null){
+            return 1;
+        }
+        
         Pattern header_pattern = Pattern.compile("page=(\\d+)>; rel=\"last\"");
         Matcher header_matcher = header_pattern.matcher(header_link);
 
