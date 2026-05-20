@@ -153,6 +153,7 @@ public class GitHubRepoAPI {
         Mono<ApiStatus<Integer>> open_count_wrapped = apiErrorHandler.handle(open_issues_count);
 
         return gitHubAPI_res.flatMap(response -> {
+            System.out.println("Gettign mroe data when it shoudl noT!");
             return Mono.zip(closed_count_wrapped, open_count_wrapped).map(tuple -> {
                 Integer closed_count = tuple.getT1().getData();
                 Integer open_count = tuple.getT2().getData();

@@ -31,7 +31,7 @@ public class GitHubCommitsAPI {
     }
 
     public Mono<ApiStatus<RepoCommitInfo>> fetch(String group, String repo){
-        System.out.println("Fetching GitHub Repo commit info from api");
+        System.out.println("Fetching GitHub Repo commit info from api at: " + "https://api.github.com/repos/" + group + "/" + repo + "/commits");
         Mono<RepoCommitInfo> commit_info = webClient.get()
                             .uri(uriBuilder -> uriBuilder
                                 .scheme("https")

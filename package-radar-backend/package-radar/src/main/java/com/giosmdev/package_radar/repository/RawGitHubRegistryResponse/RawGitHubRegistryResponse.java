@@ -46,9 +46,11 @@ public class RawGitHubRegistryResponse {
                         return ResponseEntity.ok(new RawGitHubResponse(response, commit_info, contributor_info));
                     });
             })
-        .onErrorResume(PackageNotFoundException.class, error ->
-            Mono.just(ResponseEntity.status(404).build())
-         )
+        .onErrorResume(PackageNotFoundException.class, error ->{
+                System.out.println("RPO DOES NOT EXIST");
+                return Mono.just(ResponseEntity.status(200).body(new RawGitHubResponse(null, null, null))); //Force Null
+            }
+        )
         .onErrorResume(RegistryException.class, error ->
             Mono.just(ResponseEntity.status(503).build())
         )

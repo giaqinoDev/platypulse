@@ -46,6 +46,20 @@ public class GitHubRepoContributorsAPI {
                                     .header("Accept", "application/vnd.github+json")
                                     .header("X-GitHub-Api-Version", "2026-03-10")
                                     .retrieve()
+                                    .onStatus(
+                                        status -> status.is4xxClientError(),
+                                        response -> {
+                                            System.out.println("GItHub Contributors 404 error"); // <--------------- THIS IS BEING HIT!!!!!
+                                            return Mono.error(new PackageNotFoundException());
+                                        }
+                                    )
+                                    .onStatus(
+                                        status -> status.is5xxServerError(),
+                                        response -> {
+                                            System.out.println("500 level github api contributors endpoint");
+                                            return Mono.error(new RegistryException());
+                                        }
+                                    )
                                     .toEntity(String.class)
                                     .block();
 
@@ -70,7 +84,10 @@ public class GitHubRepoContributorsAPI {
                                     )
                                     .onStatus(
                                         status -> status.is5xxServerError(),
-                                        response -> Mono.error(new RegistryException())
+                                        response -> {
+                                            System.out.println("500 level github api contributors endpoint");
+                                            return Mono.error(new RegistryException());
+                                        }
                                     )
                                     .bodyToMono(JsonNode.class)
                                     .timeout(Duration.ofSeconds(7))
