@@ -17,10 +17,11 @@ public class PackageHealthScoringService {
 
         //Overall signal categorization weights
         double overall = weightedAverage(
-                    new double[]{activity, maintenance, adoption, risk},
-                    new double[]{0.25, 0.30, 0.25, 0.20}
-                );
-
+            new double[]{activity, maintenance, adoption, risk},
+            new double[]{0.25, 0.30, 0.25, 0.20}
+        );
+        
+        System.out.println(maintenance);
         return new HealthScoreReport(
             round(overall),
             round(activity),
@@ -51,6 +52,9 @@ public class PackageHealthScoringService {
         double busFactor = scoreBusFactor(features.getCommits_count(), features.getTop_contributor_commit_count());
         double releaseCadence = scoreReleaseCadence(features.getReleases_per_year());
 
+        System.out.println(issueResponsiveness);
+        System.out.println(busFactor);
+        System.out.println(releaseCadence);
         //Sub Category weighting
         return weightedAverage(
             new double[]{issueResponsiveness, busFactor, releaseCadence},
@@ -176,6 +180,7 @@ public class PackageHealthScoringService {
             return -1;
         }
 
+        System.out.println("Release Per Year: " + releasesPerYear);
         double score = releasesPerYear * 10;
 
         return Math.min(score, 100);

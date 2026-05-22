@@ -89,6 +89,7 @@ public class SignalExtraction {
             }
             total_releases = (double) pkg_info.getVersions_release_info().size() - 2;
             releases_per_year = calcReleasesPerYear(pkg_info.getVersions_release_info(), release_date);
+            System.out.println("releases_per_year: " + releases_per_year);
         }
         if(downloads_timeline != null){
             downloads_per_week = calcDownloadsPerWeek(downloads_timeline);
@@ -146,13 +147,16 @@ public class SignalExtraction {
         Instant first_release_date = Instant.parse(v_release_info.path("created").asString());
         Double release_timeline = (double) ChronoUnit.DAYS.between(first_release_date, latest_v_release_date)/365;
 
-        int total_releases_count = v_release_info.size();
+        int total_releases_count = v_release_info.size() - 2;
 
         System.out.println("first_release_date: " + first_release_date);
         System.out.println("latest_v_release_date: " + latest_v_release_date);
         System.out.println("release_timeline: " + release_timeline);
         System.out.println("total_releases: " + total_releases_count);
 
+        if(release_timeline == 0){
+            return total_releases_count;
+        }
         return total_releases_count/release_timeline;
     }
 
