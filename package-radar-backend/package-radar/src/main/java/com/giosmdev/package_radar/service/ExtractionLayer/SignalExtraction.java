@@ -162,16 +162,21 @@ public class SignalExtraction {
 
     private double calcDownloadsPerWeek(List<WeeklyDownloads> downloads_timeline){
         int timeline_length = downloads_timeline.size();
-        //int total_downloads;
+        System.out.println("timeline_length: " + timeline_length);
+
         //Trim spikes over the last 8 weeks
         List<WeeklyDownloads> eight_week_timeline = downloads_timeline.subList(timeline_length - 9, timeline_length-1);
         eight_week_timeline.stream().sorted(Comparator.comparing(WeeklyDownloads::getVolume)).collect(Collectors.toList());
-        eight_week_timeline.remove(0);
-        eight_week_timeline.remove(eight_week_timeline.size()-1);
 
-        double total_downloads = eight_week_timeline.stream().mapToInt(wkDwnld -> wkDwnld.getVolume()).sum();
-        //List<Integer> sub_downloads_timeline = eight_week_timeline.stream().map(wkDwnld -> wkDwnld.getVolume()).toList();
-        //sub_downloads_timeline.forEach(volume -> {total_downloads + volume});
-        return total_downloads/8.0;
+        //Removes possbile outliers (spikes) in downloads data
+        eight_week_timeline.remove(0); //removes smallest amount of weekly downlaods
+        eight_week_timeline.remove(eight_week_timeline.size()-1); //removes largest amount of weekly downloads
+
+        double total_downloads = 0;
+        for (WeeklyDownloads weeks_downlaods : eight_week_timeline){
+            total_downloads += weeks_downlaods.getVolume();
+        }
+        System.out.println(total_downloads);
+        return total_downloads/6.0;
     }
 }

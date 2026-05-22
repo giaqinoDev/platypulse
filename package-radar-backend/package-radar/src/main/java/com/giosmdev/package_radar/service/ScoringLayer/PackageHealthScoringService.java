@@ -18,7 +18,7 @@ public class PackageHealthScoringService {
         //Overall signal categorization weights
         double overall = weightedAverage(
             new double[]{activity, maintenance, adoption, risk},
-            new double[]{0.25, 0.30, 0.25, 0.20}
+            new double[]{0.25, 0.25, 0.30, 0.20}
         );
         
         System.out.println(maintenance);
@@ -180,7 +180,6 @@ public class PackageHealthScoringService {
             return -1;
         }
 
-        System.out.println("Release Per Year: " + releasesPerYear);
         double score = releasesPerYear * 10;
 
         return Math.min(score, 100);
@@ -188,12 +187,12 @@ public class PackageHealthScoringService {
 
     private double scoreDownloads(Double downloads){
 
+        System.out.println(downloads);
         if(downloads == null) {
             return -1;
         }
 
         double score = (Math.log10(downloads + 1) / 7.0) * 100;
-
         return Math.min(score, 100);
     }
 
