@@ -45,7 +45,7 @@ public class LibrariesIoAPI {
                             response -> Mono.error(new RegistryException())
                         )
                         .bodyToMono(JsonNode.class)
-                        .timeout(Duration.ofSeconds(3))
+                        .timeout(Duration.ofSeconds(10))
                         .map(response -> {
                             try{
                                 int dependent_packages_count = response.get("dependents_count").asInt();

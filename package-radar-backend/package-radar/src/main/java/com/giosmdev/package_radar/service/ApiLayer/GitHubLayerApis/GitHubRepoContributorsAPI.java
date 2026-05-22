@@ -90,7 +90,7 @@ public class GitHubRepoContributorsAPI {
                                         }
                                     )
                                     .bodyToMono(JsonNode.class)
-                                    .timeout(Duration.ofSeconds(7))
+                                    .timeout(Duration.ofSeconds(10))
                                     .map(response -> proccessResponse(response, null)); //header_payload.getHeaders()
         Mono<ApiStatus<RepoContributorsInfo>> wrapper_result = errorHandler.handle(contributors_info);
         return wrapper_result;

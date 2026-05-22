@@ -18,7 +18,7 @@ public class PackageHealthScoringService {
         //Overall signal categorization weights
         double overall = weightedAverage(
             new double[]{activity, maintenance, adoption, risk},
-            new double[]{0.25, 0.25, 0.30, 0.20}
+            new double[]{0.15, 0.30, 0.35, 0.20}
         );
         
         System.out.println(maintenance);
@@ -50,11 +50,13 @@ public class PackageHealthScoringService {
 
         double issueResponsiveness = scoreIssueResponsiveness(features.getOpen_issues(), features.getClosed_issues());
         double busFactor = scoreBusFactor(features.getCommits_count(), features.getTop_contributor_commit_count());
-        double releaseCadence = scoreReleaseCadence(features.getReleases_per_year());
 
-        System.out.println(issueResponsiveness);
-        System.out.println(busFactor);
-        System.out.println(releaseCadence);
+        double releaseRecency = scoreReleaseRecency(features.getDays_since_last_release());
+        double releaseCadence = scoreReleaseCadence(features.getReleases_per_year(), releaseRecency);
+
+        System.out.println("issueResponsiveness: " + issueResponsiveness);
+        System.out.println("busFactor: " + busFactor);
+        System.out.println("releaseCadence: " + releaseCadence);
         //Sub Category weighting
         return weightedAverage(
             new double[]{issueResponsiveness, busFactor, releaseCadence},
@@ -174,13 +176,14 @@ public class PackageHealthScoringService {
         return (1 - dominance) * 100;
     }
 
-    private double scoreReleaseCadence(Double releasesPerYear){
+    private double scoreReleaseCadence(Double releasesPerYear, Double releaseRecency){
 
         if(releasesPerYear == null) {
             return -1;
         }
 
-        double score = releasesPerYear * 10;
+        double recency_score = scoreReleaseRecency(releaseRecency);
+        double score = (releasesPerYear * 10)/(recency_score * 0.1);
 
         return Math.min(score, 100);
     }

@@ -56,7 +56,7 @@ public class GitHubRepoAPI {
                             response -> Mono.error(new RegistryException())
                         )
                         .bodyToMono(JsonNode.class)
-                        .timeout(Duration.ofSeconds(7))
+                        .timeout(Duration.ofSeconds(10))
                         .map(response -> {
                             try{
                                 int stars_count = response.get("stargazers_count").asInt();

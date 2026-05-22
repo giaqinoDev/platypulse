@@ -3,6 +3,7 @@ package com.giosmdev.package_radar.service.ExtractionLayer;
 //import static org.junit.jupiter.api.DynamicTest.stream;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -146,7 +147,7 @@ public class SignalExtraction {
         //List<String> dicToList = ArrayList<>(v_release_info)
         Instant first_release_date = Instant.parse(v_release_info.path("created").asString());
         Double release_timeline = (double) ChronoUnit.DAYS.between(first_release_date, latest_v_release_date)/365;
-
+        //Double late_release_penalty = (double) ChronoUnit.DAYS.between(latest_v_release_date, LocalDate.now())/100;
         int total_releases_count = v_release_info.size() - 2;
 
         System.out.println("first_release_date: " + first_release_date);

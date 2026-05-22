@@ -57,7 +57,7 @@ public class GitHubCommitsAPI {
                                 return Mono.error(new RegistryException());}
                             )
                             .bodyToMono(JsonNode.class)
-                            .timeout(Duration.ofSeconds(7))
+                            .timeout(Duration.ofSeconds(10))
                             .map(response -> processCommitInfo(response));
 
         Mono<ApiStatus<RepoCommitInfo>> wrapper_result = handleError.handle(commit_info);
