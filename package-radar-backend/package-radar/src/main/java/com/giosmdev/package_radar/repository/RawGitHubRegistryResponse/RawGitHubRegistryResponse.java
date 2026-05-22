@@ -41,14 +41,15 @@ public class RawGitHubRegistryResponse {
         return repo_response.flatMap(response -> {
             System.out.println("VERYFYING");
             return Mono.zip(commits_info_response, contributors_info_response).map(tuple -> {
-                        RepoCommitInfo commit_info = tuple.getT1().getData();
-                        RepoContributorsInfo contributor_info = tuple.getT2().getData();
-                        return ResponseEntity.ok(new RawGitHubResponse(response, commit_info, contributor_info));
-                    });
+                    System.out.println("Zipping Monos");
+                    RepoCommitInfo commit_info = tuple.getT1().getData();
+                    RepoContributorsInfo contributor_info = tuple.getT2().getData();
+                    return ResponseEntity.ok(new RawGitHubResponse(response, commit_info, contributor_info));
+                });
             })
         .onErrorResume(PackageNotFoundException.class, error ->{
-                System.out.println("RPO DOES NOT EXIST");
-                return Mono.just(ResponseEntity.status(200).body(new RawGitHubResponse(null, null, null))); //Force Null
+                System.out.println("REPO DOES NOT EXIST: Graceful return null");
+                return Mono.just(ResponseEntity.status(200).body(null)); //Force Null: new RawGitHubResponse(null, null, null)
             }
         )
         .onErrorResume(RegistryException.class, error ->

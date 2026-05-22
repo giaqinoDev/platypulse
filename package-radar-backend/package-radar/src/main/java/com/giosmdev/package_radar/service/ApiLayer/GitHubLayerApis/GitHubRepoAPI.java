@@ -47,7 +47,7 @@ public class GitHubRepoAPI {
                         .onStatus(
                             status -> status.is4xxClientError(),
                             response -> {
-                                System.out.println("GttHub Repo 404 Error");
+                                System.out.println("GitHub Repo 404 Error");
                                 return Mono.error(new PackageNotFoundException());
                             }
                         )

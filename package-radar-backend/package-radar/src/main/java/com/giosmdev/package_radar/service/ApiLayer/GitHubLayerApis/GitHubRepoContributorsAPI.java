@@ -33,35 +33,35 @@ public class GitHubRepoContributorsAPI {
 
     public Mono<ApiStatus<RepoContributorsInfo>> fetch(String group, String repo){
         System.out.println("Fetching GItHub Repo contributors info from api");
-        ResponseEntity<String> header_payload = webClient.get()
-                                    .uri(uriBuilder -> uriBuilder
-                                        .scheme("https")
-                                        .host("api.github.com")
-                                        .path("/repos/{group}/{repo}/contributors")
-                                        .queryParam("per_page", "1")
-                                        .queryParam("anon", "true") //include anonymous contributors
-                                        .build(group, repo)
-                                    )
-                                    .header("Authorization", "Bearer " + System.getenv("GITHUB_ACCESS_TOKEN"))
-                                    .header("Accept", "application/vnd.github+json")
-                                    .header("X-GitHub-Api-Version", "2026-03-10")
-                                    .retrieve()
-                                    .onStatus(
-                                        status -> status.is4xxClientError(),
-                                        response -> {
-                                            System.out.println("GItHub Contributors 404 error"); // <--------------- THIS IS BEING HIT!!!!!
-                                            return Mono.error(new PackageNotFoundException());
-                                        }
-                                    )
-                                    .onStatus(
-                                        status -> status.is5xxServerError(),
-                                        response -> {
-                                            System.out.println("500 level github api contributors endpoint");
-                                            return Mono.error(new RegistryException());
-                                        }
-                                    )
-                                    .toEntity(String.class)
-                                    .block();
+        // ResponseEntity<String> header_payload = webClient.get()
+        //                             .uri(uriBuilder -> uriBuilder
+        //                                 .scheme("https")
+        //                                 .host("api.github.com")
+        //                                 .path("/repos/{group}/{repo}/contributors")
+        //                                 .queryParam("per_page", "1")
+        //                                 .queryParam("anon", "true") //include anonymous contributors
+        //                                 .build(group, repo)
+        //                             )
+        //                             .header("Authorization", "Bearer " + System.getenv("GITHUB_ACCESS_TOKEN"))
+        //                             .header("Accept", "application/vnd.github+json")
+        //                             .header("X-GitHub-Api-Version", "2026-03-10")
+        //                             .retrieve()
+        //                             .onStatus(
+        //                                 status -> status.is4xxClientError(),
+        //                                 response -> {
+        //                                     System.out.println("GItHub Contributors 404 error"); // <--------------- THIS IS BEING HIT!!!!!
+        //                                     return Mono.error(new PackageNotFoundException());
+        //                                 }
+        //                             )
+        //                             .onStatus(
+        //                                 status -> status.is5xxServerError(),
+        //                                 response -> {
+        //                                     System.out.println("500 level github api contributors endpoint");
+        //                                     return Mono.error(new RegistryException());
+        //                                 }
+        //                             )
+        //                             .toEntity(String.class)
+        //                             .block();
 
         Mono<RepoContributorsInfo> contributors_info = webClient.get()
                                     .uri(uriBuilder -> uriBuilder
@@ -78,7 +78,7 @@ public class GitHubRepoContributorsAPI {
                                     .onStatus(
                                         status -> status.is4xxClientError(),
                                         response -> {
-                                            System.out.println("GItHub Contributors 404 error");
+                                            System.out.println("GitHub Contributors API Layer 404 error");
                                             return Mono.error(new PackageNotFoundException());
                                         }
                                     )
@@ -91,7 +91,7 @@ public class GitHubRepoContributorsAPI {
                                     )
                                     .bodyToMono(JsonNode.class)
                                     .timeout(Duration.ofSeconds(7))
-                                    .map(response -> proccessResponse(response, header_payload.getHeaders()));
+                                    .map(response -> proccessResponse(response, null)); //header_payload.getHeaders()
         Mono<ApiStatus<RepoContributorsInfo>> wrapper_result = errorHandler.handle(contributors_info);
         return wrapper_result;
     }
