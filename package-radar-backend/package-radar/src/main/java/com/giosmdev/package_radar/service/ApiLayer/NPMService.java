@@ -35,8 +35,8 @@ public class NPMService {
         // });
 
         Mono<ResponseEntity<HealthScoreReport>> score_report_javaScript = raw_response.map((response) -> {
-            UniversalPackageFeatures extraced_signals = signalExtractor.extractSignals(response.getBody());
-            return ResponseEntity.ok(scoringService.score(extraced_signals));
+            UniversalPackageFeatures extracted_signals = signalExtractor.extractSignals(response.getBody());
+            return ResponseEntity.ok(scoringService.score(extracted_signals));
         });
 
         return score_report_javaScript;
