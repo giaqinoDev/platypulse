@@ -51,12 +51,12 @@ public class PackageHealthScoringService {
         double issueResponsiveness = scoreIssueResponsiveness(features.getOpen_issues(), features.getClosed_issues());
         double busFactor = scoreBusFactor(features.getCommits_count(), features.getTop_contributor_commit_count());
 
-        double releaseRecency = scoreReleaseRecency(features.getDays_since_last_release());
-        double releaseCadence = scoreReleaseCadence(features.getReleases_per_year(), releaseRecency);
+        double releaseCadence = scoreReleaseCadence(features.getReleases_per_year(), features.getDays_since_last_release());
 
         System.out.println("issueResponsiveness: " + issueResponsiveness);
         System.out.println("busFactor: " + busFactor);
         System.out.println("releaseCadence: " + releaseCadence);
+        System.out.println("Days since latest release: " + features.getDays_since_last_release());
         //Sub Category weighting
         return weightedAverage(
             new double[]{issueResponsiveness, busFactor, releaseCadence},
@@ -130,6 +130,9 @@ public class PackageHealthScoringService {
         if(days <= 365){
             return 30;
         }
+        if(days <= 730){
+            return 15;
+        }
         return 0;
     }
 
@@ -176,15 +179,20 @@ public class PackageHealthScoringService {
         return (1 - dominance) * 100;
     }
 
-    private double scoreReleaseCadence(Double releasesPerYear, Double releaseRecency){
+    private double scoreReleaseCadence(Double releasesPerYear, Double daysSinceLastRelease){
 
         if(releasesPerYear == null) {
             return -1;
         }
 
-        double recency_score = scoreReleaseRecency(releaseRecency);
-        double score = (releasesPerYear * 10)/(recency_score);
+        double recency_score = scoreReleaseRecency(daysSinceLastRelease)/100;
+        if(recency_score == -1){
+            return -1;
+        }
 
+        double release_freq = Math.min(releasesPerYear, 24);
+        double score = (release_freq * 10 * recency_score);
+        System.out.println("recency_score: " + recency_score);
         return Math.min(score, 100);
     }
 

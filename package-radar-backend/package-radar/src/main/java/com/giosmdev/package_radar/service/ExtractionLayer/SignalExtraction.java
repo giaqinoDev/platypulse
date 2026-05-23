@@ -177,7 +177,6 @@ public class SignalExtraction {
         for (WeeklyDownloads weeks_downlaods : eight_week_timeline){
             total_downloads += weeks_downlaods.getVolume();
         }
-        System.out.println(total_downloads);
         return total_downloads/6.0;
     }
 }
