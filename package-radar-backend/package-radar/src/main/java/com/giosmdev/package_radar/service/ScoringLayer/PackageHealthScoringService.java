@@ -183,7 +183,7 @@ public class PackageHealthScoringService {
         }
 
         double recency_score = scoreReleaseRecency(releaseRecency);
-        double score = (releasesPerYear * 10)/(recency_score * 0.1);
+        double score = (releasesPerYear * 10)/(recency_score);
 
         return Math.min(score, 100);
     }
