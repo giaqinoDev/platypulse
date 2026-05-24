@@ -13,7 +13,7 @@ interface UseLibrariesIOFetchProps{
 
 function useLibrariesIOFetch({query, platform, setFetchError}:UseLibrariesIOFetchProps ){//{query, platform, setFetchError}:UseLibrariesIOFetchProps ){
     //MAKE SURE TO HIDE API KEY!!!!!!!!!!!!!!!!
-    const BASE_LIBRARIES_URL = `https://libraries.io/api/${platform}/${query}?api_key=***REMOVED***`;
+    const BASE_LIBRARIES_URL = `https://libraries.io/api/${platform}/${query}?api_key=???`;
     const [packageDependents, setPackageDependents] = useState<Dependents|null>(null);
     useEffect(() => {
 
