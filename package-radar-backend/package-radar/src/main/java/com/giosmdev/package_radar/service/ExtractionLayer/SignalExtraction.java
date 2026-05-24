@@ -3,7 +3,6 @@ package com.giosmdev.package_radar.service.ExtractionLayer;
 //import static org.junit.jupiter.api.DynamicTest.stream;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -21,15 +20,9 @@ import com.giosmdev.package_radar.model.NPMRegistry.DownloadsTimeline.WeeklyDown
 import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
 
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class SignalExtraction {
-    private ObjectMapper objMapper;
-
-    public SignalExtraction(ObjectMapper objMapper) {
-        this.objMapper = objMapper;
-    }
 
     public UniversalPackageFeatures extractSignals(RawNpmPayload payload) {
         // JsonNode payload_tree = objMapper.valueToTree(payload);

@@ -2,7 +2,6 @@ package com.giosmdev.package_radar.service.ApiLayer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
 import com.giosmdev.package_radar.model.HealthScoreReport.HealthScoreReport;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;

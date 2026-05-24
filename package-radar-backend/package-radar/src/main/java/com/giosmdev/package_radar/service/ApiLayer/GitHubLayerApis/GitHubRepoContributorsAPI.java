@@ -1,13 +1,8 @@
 package com.giosmdev.package_radar.service.ApiLayer.GitHubLayerApis;
-
-import com.giosmdev.package_radar.service.ApiLayer.DependencyTree.GenDependenciesTree;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -33,35 +28,6 @@ public class GitHubRepoContributorsAPI {
 
     public Mono<ApiStatus<RepoContributorsInfo>> fetch(String group, String repo){
         System.out.println("Fetching GItHub Repo contributors info from api");
-        // ResponseEntity<String> header_payload = webClient.get()
-        //                             .uri(uriBuilder -> uriBuilder
-        //                                 .scheme("https")
-        //                                 .host("api.github.com")
-        //                                 .path("/repos/{group}/{repo}/contributors")
-        //                                 .queryParam("per_page", "1")
-        //                                 .queryParam("anon", "true") //include anonymous contributors
-        //                                 .build(group, repo)
-        //                             )
-        //                             .header("Authorization", "Bearer " + System.getenv("GITHUB_ACCESS_TOKEN"))
-        //                             .header("Accept", "application/vnd.github+json")
-        //                             .header("X-GitHub-Api-Version", "2026-03-10")
-        //                             .retrieve()
-        //                             .onStatus(
-        //                                 status -> status.is4xxClientError(),
-        //                                 response -> {
-        //                                     System.out.println("GItHub Contributors 404 error"); // <--------------- THIS IS BEING HIT!!!!!
-        //                                     return Mono.error(new PackageNotFoundException());
-        //                                 }
-        //                             )
-        //                             .onStatus(
-        //                                 status -> status.is5xxServerError(),
-        //                                 response -> {
-        //                                     System.out.println("500 level github api contributors endpoint");
-        //                                     return Mono.error(new RegistryException());
-        //                                 }
-        //                             )
-        //                             .toEntity(String.class)
-        //                             .block();
 
         Mono<RepoContributorsInfo> contributors_info = webClient.get()
                                     .uri(uriBuilder -> uriBuilder
@@ -129,23 +95,5 @@ public class GitHubRepoContributorsAPI {
             error.printStackTrace();
             throw new ProcessingException(error.getStackTrace());
         }
-    }
-
-    //Deprecated Function----------------------------------------------
-    private int findContributorCount(HttpHeaders header){
-        String header_link = header.getFirst("Link"); //Only works when pagination is implemented (i.e for multiple lists of contributors)
-        // ^ above returns null if a header link explicitly defining pagenation does not exists
-        //Requried a pagination check
-        if(header_link == null){
-            return 1;
-        }
-        
-        Pattern header_pattern = Pattern.compile("page=(\\d+)>; rel=\"last\"");
-        Matcher header_matcher = header_pattern.matcher(header_link);
-
-        if(header_matcher.find()){
-            return Integer.parseInt(header_matcher.group(1)) + 1;
-        }
-        return 1;
     }
 }
