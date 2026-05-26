@@ -1,6 +1,5 @@
 import { useState } from "react";
 import useNPMFetch from "../NPMFetch/useNPMFetch";
-import useTestFetch from "../NPMFetch/useTestFetch";
 
 function Home(){
 
@@ -8,7 +7,6 @@ function Home(){
     const [searchTerm, setSearchTerm] = useState("");
     const [query, setQuery] = useState<string[]|null>(null);
     const exResult = useNPMFetch(query);
-    const {a, b, c, triggerFetch} = useTestFetch();
     function handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
         setQuery(parseSearchTerm(searchTerm.trim()));
@@ -27,11 +25,11 @@ function Home(){
                 more informed package inclusion descisions.</p>
             <form onSubmit={handleSubmit}>
                 <input 
-                type="search" 
-                name="searchTerm" 
-                required
-                value={searchTerm}
-                onChange={(event) => {setSearchTerm(event.target.value)}}/>
+                    type="search" 
+                    name="searchTerm" 
+                    required
+                    value={searchTerm}
+                    onChange={(event) => {setSearchTerm(event.target.value)}}/>
                 <input type="submit"/>
             </form>
 
