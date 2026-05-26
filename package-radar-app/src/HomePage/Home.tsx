@@ -1,4 +1,7 @@
 import { useState } from "react";
+import "@fontsource/geist-sans/400.css";
+import "@fontsource/geist-sans/200.css";
+import "./Home.css";
 import useNPMFetch from "../NPMFetch/useNPMFetch";
 
 function Home(){
@@ -20,8 +23,8 @@ function Home(){
 
     return(
         <div>
-            <h1>Packground Check</h1>
-            <p>Packground Check continuously monitors health signals across the npm ecosystem, 
+            <h1 className="title">Packground Check</h1>
+            <p className="header">Packground Check continuously monitors health signals across the npm ecosystem, 
                 helping developers make more informed decisions about which packages to include in their projects.</p>
             <form onSubmit={handleSubmit}>
                 <input 
