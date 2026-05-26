@@ -13,7 +13,6 @@ function Home(){
         event.preventDefault();
         setQuery(parseSearchTerm(searchTerm.trim()));
         
-        
     }
 
     function parseSearchTerm(searchTerm : string){
@@ -23,7 +22,8 @@ function Home(){
 
     return(
         <div>
-            <h1>Packround Check</h1>
+            <h1>Packground Check</h1>
+            <p>Packground Check continuously monitors health signals across the npm ecosystem to help developers make more informed package inclusion descisions.</p>
             <form onSubmit={handleSubmit}>
                 <input 
                 type="search" 
@@ -33,13 +33,6 @@ function Home(){
                 onChange={(event) => {setSearchTerm(event.target.value)}}/>
                 <input type="submit"/>
             </form>
-            <button onClick={() => {
-                triggerFetch();
-                console.log("Pressed");
-            }
-            }>
-                Test GitHub Registry Response
-            </button>
 
             {exResult.loading && 
                 <div>Loading</div>
