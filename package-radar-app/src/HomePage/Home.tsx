@@ -38,8 +38,8 @@ function Home(){
                         required
                         value={searchTerm}
                         onChange={(event) => {setSearchTerm(event.target.value)}}/>
+                    <input type="submit"/>
                 </div>
-                <input type="submit"/>
             </form>
 
             {exResult.loading && 
