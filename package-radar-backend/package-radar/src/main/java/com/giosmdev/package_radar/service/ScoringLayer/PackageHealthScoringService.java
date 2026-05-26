@@ -83,7 +83,7 @@ public class PackageHealthScoringService {
 
         double archived = scoreArchived(features.getIsArchived());
         double dependencyDepth = scoreDependencyDepth(features.getDependencies_depth());
-        double deprecatedDependencies = scoreDeprecatedDependencies(features.getDirect_deprecated_dependnecies(), features.getDirect_dependencies_count());
+        double deprecatedDependencies = scoreDeprecatedDependencies(features.getDirect_deprecated_dependencies(), features.getDirect_dependencies_count());
 
         //Sub category weighting
         return weightedAverage(

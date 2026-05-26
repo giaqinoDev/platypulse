@@ -36,7 +36,7 @@ public class UniversalPackageFeatures{
 
     //Dependencies
     private Double direct_dependencies_count;
-    private Double direct_deprecated_dependnecies;
+    private Double direct_deprecated_dependencies;
     private Double dependencies_depth;
 
     //Repo Info

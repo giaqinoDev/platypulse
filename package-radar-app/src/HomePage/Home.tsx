@@ -23,7 +23,8 @@ function Home(){
     return(
         <div>
             <h1>Packground Check</h1>
-            <p>Packground Check continuously monitors health signals across the npm ecosystem to help developers make more informed package inclusion descisions.</p>
+            <p>Packground Check continuously monitors health signals across the npm ecosystem to help developers make
+                more informed package inclusion descisions.</p>
             <form onSubmit={handleSubmit}>
                 <input 
                 type="search" 

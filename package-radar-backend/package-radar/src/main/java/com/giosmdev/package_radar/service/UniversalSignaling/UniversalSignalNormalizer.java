@@ -181,7 +181,7 @@ public class UniversalSignalNormalizer {
         return 0;
     }
 
-    public double scoreDirectDepreciatedDependencies(double direct_deprecated_dependnecies){
+    public double scoreDirectDepreciatedDependencies(double direct_deprecated_dependencies){
         return 0;
     }
 
