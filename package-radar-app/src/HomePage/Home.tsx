@@ -33,13 +33,13 @@ function Home(){
                     <input
                         className="package-search-bar" 
                         type="search" 
-                        placeholder="Analyze Package.."
+                        placeholder="Analyze Package..."
                         name="searchTerm" 
                         required
                         value={searchTerm}
                         onChange={(event) => {setSearchTerm(event.target.value)}}/>
-                    <input type="submit"/>
                 </div>
+                <input type="submit"/>
             </form>
 
             {exResult.loading && 

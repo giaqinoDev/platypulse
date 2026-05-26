@@ -10,15 +10,20 @@
     color: white;
 }
 
+/*-----------------------------------Search Bar---------------------------------------------------------*/
 .search-field-container{
     display: flex;
-    width: fit-content;
     align-items: center;
     position: relative;
 }
 .package-search-bar{
     padding: 10px 0px;
     padding-left: 30px;
+    padding-right: 10px;
+    font-family: "Geist Sans", sans-serif;
+    font-weight: 200;
+    width: 50%;
+    max-width: 500px;
 }
 
 .search-icon{
