@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "@fontsource/geist-sans/400.css";
 import "@fontsource/geist-sans/200.css";
+import { IoSearchOutline } from "react-icons/io5";
 import "./Home.css";
 import useNPMFetch from "../NPMFetch/useNPMFetch";
 
@@ -27,13 +28,18 @@ function Home(){
             <p className="header">Packground Check continuously monitors health signals across the npm ecosystem, 
                 helping developers make more informed decisions about which packages to include in their projects.</p>
             <form onSubmit={handleSubmit}>
-                <input 
-                    type="search" 
-                    name="searchTerm" 
-                    required
-                    value={searchTerm}
-                    onChange={(event) => {setSearchTerm(event.target.value)}}/>
-                <input type="submit"/>
+                <div className="search-field-container">
+                    <IoSearchOutline className="search-icon"/>
+                    <input
+                        className="package-search-bar" 
+                        type="search" 
+                        placeholder="Analyze Package.."
+                        name="searchTerm" 
+                        required
+                        value={searchTerm}
+                        onChange={(event) => {setSearchTerm(event.target.value)}}/>
+                    <input type="submit"/>
+                </div>
             </form>
 
             {exResult.loading && 
