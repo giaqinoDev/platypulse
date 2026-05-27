@@ -24,7 +24,7 @@ function Home(){
 
     return(
         <div>
-            <h1 className="title">Packground Check</h1>
+            <h1 className="title">Make dependency decisions backed by signals, not guesswork.</h1>
             <p className="header">
                 Monitor the health of packages across the NPM ecosystem and retrieve up to date reporting to guide decisions on package inclusion.
             </p>
