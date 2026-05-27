@@ -25,8 +25,9 @@ function Home(){
     return(
         <div>
             <h1 className="title">Packground Check</h1>
-            <p className="header">Packground Check continuously monitors health signals across the npm ecosystem, 
-                helping developers make more informed decisions about which packages to include in their projects.</p>
+            <p className="header">
+                Monitor the health of packages across the NPM ecosystem and retrieve up to date reporting to guide decisions on package inclusion.
+            </p>
             <form onSubmit={handleSubmit}>
                 <div className="search-field-container">
                     <IoSearchOutline className="search-icon"/>
