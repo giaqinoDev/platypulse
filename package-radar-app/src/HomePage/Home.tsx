@@ -32,7 +32,7 @@ function Home(){
                     <IoSearchOutline className="search-icon"/>
                     <input
                         className="package-search-bar" 
-                        type="search" 
+                        type="text" 
                         placeholder="Analyze Package..."
                         name="searchTerm" 
                         required
