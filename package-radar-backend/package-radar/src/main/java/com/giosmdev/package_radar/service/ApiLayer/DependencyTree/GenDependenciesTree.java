@@ -105,11 +105,11 @@ public class GenDependenciesTree {
                         .uri(BASE_PACKAGE_URL + "/{name}", name)
                         .retrieve()
                         .bodyToMono(JsonNode.class)
-                        .timeout(Duration.ofSeconds(2))
+                        .timeout(Duration.ofSeconds(10))
                         .onErrorResume(e -> {
-                            System.out.println("Dep Tree error");
+                            System.out.println("Dep Tree Sub Deps error");
                             return Mono.empty();}) //DOnt care enough to properly catch error and bubble it up
-                )//computerIfAbsent automatically adds Mono to map
+                )//computeIfAbsent automatically adds Mono to map
                 .block(); //essentially completes the Mono, extracting the JsonNode out of Mono<JsonNode> and returning it
                 
 
