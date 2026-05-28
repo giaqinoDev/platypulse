@@ -85,7 +85,8 @@ public class GenDependenciesTree {
                     }
                 }
 
-                return new DependencyTree(pkgName, final_leaf.depth + 1, roots);
+                int depth = final_leaf == null ? 0 : final_leaf.depth + 1;
+                return new DependencyTree(pkgName, depth, roots);
 
             }).subscribeOn(Schedulers.boundedElastic());//Run blockign code on a thread from the boundedElastic pool 
                                                         //(handles blocking operations without blocking reactive threads)
@@ -105,6 +106,7 @@ public class GenDependenciesTree {
                         .uri(BASE_PACKAGE_URL + "/{name}", name)
                         .retrieve()
                         .bodyToMono(JsonNode.class)
+                        .cache()
                         .timeout(Duration.ofSeconds(10))
                         .onErrorResume(e -> {
                             System.out.println("Dep Tree Sub Deps error");

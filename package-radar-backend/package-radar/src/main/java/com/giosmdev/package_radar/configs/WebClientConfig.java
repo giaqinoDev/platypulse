@@ -1,5 +1,7 @@
 package com.giosmdev.package_radar.configs;
 
+import java.net.http.HttpClient;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
@@ -13,7 +15,7 @@ public class WebClientConfig {
     //WebClient to serialize and deserialize request and responses bodies
     ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(configurer -> configurer.defaultCodecs()
-                        .maxInMemorySize(10 * 1024 * 1024)) // 5MB
+                        .maxInMemorySize(10 * 1024 * 1024)) // 10MB
                 .build();
     @Bean //creates a bean of type WebClient, the beans name is "webClient"
     //tells SB to create an instance of WebClient and manage it in the IoC container
