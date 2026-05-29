@@ -1,4 +1,6 @@
 package com.giosmdev.package_radar.service.ApiLayer;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +36,12 @@ public class NPMService {
         // });
 
         Mono<ResponseEntity<HealthScoreReport>> score_report_javaScript = raw_response.map((response) -> {
-            UniversalPackageFeatures extracted_signals = signalExtractor.extractSignals(response.getBody());
-            return ResponseEntity.ok(scoringService.score(extracted_signals));
+            if(response.getStatusCode().isSameCodeAs(HttpStatus.OK)){
+                UniversalPackageFeatures extracted_signals = signalExtractor.extractSignals(response.getBody());
+                return ResponseEntity.ok(scoringService.score(extracted_signals));
+            }
+            System.out.println(response.getStatusCode());
+            return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders()).body(null);
         });
 
         return score_report_javaScript;
