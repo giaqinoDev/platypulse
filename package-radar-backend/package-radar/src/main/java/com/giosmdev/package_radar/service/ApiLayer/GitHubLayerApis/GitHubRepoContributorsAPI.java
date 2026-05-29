@@ -66,7 +66,6 @@ public class GitHubRepoContributorsAPI {
         if(contributors == null || contributors.isEmpty()){
             return new RepoContributorsInfo(0, 0, 0, 0);
         }
-        System.out.println(contributors);
         System.out.println("processing Contirbutors");
         AtomicInteger total_commits = new AtomicInteger();
         int top_contributor_commits = contributors.get(0).get("contributions").asInt();

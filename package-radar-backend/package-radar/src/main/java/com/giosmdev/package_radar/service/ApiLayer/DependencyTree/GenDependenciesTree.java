@@ -22,13 +22,12 @@ import tools.jackson.databind.JsonNode;
 @Service
 public class GenDependenciesTree {
     private WebClient webClient;
-
     private final int maxDepth = 6;
-    private final AtomicInteger requestCount = new AtomicInteger(0);
     private final int maxRequests = 100;
-    private DepNode final_leaf;
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
 
+    private final AtomicInteger requestCount = new AtomicInteger(0);
+    private DepNode final_leaf;
     Map<String, Mono<JsonNode>> proccessedDeps_Map = new ConcurrentHashMap<>();
     public GenDependenciesTree(WebClient webClient){
         this.webClient = webClient;
@@ -45,7 +44,7 @@ public class GenDependenciesTree {
     }
     public Mono<DependencyTree> generate(String pkgName, JsonNode topLayerDependencies) {
         if(topLayerDependencies == null){
-            return Mono.just(null);
+            return Mono.empty();
         }
            return Mono.fromCallable(() -> {  //fromCallable allows you to wrap a value that is possibly a reuslt of a blocking operation
                                        //into a Mono. This allows you to incorporate it into existsing reactive pipelines
@@ -105,12 +104,22 @@ public class GenDependenciesTree {
                     webClient.get()
                         .uri(BASE_PACKAGE_URL + "/{name}", name)
                         .retrieve()
+                        .onStatus(
+                            status -> status.is4xxClientError(),
+                            fetchResponse -> Mono.empty()
+                        )
+                        .onStatus(
+                            status -> status.is5xxServerError(),
+                            fetchResponse -> Mono.empty()
+                        )
                         .bodyToMono(JsonNode.class)
+                        .retry(1)
                         .cache()
-                        .timeout(Duration.ofSeconds(10))
+                        .timeout(Duration.ofSeconds(5))
                         .onErrorResume(e -> {
                             System.out.println("Dep Tree Sub Deps error");
-                            return Mono.empty();}) //DOnt care enough to properly catch error and bubble it up
+                            return Mono.empty();
+                        }) //DOnt care enough to properly catch error and bubble it up
                 )//computeIfAbsent automatically adds Mono to map
                 .block(); //essentially completes the Mono, extracting the JsonNode out of Mono<JsonNode> and returning it
                 
