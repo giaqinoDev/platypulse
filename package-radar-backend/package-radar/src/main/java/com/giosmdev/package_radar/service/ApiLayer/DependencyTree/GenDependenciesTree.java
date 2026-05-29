@@ -118,6 +118,7 @@ public class GenDependenciesTree {
                         .timeout(Duration.ofSeconds(5))
                         .onErrorResume(e -> {
                             System.out.println("Dep Tree Sub Deps error");
+                            e.printStackTrace();
                             return Mono.empty();
                         }) //DOnt care enough to properly catch error and bubble it up
                 )//computeIfAbsent automatically adds Mono to map

@@ -10,6 +10,12 @@
     color: white;
 }
 
+.info{
+    font-family: "Geist Sans", sans-serif;
+    font-weight: 100;
+    color: white;
+}
+
 /*-----------------------------------Search Bar---------------------------------------------------------*/
 .search-field-container{
     display: flex;

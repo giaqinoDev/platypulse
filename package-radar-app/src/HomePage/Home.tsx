@@ -49,14 +49,14 @@ function Home(){
 
             {exResult.fetchError && 
                 <div id="info">
-                    <p>{exResult.fetchError.toString()}</p>
+                    <p className="info">{exResult.fetchError.toString()}</p>
                 </div>
             }
             {exResult.packageData && 
                 <div id="info">
                     {Object.entries(exResult.packageData).map(([key, value]) => (
                         <div key={key}>
-                            <p>{`${key}: ${String(value)}`}</p>
+                            <p className="info">{`${key}: ${String(value)}`}</p>
                         </div>
                     ))}
                 </div>
