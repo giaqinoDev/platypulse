@@ -1,0 +1,33 @@
+.ecosystem-dropdown-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 13px;
+    aspect-ratio: 1 / 1;
+    background-color: #0A0A0A;
+
+    border-style: solid;
+    border-left-style: none;
+    border-color: #3b3b3b;
+    border-width: 1px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.ecosystem-dropdown{
+    display: flex;
+    flex-direction: column;
+
+    background-color: #0A0A0A;
+    position: absolute;
+    padding: 20px;
+    top: 40px;
+    left: 450px;
+}
+.ecosystem-icon{
+    color: white;
+    width: 20px;
+    height: auto;
+}

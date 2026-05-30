@@ -21,7 +21,9 @@ function SearchBar({ onSearch } : QueryStructure){
     }
 
     return (
-        <form onSubmit={(event) => {
+        <form 
+            className="search-container" 
+            onSubmit={(event) => {
                 event.preventDefault();
                 const query = parseSearchTerm(searchTerm.trim());
                 if(regSearchContext != null){
@@ -39,8 +41,8 @@ function SearchBar({ onSearch } : QueryStructure){
                     required
                     value={searchTerm}
                     onChange={(event) => {setSearchTerm(event.target.value)}}/>
+                <EcosystemDropdown/>
             </div>
-            <EcosystemDropdown/>
         </form>
     );
 }

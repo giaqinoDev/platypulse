@@ -1,4 +1,3 @@
-/*-----------------------------------Search Bar---------------------------------------------------------*/
 .search-field-container{
     display: flex;
     align-items: center;
@@ -17,7 +16,12 @@
     border-style: solid;
     border-color: #3b3b3b;
     border-width: 1px;
-    border-radius: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.package-search-bar:focus{
+    outline: none;
 }
 .package-search-bar:-webkit-autofill,
 .package-search-bar:-webkit-autofill:hover,
