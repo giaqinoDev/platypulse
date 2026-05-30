@@ -19,6 +19,14 @@
     border-width: 1px;
     border-radius: 5px;
 }
+.package-search-bar:-webkit-autofill,
+.package-search-bar:-webkit-autofill:hover,
+.package-search-bar:-webkit-autofill:focus,
+.package-search-bar:-webkit-autofill:active {
+    -webkit-text-fill-color: white;
+    -webkit-box-shadow: 0 0 0 1000px #0A0A0A inset;
+    caret-color: white;
+}
 
 .search-icon{
     position: absolute;
