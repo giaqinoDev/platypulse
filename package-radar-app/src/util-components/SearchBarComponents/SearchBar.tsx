@@ -1,13 +1,15 @@
 import { IoSearchOutline } from "react-icons/io5";
 import EcosystemDropdown from "./EcosystemDropdown";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useContext, useState, type Dispatch, type SetStateAction } from "react";
 import type { SearchContextStructure } from "../../contexts/RegistrySearch/SearchContextStructure";
+import RegistrySearchContext from "../../contexts/RegistrySearch/RegistrySearchContext";
 
 interface QueryStructure{
     onSearch: Dispatch<SetStateAction<SearchContextStructure | null>>;
 }
 function SearchBar({ onSearch } : QueryStructure){
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const regSearchContext= useContext(RegistrySearchContext);
 
     function parseSearchTerm(searchTerm : string){
         const parsedSearchTerm = searchTerm.split("/");
@@ -21,6 +23,9 @@ function SearchBar({ onSearch } : QueryStructure){
         <form onSubmit={(event) => {
                 event.preventDefault();
                 const query = parseSearchTerm(searchTerm.trim());
+                if(regSearchContext != null){
+                    regSearchContext.setRegistrySearchTerm(query);
+                }
                 onSearch(query);
             }}>
             <div className="search-field-container">

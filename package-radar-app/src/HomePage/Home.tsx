@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "@fontsource/geist-sans/400.css";
 import "@fontsource/geist-sans/200.css";
 
@@ -6,6 +6,7 @@ import "./Home.css";
 import useNPMFetch from "../NPMFetch/useNPMFetch";
 import SearchBar from "../util-components/SearchBarComponents/SearchBar";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
+import RegistrySearchContext from "../contexts/RegistrySearch/RegistrySearchContext";
 
 function Home(){
 
