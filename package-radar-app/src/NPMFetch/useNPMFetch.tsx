@@ -6,47 +6,12 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
     const [packageData, setPackageData] = useState<JSON|null>(null);
 
-    interface NPMPackage_Data_Primative{
-        //Package Releases:
-        latest_v: string,
-        latest_release_date: string,
-        releases: object,
-
-        //Dependency Structure:
-        dependencies: DependencyPackage_Info|null|undefined,
-        weekly_downloads_timeline: WeeklyDownloads[]|null,
-        //Depth of dependency tree will be handled by the back end
-
-    }
-
-    interface WeeklyDownloads{
-        downloads: number|null,
-        start_date: string|null,
-        end_date: string|null
-    }
-
-    interface DependencyPackage_Info{
-        package_dependencies: DependencyInfo[]|null;
-        num_dependencies: number|null,
-    }
-    interface DependencyInfo{
-        dependency_name: string,
-        dependency_v: string,
-        version_info: VersionInfo|null
-        //SEMVER: MAJOR.MINOR.PATCH
-    }
-    interface VersionInfo{
-        status: "up-to-date" | "patch-behind" | "minor-behind" | "major-behind"
-        deprecated: boolean,
-    }
-
     useEffect(() => {
-        
         if(!queriedSearch){
             return;
         }
-        setLoading(true);
         const fetchFromBackend = async () => {
+            setLoading(true);
             try{
                 let response = null;
                 if(queriedSearch.search_term.length == 2){
@@ -55,10 +20,15 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
                 else if(queriedSearch.search_term.length == 1){
                     response = await fetch(`/bend/api/packages/${queriedSearch.search_term[0]}`);
                 }
-                console.log(response.status);
-                const info = await response.json();
-                setPackageData(info);
-                setLoading(false);
+
+                if(response != null){
+                    console.log(response.status);
+                    const info = await response.json();
+                    setPackageData(info);
+                }
+                else{
+                    setFetchError("Response was empty");
+                }
             }
             catch(reponseError: unknown){
                 if(reponseError instanceof Error){
@@ -67,8 +37,8 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
                 else{
                     setFetchError("Unkown Error");
                 }
-                setLoading(false);
             }
+            setLoading(false);
         }
         fetchFromBackend();
     }, [queriedSearch])
