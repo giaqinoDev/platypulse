@@ -6,6 +6,7 @@ import { RiNpmjsLine } from "react-icons/ri";
 
 import "./Home.css";
 import useNPMFetch from "../NPMFetch/useNPMFetch";
+import EcosystemDropdown from "../util-components/EcosystemDropdown";
 
 function Home(){
 
@@ -42,6 +43,7 @@ function Home(){
                         value={searchTerm}
                         onChange={(event) => {setSearchTerm(event.target.value)}}/>
                 </div>
+                <EcosystemDropdown/>
             </form>
 
             {exResult.loading && 
