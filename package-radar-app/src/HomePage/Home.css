@@ -15,33 +15,3 @@
     font-weight: 100;
     color: white;
 }
-
-/*-----------------------------------Search Bar---------------------------------------------------------*/
-.search-field-container{
-    display: flex;
-    align-items: center;
-    position: relative;
-}
-.package-search-bar{
-    padding: 15px 0px;
-    padding-left: 40px;
-    padding-right: 10px;
-    font-family: "Geist Sans", sans-serif;
-    font-weight: 200;
-    width: 50%;
-    max-width: 400px;
-    background-color: #0A0A0A;
-    color: white;
-    border-style: solid;
-    border-color: #3b3b3b;
-    border-width: 1px;
-    border-radius: 5px;
-}
-
-.search-icon{
-    position: absolute;
-    width: 20px;
-    height: auto;
-    left: 10px;
-    color: white;
-}

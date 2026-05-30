@@ -3,6 +3,7 @@ import EcosystemDropdown from "./EcosystemDropdown";
 import { useContext, useState, type Dispatch, type SetStateAction } from "react";
 import type { SearchContextStructure } from "../../contexts/RegistrySearch/SearchContextStructure";
 import RegistrySearchContext from "../../contexts/RegistrySearch/RegistrySearchContext";
+import "./SearchBar.css"
 
 interface QueryStructure{
     onSearch: Dispatch<SetStateAction<SearchContextStructure | null>>;
