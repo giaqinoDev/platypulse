@@ -1,4 +1,4 @@
 export interface SearchContextStructure{
-    search_term: string,
+    search_term: string[],
     ecosystem: string,
 }

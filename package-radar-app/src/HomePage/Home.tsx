@@ -1,29 +1,16 @@
 import { useState } from "react";
 import "@fontsource/geist-sans/400.css";
 import "@fontsource/geist-sans/200.css";
-import { IoSearchOutline } from "react-icons/io5";
-import { RiNpmjsLine } from "react-icons/ri";
 
 import "./Home.css";
 import useNPMFetch from "../NPMFetch/useNPMFetch";
-import EcosystemDropdown from "../util-components/EcosystemDropdown";
+import SearchBar from "../util-components/SearchBarComponents/SearchBar";
+import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 
 function Home(){
 
-    //Search Term
-    const [searchTerm, setSearchTerm] = useState("");
-    const [query, setQuery] = useState<string[]|null>(null);
+    const [query, setQuery] = useState<SearchContextStructure|null>(null);
     const exResult = useNPMFetch(query);
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>){
-        event.preventDefault();
-        setQuery(parseSearchTerm(searchTerm.trim()));
-        
-    }
-
-    function parseSearchTerm(searchTerm : string){
-        const parsedSearchTerm = searchTerm.split("/")
-        return parsedSearchTerm;
-    }
 
     return(
         <div>
@@ -31,20 +18,8 @@ function Home(){
             <p className="header">
                 Monitor the health of packages across the NPM ecosystem and retrieve up to date reporting to guide decisions on package inclusion.
             </p>
-            <form onSubmit={handleSubmit}>
-                <div className="search-field-container">
-                    <IoSearchOutline className="search-icon"/>
-                    <input
-                        className="package-search-bar" 
-                        type="text" 
-                        placeholder="Analyze Package..."
-                        name="searchTerm" 
-                        required
-                        value={searchTerm}
-                        onChange={(event) => {setSearchTerm(event.target.value)}}/>
-                </div>
-                <EcosystemDropdown/>
-            </form>
+            
+            <SearchBar onSearch={setQuery}/>
 
             {exResult.loading && 
                 <div>Loading</div>

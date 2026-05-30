@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-function useNPMFetch(queriedSearch: string[]|null){
+import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
+function useNPMFetch(queriedSearch: SearchContextStructure|null){
     //const [queryResult, setQueryResult] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
@@ -48,11 +49,11 @@ function useNPMFetch(queriedSearch: string[]|null){
         const fetchFromBackend = async () => {
             try{
                 let response = null;
-                if(queriedSearch.length == 2){
-                    response = await fetch(`/bend/api/packages/${queriedSearch[0]}/${queriedSearch[1]}`);
+                if(queriedSearch.search_term.length == 2){
+                    response = await fetch(`/bend/api/packages/${queriedSearch.search_term[0]}/${queriedSearch.search_term[1]}`);
                 }
-                else if(queriedSearch.length == 1){
-                    response = await fetch(`/bend/api/packages/${queriedSearch}`);
+                else if(queriedSearch.search_term.length == 1){
+                    response = await fetch(`/bend/api/packages/${queriedSearch.search_term[0]}`);
                 }
                 console.log(response.status);
                 const info = await response.json();
