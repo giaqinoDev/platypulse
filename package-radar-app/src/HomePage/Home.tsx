@@ -2,6 +2,8 @@ import { useState } from "react";
 import "@fontsource/geist-sans/400.css";
 import "@fontsource/geist-sans/200.css";
 import { IoSearchOutline } from "react-icons/io5";
+import { RiNpmjsLine } from "react-icons/ri";
+
 import "./Home.css";
 import useNPMFetch from "../NPMFetch/useNPMFetch";
 
@@ -39,7 +41,6 @@ function Home(){
                         required
                         value={searchTerm}
                         onChange={(event) => {setSearchTerm(event.target.value)}}/>
-                    <input type="submit"/>
                 </div>
             </form>
 
