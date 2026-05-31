@@ -1,13 +1,13 @@
 import "./EcosystemDropdown.css"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { EcosystemsList } from "./EcosystemsList";
-import type { RegistrySearchContextStructure } from "../../contexts/RegistrySearch/RegistrySearchContextStructure";
-interface SearchContextProp{
-    searchContext: RegistrySearchContextStructure|null
+
+interface ActiveOptionProp{
+    activeOptionId: number,
+    setActiveOptionId: Dispatch<SetStateAction<number>>;
 }
-function EcosystemDropdown({ searchContext } : SearchContextProp){
+function EcosystemDropdown({ activeOptionId, setActiveOptionId }: ActiveOptionProp){
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
-    const [activeOptionId, setActiveOptionId] = useState<number>(1);
     const ecosystemOptionsConst = new EcosystemsList().getEcosystemOptions();
     const [ecosystemOptions] = useState(ecosystemOptionsConst);
     const dropdown_menuRef = useRef<HTMLDivElement>(null)
