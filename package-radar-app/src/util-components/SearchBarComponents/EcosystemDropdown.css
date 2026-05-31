@@ -16,6 +16,16 @@
     border-bottom-right-radius: 5px;
     cursor: pointer;
 }
+@keyframes fadeIn{
+    0%{
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
 
 .ecosystem-dropdown{
     display: flex;
@@ -25,6 +35,11 @@
     position: absolute;
     top: 40px;
     left: 450px;
+
+    opacity: 0;
+    animation-name: fadeIn;
+    animation-fill-mode: forwards;
+    animation-duration: 0.20s;
 }
 .ecosystem-icon{
     color: white;
