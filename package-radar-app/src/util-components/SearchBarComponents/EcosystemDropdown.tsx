@@ -26,9 +26,8 @@ function EcosystemDropdown({ activeOptionId, setActiveOptionId }: ActiveOptionPr
 
     return(
         <div className="ecosystem-dropdown-container" onClick={() => {setShowDropdown(!showDropdown)}} ref={dropdown_menuRef}>
-            <div>
-                <img src={ecosystemOptions.at(activeOptionId-1)?.icon_path} className="ecosystem-icon-active"/>
-            </div>
+            <img src={ecosystemOptions.at(activeOptionId-1)?.icon_path} className="ecosystem-icon-active"/>
+            
             {showDropdown &&
                 <div className="ecosystem-dropdown">
                     {ecosystemOptions.map((ecosystem) => {
