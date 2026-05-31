@@ -30,6 +30,7 @@
     -webkit-text-fill-color: white;
     -webkit-box-shadow: 0 0 0 1000px #0A0A0A inset;
     caret-color: white;
+    color: white;
 }
 
 .search-icon{
