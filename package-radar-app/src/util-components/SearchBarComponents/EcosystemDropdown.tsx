@@ -8,7 +8,8 @@ interface SearchContextProp{
 function EcosystemDropdown({ searchContext } : SearchContextProp){
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const [activeOptionId, setActiveOptionId] = useState<number>(1);
-    const [ecosystemOptions] = useState(new EcosystemsList().getEcosystemOptions());
+    const ecosystemOptionsConst = new EcosystemsList().getEcosystemOptions();
+    const [ecosystemOptions] = useState(ecosystemOptionsConst);
     const dropdown_menuRef = useRef<HTMLDivElement>(null)
     function dropDownState(event: MouseEvent){
         if(dropdown_menuRef.current && !dropdown_menuRef.current.contains(event.target as Node)){
@@ -18,11 +19,11 @@ function EcosystemDropdown({ searchContext } : SearchContextProp){
 
     useEffect(() => {
         document.addEventListener("click", dropDownState);
-
         return () => {
             document.removeEventListener("click", dropDownState);
         }
     }, [])
+
     return(
         <div className="ecosystem-dropdown-container" onClick={() => {setShowDropdown(!showDropdown)}} ref={dropdown_menuRef}>
             <div>
@@ -31,17 +32,19 @@ function EcosystemDropdown({ searchContext } : SearchContextProp){
             {showDropdown &&
                 <div className="ecosystem-dropdown">
                     {ecosystemOptions.map((ecosystem) => {
-                        return(
+                        if(ecosystem.id != activeOptionId){
+                            return(
                             <div 
                                 key={ecosystem.id} 
                                 className="ecosystem-option" 
                                 onClick={() => {
-                                    setActiveOptionId(ecosystem.id)}
-                                }>
+                                    setActiveOptionId(ecosystem.id)
+                                }}>
                                 <img src={ecosystem.icon_path} className="ecosystem-icon"/>
                                 <p className="ecosystem-name">{ecosystem.name}</p>
                             </div>
                         );
+                        }
                     })}
                 </div>
             }
