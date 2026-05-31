@@ -10,7 +10,7 @@ interface QueryStructure{
 }
 function SearchBar({ onSearch } : QueryStructure){
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const regSearchContext= useContext(RegistrySearchContext);
+    const regSearchContext = useContext(RegistrySearchContext);
 
     function parseSearchTerm(searchTerm : string){
         const parsedSearchTerm = searchTerm.split("/");
@@ -41,7 +41,7 @@ function SearchBar({ onSearch } : QueryStructure){
                     required
                     value={searchTerm}
                     onChange={(event) => {setSearchTerm(event.target.value)}}/>
-                <EcosystemDropdown/>
+                <EcosystemDropdown searchContext={regSearchContext}/>
             </div>
         </form>
     );

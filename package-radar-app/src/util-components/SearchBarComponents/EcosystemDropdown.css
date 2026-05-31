@@ -22,11 +22,30 @@
 
     background-color: #0A0A0A;
     position: absolute;
-    padding: 20px;
     top: 40px;
     left: 450px;
 }
 .ecosystem-icon{
+    color: white;
+    width: 25px;
+    height: auto;
+}
+.ecosystem-option{
+    display: flex;
+    flex-direction: row;
+    padding: 0px 10px;
+}
+.ecosystem-option:hover{
+    background-color: #2d2d2d;
+    cursor: pointer;
+}
+.ecosystem-name{
+    font-family: "Geist Sans", sans-serif;
+    font-weight: 100;
+    color: white;
+    margin-left: 10px;
+}
+.ecosystem-icon-active{
     color: white;
     width: 20px;
     height: auto;
