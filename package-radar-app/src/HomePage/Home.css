@@ -9,7 +9,20 @@
     font-weight: 200;
     color: white;
 }
+.highlight-word{
+    font-style: italic;
+    color: #ee6c4d;
+}
 
+.home-page-header{
+    display: flex;
+    flex-direction: row;
+    background-color: #3d5a80;
+    overflow-x: hidden;
+}
+.home-page-hero-section{
+    padding: 20px;
+}
 .info{
     font-family: "Geist Sans", sans-serif;
     font-weight: 100;

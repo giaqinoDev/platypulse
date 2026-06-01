@@ -17,14 +17,18 @@ function Home(){
 
     return(
         <div>
-            <h1 className="title">Make dependency decisions backed by signals, not guesswork.</h1>
-            <p className="header">
-                Monitor the health of packages across the NPM ecosystem and retrieve up to date reporting to guide decisions on package inclusion.
-            </p>
-            
-            <SearchBar onSearch={setQuery}/>
+            <div className="home-page-header">
+                <div className="home-page-hero-section">
+                    <h1 className="title">Make dependency decisions backed by <span className="highlight-word">signals</span>, not guesswork.</h1>
+                    <p className="header">
+                        Monitor the health of packages across the NPM ecosystem and retrieve up to date reporting to guide decisions on package inclusion.
+                    </p>
+                    
+                    <SearchBar onSearch={setQuery}/>
+                </div>
 
-            <SplashGraphgic/>
+                <SplashGraphgic/>
+            </div>
             {exResult.loading && 
                 <div>Loading</div>
             }
