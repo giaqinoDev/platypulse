@@ -1,3 +1,5 @@
+/* THIS COMPONENT IS VIBE CODED (AI GEN) */
+
 .splash-container {
     position: relative;
     width: 50%;
@@ -81,7 +83,7 @@
                     calc(-50% + var(--drift-x)),
                     calc(-50% + var(--drift-y))
                 )
-                rotate(calc(var(--rotation) + 25deg))
+                rotate(calc(var(--rotation) + var(--spin)))
                 scale(var(--scale));
         }
 }

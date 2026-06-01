@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import platypusSplash from "../../assets/HomeSplashScreenGraphic/Platypulse Asets (2).svg";
 import "./SplashGraphic.css";
 
+// THIS COMPONENT IS VIBE CODED (AI GEN)
 interface PackageParticle {
     id: number;
     name: string;
@@ -9,32 +10,40 @@ interface PackageParticle {
     driftY: number;
     duration: number;
     rotation: number;
+    spin: number;
     scale: number;
 }
 
 const PACKAGE_NAMES = [
     "react",
-    "typescript",
     "vite",
-    "spring-boot",
-    "express",
-    "postgresql",
-    "docker",
-    "tailwindcss",
     "axios",
-    "nextjs",
-    "redis",
-    "flask",
-    "django",
-    "webpack",
     "lodash",
-    "mongoose"
+    "express",
+    "typescript",
+    "tailwindcss",
+    "@reduxjs/toolkit",
+    "@tanstack/react-query",
+    "@mui/material",
+    "@prisma/client",
+    "@nestjs/core",
+    "socket.io",
+    "jsonwebtoken",
+    "playwright",
+    "eslint",
+    "prettier",
+    "mongoose",
+    "date-fns",
+    "zod",
 ];
+
+
 
 function SplashGraphic() {
     const [particles, setParticles] = useState<PackageParticle[]>([]);
     const particleId = useRef(0);
 
+    
     useEffect(() => {
         const spawnParticle = () => {
             const particle: PackageParticle = {
@@ -46,7 +55,13 @@ function SplashGraphic() {
                 driftX: (Math.random() - 0.5) * 350,
                 driftY: -(250 + Math.random() * 200),
                 duration: 4 + Math.random() * 3,
+
+                // Initial angle
                 rotation: (Math.random() - 0.5) * 30,
+
+                // Amount to spin while floating
+                spin: (Math.random() - 0.5) * 180,
+
                 scale: 0.8 + Math.random() * 0.4
             };
 
@@ -84,6 +99,7 @@ function SplashGraphic() {
                                 "--drift-y": `${particle.driftY}px`,
                                 "--duration": `${particle.duration}s`,
                                 "--rotation": `${particle.rotation}deg`,
+                                "--spin": `${particle.spin}deg`,
                                 "--scale": particle.scale
                             } as React.CSSProperties
                         }
