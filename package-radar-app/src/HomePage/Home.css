@@ -1,13 +1,14 @@
 .title{
     font-family: "Geist Sans", sans-serif;
     font-weight: 400;
+    font-size: 2.5rem;
     color: white;
 }
 
 .header{
     font-family: "Geist Sans", sans-serif;
     font-weight: 200;
-    color: white;
+    color: #e0fbfc;
 }
 .highlight-word{
     font-style: italic;
@@ -23,6 +24,7 @@
     max-height: fit-content;
     z-index: 10;
 }
+
 .center-header{
     display: flex;
     flex-direction: row;
