@@ -17,10 +17,16 @@
 .home-page-header{
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-direction: row;
     background-color: #3d5a80;
     max-height: fit-content;
     z-index: 10;
+}
+.center-header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 .home-page-hero-section{
     padding: 20px;
