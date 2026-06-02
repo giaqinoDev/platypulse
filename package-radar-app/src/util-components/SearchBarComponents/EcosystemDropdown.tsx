@@ -10,6 +10,7 @@ function EcosystemDropdown({ activeOptionId, setActiveOptionId }: ActiveOptionPr
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const ecosystemOptionsConst = new EcosystemsList().getEcosystemOptions();
     const [ecosystemOptions] = useState(ecosystemOptionsConst);
+    const [yOffset, setYOffset] = useState<number|undefined>(0);
     const dropdown_menuRef = useRef<HTMLDivElement>(null)
     function dropDownState(event: MouseEvent){
         if(dropdown_menuRef.current && !dropdown_menuRef.current.contains(event.target as Node)){
@@ -24,12 +25,16 @@ function EcosystemDropdown({ activeOptionId, setActiveOptionId }: ActiveOptionPr
         }
     }, [])
 
+    useEffect(() => {
+        setYOffset(dropdown_menuRef.current?.getBoundingClientRect().height);
+    }, [showDropdown])
+
     return(
         <div className="ecosystem-dropdown-container" onClick={() => {setShowDropdown(!showDropdown)}} ref={dropdown_menuRef}>
             <img src={ecosystemOptions.at(activeOptionId-1)?.icon_path} className="ecosystem-icon-active"/>
             
-            {showDropdown &&
-                <div className="ecosystem-dropdown">
+            {showDropdown && 
+                <div className="ecosystem-dropdown" style={{"--offset-Y": yOffset +  "px"}}>
                     {ecosystemOptions.map((ecosystem) => {
                         if(ecosystem.id != activeOptionId){
                             return(

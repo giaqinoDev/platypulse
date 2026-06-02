@@ -16,12 +16,15 @@
 
 .home-page-header{
     display: flex;
+    align-items: center;
     flex-direction: row;
     background-color: #3d5a80;
-    overflow-x: hidden;
+    max-height: fit-content;
+    z-index: 10;
 }
 .home-page-hero-section{
     padding: 20px;
+    max-width: 700px;
 }
 .info{
     font-family: "Geist Sans", sans-serif;

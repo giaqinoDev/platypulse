@@ -3,7 +3,7 @@
 .splash-container {
     position: relative;
     width: 50%;
-    max-width: 300px;
+    max-width: 350px;
     margin-top: auto;
     overflow: visible;
 }
@@ -47,6 +47,7 @@
         background: rgba(255, 255, 255, 0.9);
         color: #1f2937;
 
+        font-family: "Geist Sans", sans-serif;
         font-size: 0.9rem;
         font-weight: 600;
 

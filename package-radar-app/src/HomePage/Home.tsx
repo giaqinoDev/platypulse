@@ -26,9 +26,9 @@ function Home(){
                     
                     <SearchBar onSearch={setQuery}/>
                 </div>
-
                 <SplashGraphgic/>
             </div>
+            <div style={{"background-color": "red"}}>dwdhjdhjwhd</div>
             {exResult.loading && 
                 <div>Loading</div>
             }
