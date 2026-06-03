@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import platypusSplash from "../../assets/HomeSplashScreenGraphic/Platypulse Asets (2).svg";
+import platypusSplash from "../../assets/HomeSplashScreenGraphic/PlatypulseSplashAsset.svg";
 import "./SplashGraphic.css";
 
 // THIS COMPONENT IS VIBE CODED (AI GEN)

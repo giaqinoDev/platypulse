@@ -1,17 +1,33 @@
 .grid-container{
-    
+    max-width: 1000px;
 }
 .grid-row{
     display: flex;
     flex-direction: row;
 }
 
+.heart-pulse-icon{
+    color: rgb(242, 85, 111);
+    width: 30px;
+    height: auto;
+}
+.stack-icon{
+    width: auto;
+    height: 25px;
+    margin-left: 10px;
+    color: #ee6c4d;
+}
 .grid-element{
-    background-color: #edf2f4;
+    background-color: white;/*#edf2f4;*/
     border-style: hidden;
     border-radius: 8px;
-    padding: 10px;
+    padding: 20px;
     margin: 3px;
+}
+.platypus-magnifying-svg{
+    height: 120px;
+    width: auto;
+    margin-left: auto;
 }
 .grid-element-header{
     font-family: "Geist Sans", sans-serif;
@@ -24,9 +40,15 @@
     color: #293241;
 }
 .element1{
+    
     width: 60%;
+    padding-bottom: 0px;
 }
 .element2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 40%;
 }
 .element3{

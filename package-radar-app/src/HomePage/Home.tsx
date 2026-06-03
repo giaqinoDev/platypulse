@@ -32,7 +32,7 @@ function Home(){
                     <SplashGraphgic/>
                 </div>
             </div>
-            <div>
+            <div style={{"display": "flex", "justifyContent": "center", "padding": "40px 0px"}}>
                 <DetailsGrid/>
             </div>
             {exResult.loading && 
