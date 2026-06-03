@@ -1,8 +1,28 @@
 .grid-container{
-    display: grid;
-
+    
+}
+.grid-row{
+    display: flex;
+    flex-direction: row;
 }
 
 .grid-element{
     background-color: red;
+    border-style: solid;
+    border-color: black;
+    border-radius: 8px;
+    margin: 1.5px 3px;
+}
+
+.element1{
+    width: 60%;
+}
+.element2{
+    width: 40%;
+}
+.element3{
+    width: 40%; 
+}
+.element4{
+    width: 60%;
 }
