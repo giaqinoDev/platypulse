@@ -7,13 +7,22 @@
 }
 
 .grid-element{
-    background-color: red;
-    border-style: solid;
-    border-color: black;
+    background-color: #edf2f4;
+    border-style: hidden;
     border-radius: 8px;
-    margin: 1.5px 3px;
+    padding: 10px;
+    margin: 3px;
 }
-
+.grid-element-header{
+    font-family: "Geist Sans", sans-serif;
+    font-weight: 400;
+    color: #293241;
+}
+.grid-element-p{
+    font-family: "Geist Sans", sans-serif;
+    font-weight: 200;
+    color: #293241;
+}
 .element1{
     width: 60%;
 }
