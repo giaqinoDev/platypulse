@@ -8,6 +8,7 @@ import SearchBar from "../util-components/SearchBarComponents/SearchBar";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import RegistrySearchContext from "../contexts/RegistrySearch/RegistrySearchContext";
 import SplashGraphgic from "../util-components/HomePageSplashGraphic/SplashGraphic";
+import DetailsGrid from "../util-components/HomePageDetailsGrid/DetailsGrid";
 
 function Home(){
 
@@ -30,6 +31,9 @@ function Home(){
                     
                     <SplashGraphgic/>
                 </div>
+            </div>
+            <div>
+                <DetailsGrid/>
             </div>
             {exResult.loading && 
                 <div>Loading</div>
