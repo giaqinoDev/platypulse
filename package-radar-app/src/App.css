@@ -4,3 +4,7 @@ body{
     height: 100dvh;
     overflow-x: hidden;
 }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}

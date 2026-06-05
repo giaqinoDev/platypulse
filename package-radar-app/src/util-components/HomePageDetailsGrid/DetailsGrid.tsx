@@ -2,6 +2,7 @@ import "./DetailsGrid.css"
 import { FaHeartPulse } from "react-icons/fa6";
 import platypusMagnifying from "../../assets/HomeSplashScreenGraphic/PlatypusMagnifyingGlass.svg"
 import { TbStack2Filled } from "react-icons/tb";
+import platypusOnGraph from "../../assets/HomeSplashScreenGraphic/PlatypusOnGraph.svg"
 
 function DetailsGrid(){
     return(
@@ -28,7 +29,13 @@ function DetailsGrid(){
                     </div>
                     <p className="grid-element-p">Reduce dependency risk by identifying well-maintained libraries before they become part of your stack.</p>
                 </div>
-                <div className="grid-element element4">Ex4</div>
+                <div className="grid-element element4">
+                    <img src={platypusOnGraph} className="platypus-graph-svg"></img>
+                    <div>
+                        <h3 className="grid-element-header">Visualize Signals</h3>
+                        <p className="grid-element-p">Visualize signals across the board, from community adoption to development timelines.</p>
+                    </div>
+                </div>
             </div>
         </div>
     );
