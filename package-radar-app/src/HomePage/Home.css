@@ -3,16 +3,36 @@
     font-weight: 400;
     font-size: 2.5rem;
     color: white;
+
+    opacity: 0;
+    transform: translateY(40px);
+    animation: heroReveal 0.5s ease-out forwards;
 }
 
 .header{
     font-family: "Geist Sans", sans-serif;
     font-weight: 200;
     color: #e0fbfc;
+
+    opacity: 0;
+    transform: translateY(30px);
+    animation: heroReveal 0.5s ease-out 0.2s forwards;
 }
 .highlight-word{
     font-style: italic;
     color: #ee6c4d;
+}
+
+@keyframes heroReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .home-page-header{
