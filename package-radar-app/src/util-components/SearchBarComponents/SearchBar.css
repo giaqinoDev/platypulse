@@ -41,3 +41,9 @@
     left: 10px;
     color: #293241;
 }
+
+@media(max-width: 800px){
+    .package-search-bar{
+        width: 80%;
+    }
+}
