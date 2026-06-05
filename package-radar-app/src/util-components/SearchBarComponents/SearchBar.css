@@ -10,7 +10,7 @@
     padding-right: 10px;
     font-family: "Geist Sans", sans-serif;
     font-weight: 200;
-    width: 50%;
+    width: 80%;
     max-width: 400px;
     background-color: white;
     color: #293241;
@@ -40,10 +40,4 @@
     height: auto;
     left: 10px;
     color: #293241;
-}
-
-@media(max-width: 800px){
-    .package-search-bar{
-        width: 80%;
-    }
 }
