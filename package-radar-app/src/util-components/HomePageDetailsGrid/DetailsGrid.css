@@ -25,6 +25,7 @@
     padding: 20px;
     margin: 3px;
 }
+
 .platypus-magnifying-svg{
     max-height: 120px;
     width: auto;
@@ -96,5 +97,8 @@
     .platypus-graph-svg{
         width: 300px;
         height: auto;
+    }
+    .grid-container{
+        width: 80%;
     }
 }
