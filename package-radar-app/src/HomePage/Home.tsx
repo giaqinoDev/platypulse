@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "@fontsource/geist-sans/400.css";
 import "@fontsource/geist-sans/200.css";
 
@@ -6,19 +6,20 @@ import "./Home.css";
 import useNPMFetch from "../NPMFetch/useNPMFetch";
 import SearchBar from "../util-components/SearchBarComponents/SearchBar";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
-import RegistrySearchContext from "../contexts/RegistrySearch/RegistrySearchContext";
 import SplashGraphgic from "../util-components/HomePageSplashGraphic/SplashGraphic";
 import DetailsGrid from "../util-components/HomePageDetailsGrid/DetailsGrid";
+import MenuHeader from "../util-components/MenuHeader/MenuHeader";
 
 function Home(){
 
     const [query, setQuery] = useState<SearchContextStructure|null>(null);
     const exResult = useNPMFetch(query);
-    const registrySearchTerm = useContext(RegistrySearchContext);
-
+    const homePageHeroRef = useRef<HTMLDivElement>(null);
+    
     return(
         <div>
-            <div className="home-page-header">
+            <MenuHeader/>
+            <div className="home-page-header" ref={homePageHeroRef}>
                 <div className="center-header">
                     <div className="home-page-hero-section">
                         <h1 className="title">Make dependency decisions backed by <span className="highlight-word">signals</span>, not guesswork.</h1>

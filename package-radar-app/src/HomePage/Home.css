@@ -16,7 +16,7 @@
 
     opacity: 0;
     transform: translateY(30px);
-    animation: heroReveal 0.5s ease-out 0.2s forwards;
+    animation: heroReveal 0.25s ease-out 0.2s forwards;
 }
 .highlight-word{
     font-style: italic;
@@ -42,7 +42,6 @@
     flex-direction: row;
     background-color: #3d5a80;
     max-height: fit-content;
-    z-index: 10;
 }
 
 .center-header{
