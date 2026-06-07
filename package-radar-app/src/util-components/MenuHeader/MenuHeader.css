@@ -9,4 +9,9 @@
     background-color: #3d5a80;
     box-shadow: 0 10px 20px -10px rgba(41, 50, 65, 0.45);
     width: 100%;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 1000;
 }

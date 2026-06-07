@@ -17,8 +17,8 @@ function Home(){
     
     return(
         <div>
+            <MenuHeader/>
             <div className="home-page-header">
-                <MenuHeader/>
                 <div className="center-header">
                     <div className="home-page-hero-section">
                         <h1 className="title">Make dependency decisions backed by <span className="highlight-word">signals</span>, not guesswork.</h1>
