@@ -14,12 +14,11 @@ function Home(){
 
     const [query, setQuery] = useState<SearchContextStructure|null>(null);
     const exResult = useNPMFetch(query);
-    const homePageHeroRef = useRef<HTMLDivElement>(null);
     
     return(
         <div>
-            <MenuHeader/>
-            <div className="home-page-header" ref={homePageHeroRef}>
+            <div className="home-page-header">
+                <MenuHeader/>
                 <div className="center-header">
                     <div className="home-page-hero-section">
                         <h1 className="title">Make dependency decisions backed by <span className="highlight-word">signals</span>, not guesswork.</h1>

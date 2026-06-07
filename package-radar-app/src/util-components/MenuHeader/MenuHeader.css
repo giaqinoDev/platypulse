@@ -6,6 +6,7 @@
 .menu-header-container{
     display: flex;
     padding: 5px 20px;
-    background-color: red;/*#3d5a80;*/
+    background-color: #3d5a80;
     box-shadow: 0 10px 20px -10px rgba(41, 50, 65, 0.45);
+    width: 100%;
 }

@@ -39,7 +39,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: row;
+    flex-direction: column;
     background-color: #3d5a80;
     max-height: fit-content;
 }
