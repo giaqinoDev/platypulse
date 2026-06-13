@@ -18,9 +18,16 @@
 
 .nav-section{
     margin-left: auto;
+
+    display: flex;
+    flex-direction: row;
 }
 
 .nav-button{
     color: white;
     text-decoration: none;
+    margin: 0px 5px;
+
+    font-family: "Geist Sans", sans-serif;
+    font-weight: 400;
 }

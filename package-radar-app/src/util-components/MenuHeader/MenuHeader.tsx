@@ -12,6 +12,9 @@ function MenuHeader(){
                 <Link to="/home" className="nav-button">
                     <p>Home</p>
                 </Link>
+                <Link to="" className="nav-button">
+                    <p>About</p>
+                </Link>
             </div>
         </div>
     );
