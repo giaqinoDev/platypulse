@@ -6,7 +6,7 @@
 .menu-header-container{
     display: flex;
     padding: 5px 20px;
-    background-color: #3d5a80;
+    background-color: #304765;/*#3d5a80;*/
     box-shadow: 0 10px 20px -10px rgba(41, 50, 65, 0.45);
     width: 100%;
 
@@ -14,4 +14,13 @@
     top: 0;
 
     z-index: 1000;
+}
+
+.nav-section{
+    margin-left: auto;
+}
+
+.nav-button{
+    color: white;
+    text-decoration: none;
 }
