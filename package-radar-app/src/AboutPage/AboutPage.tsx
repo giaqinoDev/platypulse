@@ -10,6 +10,9 @@ function AboutPage(){
                 <p className="about-page-subheading">Platypulse analyzes open-source packages across ecosystems and transforms hundreds of maintenance, 
                     adoption, activity, and risk signals into a single health score.</p>
             </div>
+            <div>
+                
+            </div>
         </div>
     );
 }
