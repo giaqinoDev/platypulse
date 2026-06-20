@@ -12,9 +12,10 @@ function MenuHeader(){
                 <Link to="/home" className="nav-button">
                     <p>Home</p>
                 </Link>
-                <Link to="/about" className="nav-button">
+                {/*<Link to="/about" className="nav-button">
                     <p>About</p>
                 </Link>
+                */}
             </div>
         </div>
     );

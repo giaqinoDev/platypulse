@@ -12,7 +12,7 @@ function App() {
     <RegistrySearchContext.Provider value={{registrySearchTerm, setRegistrySearchTerm}}>
       <Routes>
         <Route path="/home" element={<Home/>}/>
-        <Route path="/about" element={<AboutPage/>}/>
+        {/*<Route path="/about" element={<AboutPage/>}/>*/}
         <Route path="*" element={<Home/>}/>
       </Routes>
     </RegistrySearchContext.Provider>
