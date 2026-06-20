@@ -1,7 +1,7 @@
 create extension if not exists pgcrypto; -- For UUID generation
 
 create table ecosystem(
-	id integer generated always as identity primary key,
+	id integer generated always as identity primary key, --create an auto incrementing column called id and use it as a primary key
 	eco varchar(50) not null unique,
 	language varchar(50) not null
 );
