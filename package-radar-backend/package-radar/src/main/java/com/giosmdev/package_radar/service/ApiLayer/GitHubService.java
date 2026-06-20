@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.giosmdev.package_radar.model.GitHubRegistry.RawGitHubResponse;
-import com.giosmdev.package_radar.repository.RawGitHubRegistryResponse.RawGitHubRegistryResponse;
+import com.giosmdev.package_radar.service.RawGitHubRegistryResponse.RawGitHubRegistryResponse;
 
 import reactor.core.publisher.Mono;
 

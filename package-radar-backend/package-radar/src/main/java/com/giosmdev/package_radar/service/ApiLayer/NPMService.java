@@ -1,6 +1,5 @@
 package com.giosmdev.package_radar.service.ApiLayer;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +7,7 @@ import com.giosmdev.package_radar.model.HealthScoreReport.HealthScoreReport;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
 //Repositories
-import com.giosmdev.package_radar.repository.RawNPMRegistryResponse.RawNPMRegistryResponse;
+import com.giosmdev.package_radar.service.RawNPMRegistryResponse.RawNPMRegistryResponse;
 import com.giosmdev.package_radar.service.ExtractionLayer.SignalExtraction;
 import com.giosmdev.package_radar.service.ScoringLayer.PackageHealthScoringService;
 

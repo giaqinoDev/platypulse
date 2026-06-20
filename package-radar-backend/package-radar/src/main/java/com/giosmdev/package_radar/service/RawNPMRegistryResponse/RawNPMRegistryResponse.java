@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.repository.RawNPMRegistryResponse;
+package com.giosmdev.package_radar.service.RawNPMRegistryResponse;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;

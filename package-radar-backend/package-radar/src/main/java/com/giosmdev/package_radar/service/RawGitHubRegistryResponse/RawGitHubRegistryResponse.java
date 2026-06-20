@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.repository.RawGitHubRegistryResponse;
+package com.giosmdev.package_radar.service.RawGitHubRegistryResponse;
 
 import java.util.concurrent.TimeoutException;
 
