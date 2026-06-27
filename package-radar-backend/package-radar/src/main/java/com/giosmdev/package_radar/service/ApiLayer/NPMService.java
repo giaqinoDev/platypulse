@@ -8,6 +8,7 @@ import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
 //Repositories
 import com.giosmdev.package_radar.service.RawNPMRegistryResponse.RawNPMRegistryResponse;
+import com.giosmdev.package_radar.service.DB_Service.PlatyPulse_DB_Service;
 import com.giosmdev.package_radar.service.ExtractionLayer.SignalExtraction;
 import com.giosmdev.package_radar.service.ScoringLayer.PackageHealthScoringService;
 
@@ -19,15 +20,18 @@ public class NPMService {
     private RawNPMRegistryResponse rawNPMRegResponse;
     private SignalExtraction signalExtractor;
     private PackageHealthScoringService scoringService;
+    private PlatyPulse_DB_Service plp_db_service;
 
     //Spring expects all constructor injections to be done in one consturctor
-    public NPMService(RawNPMRegistryResponse rawNPMRegResponse, SignalExtraction signalExtractor, PackageHealthScoringService scoringService){
+    public NPMService(RawNPMRegistryResponse rawNPMRegResponse, SignalExtraction signalExtractor, PackageHealthScoringService scoringService, PlatyPulse_DB_Service plp_db_service){
         this.rawNPMRegResponse = rawNPMRegResponse;
         this.signalExtractor = signalExtractor;
         this.scoringService = scoringService;
+        this.plp_db_service = plp_db_service;
     }
 
     public Mono<ResponseEntity<HealthScoreReport>> getReport(String pkgName){
+        System.out.println(plp_db_service.getAllEcosystems());
         Mono<ResponseEntity<RawNpmPayload>> raw_response = rawNPMRegResponse.genRawNPMResponse(pkgName);
         
         // Mono<ResponseEntity<UniversalPackageFeatures>> extracted_signals = raw_response.map((response) -> {

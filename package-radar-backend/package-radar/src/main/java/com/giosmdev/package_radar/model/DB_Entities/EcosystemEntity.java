@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.repository;
+package com.giosmdev.package_radar.model.DB_Entities;
 
 
 import jakarta.persistence.Column;
