@@ -8,7 +8,7 @@ create table ecosystem(
 
 create table packages(
 	id UUID primary key default gen_random_uuid(),
-	eco_id integer not null references ecosystem(id),
+	eco_id integer not null references ecosystem(id) on delete cascade,
 	package_name varchar(255) not null,
 	unique (eco_id, package_name)
 );
