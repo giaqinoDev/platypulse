@@ -28,7 +28,7 @@ public class RawSignals_Entity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne
+    @OneToOne(optional = false)
     @JoinColumn(name = "health_score_id", nullable = false, unique = true)
     private PackageHealthSnapShots_Entity pkgHealthSnapShot;
 
