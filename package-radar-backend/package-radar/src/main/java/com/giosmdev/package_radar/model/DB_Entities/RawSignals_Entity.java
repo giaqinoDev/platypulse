@@ -1,7 +1,11 @@
 package com.giosmdev.package_radar.model.DB_Entities;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +19,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tools.jackson.databind.JsonNode;
 
 @Getter
 @Setter
@@ -35,6 +38,7 @@ public class RawSignals_Entity {
     @Column(name = "fetched_at", nullable = false)
     private Instant fetched_at;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "raw_data", nullable = false)
-    private JsonNode raw_data;
+    private Map<String, Object> raw_data;
 }
