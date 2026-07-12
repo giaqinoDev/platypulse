@@ -1,19 +1,17 @@
 import { IoSearchOutline } from "react-icons/io5";
 import EcosystemDropdown from "./EcosystemDropdown";
-import { useContext, useState, type Dispatch, type SetStateAction } from "react";
-import type { SearchContextStructure } from "../../contexts/RegistrySearch/SearchContextStructure";
-import RegistrySearchContext from "../../contexts/RegistrySearch/RegistrySearchContext";
+import { useState } from "react";
 import "./SearchBar.css"
 import { EcosystemsList } from "./EcosystemsList";
+import { useNavigate } from "react-router";
 
-interface QueryStructure{
-    onSearch: Dispatch<SetStateAction<SearchContextStructure | null>>;
-}
-function SearchBar({ onSearch } : QueryStructure){
+function SearchBar(){
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const regSearchContext = useContext(RegistrySearchContext);
+    //const regSearchContext = useContext(RegistrySearchContext);
     const ecosystemOptions = new EcosystemsList().getEcosystemOptions();
     const [activeOptionId, setActiveOptionId] = useState<number>(1);
+
+    const navigate = useNavigate();
 
     function constructSearchQuery(searchTerm : string){
         const parsedSearchTerm = searchTerm.split("/");
@@ -30,10 +28,12 @@ function SearchBar({ onSearch } : QueryStructure){
             onSubmit={(event) => {
                 event.preventDefault();
                 const query = constructSearchQuery(searchTerm.trim());
-                if(regSearchContext != null){
-                    regSearchContext.setRegistrySearchTerm(query);
+                if(query.search_term.length == 2){
+                    navigate(`/package/${query.ecosystem}/${query.search_term[0]}/${query.search_term[1]}`);
                 }
-                onSearch(query);
+                else if(query.search_term.length == 1){
+                    navigate(`/package/${query.ecosystem}/${query.search_term[0]}`);
+                }
             }}>
             <div className="search-field-container">
                 <IoSearchOutline className="search-icon"/>

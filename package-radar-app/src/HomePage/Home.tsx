@@ -1,19 +1,13 @@
-import { useState } from "react";
 import "@fontsource/geist-sans/400.css";
 import "@fontsource/geist-sans/200.css";
 
 import "./Home.css";
-import useNPMFetch from "../NPMFetch/useNPMFetch";
 import SearchBar from "../util-components/SearchBarComponents/SearchBar";
-import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import SplashGraphgic from "../util-components/HomePageSplashGraphic/SplashGraphic";
 import DetailsGrid from "../util-components/HomePageDetailsGrid/DetailsGrid";
 import MenuHeader from "../util-components/MenuHeader/MenuHeader";
 
 function Home(){
-
-    const [query, setQuery] = useState<SearchContextStructure|null>(null);
-    const exResult = useNPMFetch(query);
     
     return(
         <div>
@@ -26,7 +20,7 @@ function Home(){
                             Monitor the health of packages across the NPM ecosystem and retrieve up to date reporting to guide decisions on package inclusion.
                         </p>
                         
-                        <SearchBar onSearch={setQuery}/>
+                        <SearchBar/>
                     </div>
                     
                     <SplashGraphgic/>
@@ -34,26 +28,7 @@ function Home(){
             </div>
             <div style={{"display": "flex", "justifyContent": "center", "padding": "40px 0px"}}>
                 <DetailsGrid/>
-            </div>
-            {exResult.loading && 
-                <div>Loading</div>
-            }
-
-            {exResult.fetchError && 
-                <div id="info">
-                    <p className="info">{exResult.fetchError.toString()}</p>
-                </div>
-            }
-            {exResult.packageData && 
-                <div id="info">
-                    {Object.entries(exResult.packageData).map(([key, value]) => (
-                        <div key={key}>
-                            <p className="info">{`${key}: ${String(value)}`}</p>
-                        </div>
-                    ))}
-                </div>
-            }
-            
+            </div>   
             
         </div>
     );
