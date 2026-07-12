@@ -16,7 +16,7 @@ import com.giosmdev.package_radar.service.ApiLayer.NPMService;
 
 //@CrossOrigin(origins = "http://localhost:5173")
 @RestController //combines @Controller and @ResponseBody: Tells SB this class handles http requests and return JSON
-@RequestMapping("/api/packages") //maps http requests to specific controller classes: base url for all endpoints in this controller
+@RequestMapping("/api/package") //maps http requests to specific controller classes: base url for all endpoints in this controller
 public class PackageController {
 
     //Constructor injection: prefered way over auto injection
@@ -28,7 +28,7 @@ public class PackageController {
         this.requestBucket = requestBucket;
     }
 
-    @GetMapping("/{pkgName}")
+    @GetMapping("/npm/{pkgName}")
     public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String pkgName){
         if(requestBucket.tryConsume(1)){
             return npmService.getReport(pkgName);
@@ -36,7 +36,7 @@ public class PackageController {
         return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }
 
-    @GetMapping("{scope}/{pkgName}")
+    @GetMapping("/npm/{scope}/{pkgName}")
     public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String scope, @PathVariable String pkgName){
         String concatenatedQuery = scope + "/" + pkgName;
         if(requestBucket.tryConsume(1)){
