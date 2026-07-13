@@ -32,6 +32,6 @@ public class PackagesEntity {
     private EcosystemEntity ecosystem;
 
     @Column(name = "package_name", nullable = false, length = 255)
-    private String package_name;
+    private String packageName;
 
 }

@@ -30,7 +30,7 @@ public class PackageHealthSnapShots_Entity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "package_id", nullable = false)
-    private PackagesEntity pkge;
+    private PackagesEntity pkg;
     
     //Check constraint is handled by sql schema
     @Column(name = "aggregate_score", nullable = false, precision = 5, scale = 2)
