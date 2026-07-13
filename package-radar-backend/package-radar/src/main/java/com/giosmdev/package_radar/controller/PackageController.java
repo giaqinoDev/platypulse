@@ -38,6 +38,7 @@ public class PackageController {
 
     @GetMapping("/npm/{scope}/{pkgName}")
     public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String scope, @PathVariable String pkgName){
+        System.out.println("Scoped Package");
         String concatenatedQuery = scope + "/" + pkgName;
         if(requestBucket.tryConsume(1)){
             return npmService.getReport(concatenatedQuery);

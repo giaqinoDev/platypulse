@@ -8,6 +8,7 @@ function App() {
     <Routes>
       <Route path="/home" element={<Home/>}/>
       <Route path="/package/:ecosystem/:packageName" element={<AboutPage/>}/>
+      <Route path="/package/:ecosystem/:scope/:packageName" element={<AboutPage/>}/>
       <Route path="*" element={<Home/>}/>
     </Routes>
   )

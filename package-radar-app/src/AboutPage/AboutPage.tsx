@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 
 function AboutPage(){
-    const {ecosystem, packageName} = useParams();
+    const {ecosystem, scope, packageName} = useParams();
     const [query, setQuery] = useState<SearchContextStructure|null>(null);
     const exResult = useNPMFetch(query);
 
@@ -15,14 +15,23 @@ function AboutPage(){
             return;
         }
 
-        const constructedQuery : SearchContextStructure = {
-            search_term: packageName.split("/"),
-            ecosystem: ecosystem
+        let constructedQuery : SearchContextStructure;
+        if(scope){
+            constructedQuery = {
+                search_term: ["@" + scope, packageName],
+                ecosystem: ecosystem
+            }
+        }
+        else{
+            constructedQuery = {
+                search_term: [packageName],
+                ecosystem: ecosystem
+            }
         }
 
         setQuery(constructedQuery);
-        
-    }, [ecosystem, packageName])
+
+    }, [ecosystem, scope, packageName])
     return(
         <div>
             <MenuHeader/>
