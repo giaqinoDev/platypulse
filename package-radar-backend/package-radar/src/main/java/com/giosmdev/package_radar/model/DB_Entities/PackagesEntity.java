@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
@@ -33,5 +34,9 @@ public class PackagesEntity {
 
     @Column(name = "package_name", nullable = false, length = 255)
     private String packageName;
+
+    @OneToOne(optional = false)
+    @JoinColumn(name = "latest_report_id")
+    private PackageHealthSnapShots_Entity latest_report;
 
 }

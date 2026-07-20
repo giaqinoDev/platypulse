@@ -31,7 +31,6 @@ public class NPMService {
     }
 
     public Mono<ResponseEntity<HealthScoreReport>> getReport(String pkgName){
-        System.out.println(plp_db_service.getAllEcosystems().get(0).getEco());
         Mono<ResponseEntity<RawNpmPayload>> raw_response = rawNPMRegResponse.genRawNPMResponse(pkgName);
         
         // Mono<ResponseEntity<UniversalPackageFeatures>> extracted_signals = raw_response.map((response) -> {
