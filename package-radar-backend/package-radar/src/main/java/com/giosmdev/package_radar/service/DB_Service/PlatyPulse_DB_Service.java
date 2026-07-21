@@ -9,20 +9,24 @@ import org.springframework.stereotype.Service;
 import com.giosmdev.package_radar.model.DB_Entities.EcosystemEntity;
 import com.giosmdev.package_radar.model.DB_Entities.PackageHealthSnapShots_Entity;
 import com.giosmdev.package_radar.model.DB_Entities.PackagesEntity;
+import com.giosmdev.package_radar.model.DB_Entities.RawSignals_Entity;
 import com.giosmdev.package_radar.repository.EcosystemRepository;
 import com.giosmdev.package_radar.repository.PackageHealthScoreRepository;
 import com.giosmdev.package_radar.repository.PackageRepository;
+import com.giosmdev.package_radar.repository.RawSignalsRepository;
 
 @Service
 public class PlatyPulse_DB_Service {
 
     private EcosystemRepository ecosystemRepo;
     private PackageHealthScoreRepository pkgHealthRepo;
+    private RawSignalsRepository rawSignalsRepo;
     private PackageRepository pkgRepo;
-    public PlatyPulse_DB_Service(EcosystemRepository ecosystemRepo, PackageRepository pkgRepo, PackageHealthScoreRepository pkgHealthRepo){
+    public PlatyPulse_DB_Service(EcosystemRepository ecosystemRepo, PackageRepository pkgRepo, PackageHealthScoreRepository pkgHealthRepo, RawSignalsRepository rawSignalsRepo){
         this.pkgRepo = pkgRepo;
         this.ecosystemRepo = ecosystemRepo;
         this.pkgHealthRepo = pkgHealthRepo;
+        this.rawSignalsRepo = rawSignalsRepo;
     }
 
     public List<EcosystemEntity> getAllEcosystems(){
@@ -36,6 +40,11 @@ public class PlatyPulse_DB_Service {
         }
         PackagesEntity pkg = queriedPkg.get(); //gets the result of query
         PackageHealthSnapShots_Entity latestReport = pkg.getLatest_report();
+        if(latestReport == null){
+            return null;
+        }
+        Optional<RawSignals_Entity> raw_signals = rawSignalsRepo.findBypkgHealthSnapShot_id(latestReport.getId());
+        //Add combining logic
         return latestReport;
     }
 }
