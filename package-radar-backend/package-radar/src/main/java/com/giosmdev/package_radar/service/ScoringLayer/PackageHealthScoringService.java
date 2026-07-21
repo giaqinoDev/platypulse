@@ -3,12 +3,13 @@ package com.giosmdev.package_radar.service.ScoringLayer;
 import org.springframework.stereotype.Service;
 
 import com.giosmdev.package_radar.model.HealthScoreReport.HealthScoreReport;
+import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
 
 @Service
 public class PackageHealthScoringService {
 
-    public HealthScoreReport score(UniversalPackageFeatures features){
+    public HealthScoreReport score(UniversalPackageFeatures features, RawNpmPayload payload){
 
         double activity = calculateActivityScore(features);
         double maintenance = calculateMaintenanceScore(features);
@@ -27,7 +28,8 @@ public class PackageHealthScoringService {
             round(activity),
             round(maintenance),
             round(adoption),
-            round(risk)
+            round(risk),
+            payload
         );
     }
 

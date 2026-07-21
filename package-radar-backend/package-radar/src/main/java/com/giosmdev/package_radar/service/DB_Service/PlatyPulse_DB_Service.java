@@ -36,9 +36,6 @@ public class PlatyPulse_DB_Service {
         }
         PackagesEntity pkg = queriedPkg.get(); //gets the result of query
         PackageHealthSnapShots_Entity latestReport = pkg.getLatest_report();
-        if(latestReport == null){
-            return null;
-        }
         return latestReport;
     }
 }

@@ -40,7 +40,7 @@ public class NPMService {
         Mono<ResponseEntity<HealthScoreReport>> score_report_javaScript = raw_response.map((response) -> {
             if(response.getStatusCode().isSameCodeAs(HttpStatus.OK)){
                 UniversalPackageFeatures extracted_signals = signalExtractor.extractSignals(response.getBody());
-                return ResponseEntity.ok(scoringService.score(extracted_signals));
+                return ResponseEntity.ok(scoringService.score(extracted_signals, response.getBody()));
             }
             System.out.println(response.getStatusCode());
             return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders()).body(null);
