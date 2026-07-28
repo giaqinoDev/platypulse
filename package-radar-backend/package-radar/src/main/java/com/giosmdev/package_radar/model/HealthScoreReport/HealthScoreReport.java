@@ -5,6 +5,7 @@ import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tools.jackson.databind.JsonNode;
 
 @Data
 @AllArgsConstructor
@@ -16,5 +17,5 @@ public class HealthScoreReport {
     private double adoption;
     private double risk;
 
-    private RawNpmPayload raw_signals;
+    private JsonNode raw_signals;
 }

@@ -6,9 +6,11 @@ import com.giosmdev.package_radar.model.HealthScoreReport.HealthScoreReport;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
 
+import tools.jackson.databind.ObjectMapper;
+
 @Service
 public class PackageHealthScoringService {
-
+    ObjectMapper objMapper = new ObjectMapper();
     public HealthScoreReport score(UniversalPackageFeatures features, RawNpmPayload payload){
 
         double activity = calculateActivityScore(features);
@@ -29,7 +31,7 @@ public class PackageHealthScoringService {
             round(maintenance),
             round(adoption),
             round(risk),
-            payload
+            objMapper.valueToTree(payload) // Converts RawNpmResponse to JsonNode
         );
     }
 

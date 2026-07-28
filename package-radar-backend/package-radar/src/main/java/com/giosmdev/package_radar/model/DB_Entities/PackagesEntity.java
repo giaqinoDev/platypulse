@@ -35,7 +35,7 @@ public class PackagesEntity {
     @Column(name = "package_name", nullable = false, length = 255)
     private String packageName;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = true)
     @JoinColumn(name = "latest_report_id")
     private PackageHealthSnapShots_Entity latest_report;
 

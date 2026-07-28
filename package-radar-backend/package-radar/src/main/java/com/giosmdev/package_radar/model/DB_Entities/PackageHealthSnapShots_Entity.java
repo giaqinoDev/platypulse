@@ -48,15 +48,9 @@ public class PackageHealthSnapShots_Entity {
     @Column(name = "risk_score", nullable = false, precision = 5, scale = 2)
     private BigDecimal risk_score;
 
-    @Column(name = "last_scan", nullable = false)
-    private Instant last_scan;
-
     //No need to handle default now()
     @Column(name = "created_at", nullable = false)
     private Instant created_at;
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updated_at;
     
     @Column(name = "algorithm_v", nullable = false)
     private String algorithm_v;
