@@ -80,11 +80,9 @@ public class NPMService {
     public Mono<ResponseEntity<HealthScoreReport>> getReport(String pkgName){
         PackageLookUpResult latest_report = plp_db_service.getHealthScore(pkgName);
         if(latest_report.status() == LookupStatus.REPORT_FOUND || latest_report.status() == LookupStatus.RAW_SIGNALS_MISSING){
-            System.out.println("FOUND_____________________________________________________________________________");
             return Mono.just(ResponseEntity.ok(latest_report.report()));
         }
         Mono<ResponseEntity<HealthScoreReport>> generated_report = genReport(pkgName);
-        System.out.println("GENERATED: " + latest_report.status() + "------------------------------------------------------------------------------");
         return generated_report;
         
     }
