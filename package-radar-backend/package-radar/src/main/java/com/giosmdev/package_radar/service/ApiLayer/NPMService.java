@@ -1,27 +1,15 @@
 package com.giosmdev.package_radar.service.ApiLayer;
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import tools.jackson.databind.ObjectMapper;
-import com.giosmdev.package_radar.mappers.UniversalSignalsEntityMapper;
 import com.giosmdev.package_radar.model.DB_Entities.EcosystemEntity;
-import com.giosmdev.package_radar.model.DB_Entities.PackageHealthSnapShots_Entity;
-import com.giosmdev.package_radar.model.DB_Entities.PackagesEntity;
-import com.giosmdev.package_radar.model.DB_Entities.RawSignals_Entity;
-import com.giosmdev.package_radar.model.DB_Entities.UniversalSignals_Entity;
 import com.giosmdev.package_radar.model.HealthScoreReport.HealthScoreReport;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
 import com.giosmdev.package_radar.repository.EcosystemRepository;
-import com.giosmdev.package_radar.repository.PackageHealthScoreRepository;
-import com.giosmdev.package_radar.repository.PackageRepository;
-import com.giosmdev.package_radar.repository.RawSignalsRepository;
-import com.giosmdev.package_radar.repository.UnviersalSignalsRepository;
 //Repositories
 import com.giosmdev.package_radar.service.RawNPMRegistryResponse.RawNPMRegistryResponse;
 import com.giosmdev.package_radar.service.DB_Service.PlatyPulse_DB_Service;
@@ -31,7 +19,6 @@ import com.giosmdev.package_radar.service.ExtractionLayer.SignalExtraction;
 import com.giosmdev.package_radar.service.ScoringLayer.PackageHealthScoringService;
 
 import reactor.core.publisher.Mono;
-import tools.jackson.databind.JsonNode;
 
 
 @Service
