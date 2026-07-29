@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.model.ExceptionHandling;
+package com.giosmdev.package_radar.dto;
 
 import java.time.LocalDateTime;
 
