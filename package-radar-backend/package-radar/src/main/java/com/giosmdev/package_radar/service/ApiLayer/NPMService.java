@@ -42,15 +42,7 @@ public class NPMService {
     private PlatyPulse_DB_Service plp_db_service;
 
     //Repositories------------------------------------
-    private PackageHealthScoreRepository pkgHealthRepo;
-    private RawSignalsRepository rawSignalsRepo;
-    private PackageRepository pkgRepo;
     private EcosystemRepository ecosystem_repo;
-    private UnviersalSignalsRepository uni_signals_repo;
-
-    //Mappers-----------------------------------------
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private UniversalSignalsEntityMapper usE_Mapper;
 
     //Spring expects all constructor injections to be done in one consturctor
     public NPMService(
@@ -58,23 +50,13 @@ public class NPMService {
         SignalExtraction signalExtractor, 
         PackageHealthScoringService scoringService, 
         PlatyPulse_DB_Service plp_db_service, 
-        EcosystemRepository ecosystem_repo,
-        PackageRepository pkgRepo,
-        UniversalSignalsEntityMapper usE_Mapper,
-        UnviersalSignalsRepository uni_signals_repo,
-        PackageHealthScoreRepository pkgHealthRepo,
-        RawSignalsRepository rawSignalsRepo
+        EcosystemRepository ecosystem_repo
     ){
         this.rawNPMRegResponse = rawNPMRegResponse;
         this.ecosystem_repo = ecosystem_repo;
-        this.pkgRepo = pkgRepo;
         this.signalExtractor = signalExtractor;
         this.scoringService = scoringService;
         this.plp_db_service = plp_db_service;
-        this.usE_Mapper = usE_Mapper;
-        this.uni_signals_repo = uni_signals_repo;
-        this.pkgHealthRepo = pkgHealthRepo;
-        this.rawSignalsRepo = rawSignalsRepo;
     }
 
     public Mono<ResponseEntity<HealthScoreReport>> getReport(String pkgName){
@@ -101,49 +83,7 @@ public class NPMService {
                 UniversalPackageFeatures extracted_signals = signalExtractor.extractSignals(response.getBody());
                 HealthScoreReport generated_report = scoringService.score(extracted_signals, response.getBody());
 
-                //DB Entity Mapping----------------------------------------------------------------------
-                Instant timeInstant = Instant.now();
-                PackageHealthSnapShots_Entity snapShot = new PackageHealthSnapShots_Entity();
-                snapShot.setAggregate_score(BigDecimal.valueOf(generated_report.getOverall()));
-                snapShot.setActivity_score(BigDecimal.valueOf(generated_report.getActivity()));
-                snapShot.setMaintenance_score(BigDecimal.valueOf(generated_report.getMaintenance()));
-                snapShot.setAdoption_score(BigDecimal.valueOf(generated_report.getAdoption()));
-                snapShot.setRisk_score(BigDecimal.valueOf(generated_report.getRisk()));
-                snapShot.setCreated_at(timeInstant);
-                snapShot.setAlgorithm_v(System.getenv("ALGORITHM_VERSION"));
-
-                UniversalSignals_Entity universal_signals = usE_Mapper.toEntity(extracted_signals);
-                universal_signals.setCalculated_at(timeInstant);
-                
-                
-                RawSignals_Entity raw_signals = new RawSignals_Entity();
-                raw_signals.setFetched_at(timeInstant);
-                JsonNode ex = objectMapper.valueToTree(response.getBody());
-                raw_signals.setRaw_data(ex);
-                
-
-                Optional<PackagesEntity> queried_pkg = pkgRepo.findByPackageNameAndEcosystem_id(pkgName, 1);
-                PackagesEntity pkg;
-                if(!queried_pkg.isPresent()){
-                    pkg = new PackagesEntity(null, ecosystem.get(), pkgName, null);
-                }
-                else{
-                    pkg = queried_pkg.get();
-                }
-
-                pkg = pkgRepo.save(pkg);
-                snapShot.setPkg(pkg);
-                snapShot= pkgHealthRepo.save(snapShot);
-
-                universal_signals.setPkgHealthSnapShot(snapShot);
-                raw_signals.setPkgHealthSnapShot(snapShot);
-
-                uni_signals_repo.save(universal_signals);
-                System.out.println("-----------------------------" + raw_signals.getRaw_data().getClass());
-                rawSignalsRepo.save(raw_signals);
-
-                pkg.setLatest_report(snapShot);
-                pkgRepo.save(pkg);
+                plp_db_service.writeToDB(pkgName, ecosystem.get(), generated_report, extracted_signals, response.getBody());
 
                 return ResponseEntity.ok(generated_report);
             }
