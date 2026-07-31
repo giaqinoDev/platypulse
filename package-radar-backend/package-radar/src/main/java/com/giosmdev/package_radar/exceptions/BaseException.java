@@ -8,13 +8,14 @@ import lombok.Getter;
 public class BaseException extends RuntimeException{
     private final String errorCode;
     private final HttpStatus httpStatus;
-    private final String[] suggestions;
-
-    public BaseException(String message, String errorCode, HttpStatus httpStatus, String[] suggestions){
+    private final String route;
+    private final Throwable cause;
+    public BaseException(String message, String errorCode, HttpStatus httpStatus, String route, Throwable cause){
         super(message);
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
-        this.suggestions = suggestions;
+        this.route = route;
+        this.cause = cause;
     }
     
 }

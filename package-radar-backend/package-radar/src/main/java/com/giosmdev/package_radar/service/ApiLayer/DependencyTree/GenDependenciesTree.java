@@ -9,11 +9,18 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.giosmdev.package_radar.configs.APIResponseLayer.FallbackFetch;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiNotFoundException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiRateLimitException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiUnavailableException;
 import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependenciesInfo;
 import com.giosmdev.package_radar.model.NPMRegistry.DependenciesTree.DependencyTree;
+import com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling.ApiErrorInterceptor;
 
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -22,15 +29,17 @@ import tools.jackson.databind.JsonNode;
 @Service
 public class GenDependenciesTree {
     private WebClient webClient;
+    private ApiErrorInterceptor apiErrorInterceptor;
     private final int maxDepth = 6;
     private final int maxRequests = 100;
     private String BASE_PACKAGE_URL ="https://registry.npmjs.org";
 
     private final AtomicInteger requestCount = new AtomicInteger(0);
     private DepNode final_leaf;
-    Map<String, Mono<JsonNode>> proccessedDeps_Map = new ConcurrentHashMap<>();
-    public GenDependenciesTree(WebClient webClient){
+    Map<String, Mono<FallbackFetch<JsonNode>>> proccessedDeps_Map = new ConcurrentHashMap<>();
+    public GenDependenciesTree(WebClient webClient, ApiErrorInterceptor apiErrorInterceptor){
         this.webClient = webClient;
+        this.apiErrorInterceptor = apiErrorInterceptor;
     }
 
     private static class DepNode {
@@ -97,45 +106,56 @@ public class GenDependenciesTree {
         String version = versionRaw.startsWith("^") ? versionRaw.substring(1) : versionRaw;
 
         String key = name + "@" + version;
-
+        String path = BASE_PACKAGE_URL + "/" + name;
         try {
-            JsonNode response = proccessedDeps_Map
-                .computeIfAbsent(key, k ->
-                    webClient.get()
-                        .uri(BASE_PACKAGE_URL + "/{name}", name)
+            FallbackFetch<JsonNode> response = proccessedDeps_Map
+                .computeIfAbsent(key, k -> {
+
+                    Mono<JsonNode> subdep_response = webClient.get()
+                        .uri(path)
                         .retrieve()
                         .onStatus(
-                            status -> status.is4xxClientError(),
-                            fetchResponse -> Mono.empty()
+                            status -> status.value() == 404,
+                            fetchResponse -> Mono.just(new ExternalApiNotFoundException("Sub dependency not found", path))
+                        )
+                        .onStatus(
+                            status -> status.value() == 429,
+                            fetchResponse -> Mono.just(new ExternalApiRateLimitException("Rate limit exceeded on sub dependecy look up", path))
                         )
                         .onStatus(
                             status -> status.is5xxServerError(),
-                            fetchResponse -> Mono.empty()
+                            fetchResponse -> Mono.just(new ExternalApiUnavailableException("Npm Registry unavailiable", path))
                         )
                         .bodyToMono(JsonNode.class)
                         .retry(1)
                         .cache()
-                        .timeout(Duration.ofSeconds(5))
+                        .timeout(Duration.ofSeconds(5));
+                    
+                    Mono<FallbackFetch<JsonNode>> fallback_response = apiErrorInterceptor.handle(subdep_response);
+                    return fallback_response;
+                        /*
                         .onErrorResume(e -> {
                             System.out.println("Dep Tree Sub Deps error");
                             e.printStackTrace();
-                            return Mono.empty();
-                        }) //DOnt care enough to properly catch error and bubble it up
+                            return null;
+                        }); //DOnt care enough to properly catch error and bubble it up
+                         */
+                    }
                 )//computeIfAbsent automatically adds Mono to map
                 .block(); //essentially completes the Mono, extracting the JsonNode out of Mono<JsonNode> and returning it
                 
-
-            if (response == null){
+            JsonNode response_data = response.getData();
+            if (response_data == null){
                 return Collections.emptyList();
             }
 
-            boolean deprecated = response.path("versions")
+            boolean deprecated = response_data.path("versions")
                                         .path(version)
                                         .has("deprecated");
 
             dep.setDepreciated(deprecated);
 
-            JsonNode depsNode = response.path("versions")
+            JsonNode depsNode = response_data.path("versions")
                                         .path(version)
                                         .path("dependencies");
 

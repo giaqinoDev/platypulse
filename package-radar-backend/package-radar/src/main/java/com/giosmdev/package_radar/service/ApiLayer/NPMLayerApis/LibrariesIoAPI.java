@@ -4,12 +4,13 @@ import java.time.Duration;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.giosmdev.package_radar.configs.APIResponseLayer.ApiStatus;
-import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
+import com.giosmdev.package_radar.configs.APIResponseLayer.FallbackFetch;
 import com.giosmdev.package_radar.configs.custom_exceptions.ProcessingException;
-import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiNotFoundException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiRateLimitException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiUnavailableException;
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
-import com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling.ApiErrorHandler;
+import com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling.ApiErrorInterceptor;
 
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
@@ -19,14 +20,15 @@ public class LibrariesIoAPI {
     //private String BASE_LIBRARIES_URL = "https://libraries.io/api/{platform}/{package_name}?api_key={API_KEY}";
     
     private WebClient webClient;
-    private ApiErrorHandler apiErrorHandler;
+    private ApiErrorInterceptor apiErrorInterceptor;
     private final String API_KEY = System.getenv("LIBRARIES_IO_API_KEY");
-    public LibrariesIoAPI(WebClient webClient, ApiErrorHandler apiErrorHandler){
+    public LibrariesIoAPI(WebClient webClient, ApiErrorInterceptor apiErrorInterceptor){
         this.webClient = webClient;
-        this.apiErrorHandler = apiErrorHandler;
+        this.apiErrorInterceptor = apiErrorInterceptor;
     }
 
-    public Mono<ApiStatus<LibrariesIOResponse>> fetch(String platform, String package_name){
+    public Mono<FallbackFetch<LibrariesIOResponse>> fetch(String platform, String package_name){
+        String route = "https/librares.io/api/" + platform + "/" + package_name;
         Mono<LibrariesIOResponse> package_info = webClient.get()
                         .uri(uriBuilder -> uriBuilder
                             .scheme("https")
@@ -37,13 +39,20 @@ public class LibrariesIoAPI {
                         )
                         .retrieve()
                         .onStatus(
-                            status -> status.is4xxClientError(),
-                            response -> Mono.error(new PackageNotFoundException())
-                        )
-                        .onStatus(
-                            status -> status.is5xxServerError(),
-                            response -> Mono.error(new RegistryException())
-                        )
+                                status -> status.value() == 404,
+                                response -> Mono.error(new ExternalApiNotFoundException("Package not found in LibrariesIO registry", route))
+                            )
+                            .onStatus(
+                                status -> status.value() == 429,
+                                response -> Mono.error(new ExternalApiRateLimitException("LibrariesIO registry rate limit exceeded", route))
+                            )
+                            .onStatus(
+                                status -> status.is5xxServerError(),
+                                response -> {
+                                    System.out.println("500 Level Error");
+                                    return Mono.error(new ExternalApiUnavailableException("LibrariesIO Registry unavailable", route));
+                                }
+                            )
                         .bodyToMono(JsonNode.class)
                         .timeout(Duration.ofSeconds(10))
                         .map(response -> {
@@ -57,7 +66,7 @@ public class LibrariesIoAPI {
                                 throw new ProcessingException(error.getStackTrace());
                             }
                         });
-        Mono<ApiStatus<LibrariesIOResponse>> wrapped_result = apiErrorHandler.handle(package_info);
+        Mono<FallbackFetch<LibrariesIOResponse>> wrapped_result = apiErrorInterceptor.handle(package_info);
         return wrapped_result;
     }
 }

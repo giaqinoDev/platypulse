@@ -3,12 +3,12 @@ package com.giosmdev.package_radar.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.giosmdev.package_radar.configs.APIResponseLayer.FallbackFetch;
 import com.giosmdev.package_radar.model.GitHubRegistry.RawGitHubResponse;
 import com.giosmdev.package_radar.service.ApiLayer.GitHubService;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -21,7 +21,7 @@ public class TestController {
         this.gitHubService = gitHubService;
     }
     @GetMapping("github-reg-test")
-    public Mono<ResponseEntity<RawGitHubResponse>> getGitHubRes() {
+    public Mono<FallbackFetch<RawGitHubResponse>> getGitHubRes() {
         return gitHubService.getGitHubResponse("bat", "shit");
     }
     

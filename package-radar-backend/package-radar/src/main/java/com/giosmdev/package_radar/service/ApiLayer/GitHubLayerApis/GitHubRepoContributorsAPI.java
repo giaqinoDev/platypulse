@@ -6,12 +6,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.giosmdev.package_radar.configs.APIResponseLayer.ApiStatus;
+import com.giosmdev.package_radar.configs.APIResponseLayer.FallbackFetch;
 import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
-import com.giosmdev.package_radar.configs.custom_exceptions.ProcessingException;
 import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.GitHubRegistry.RepoContributorsInfo;
-import com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling.ApiErrorHandler;
+import com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling.ApiErrorInterceptor;
 
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
@@ -19,14 +18,14 @@ import tools.jackson.databind.JsonNode;
 @Service
 public class GitHubRepoContributorsAPI {
     private final WebClient webClient;
-    private final ApiErrorHandler errorHandler;
+    private final ApiErrorInterceptor apiErrorInterceptor;
 
-    public GitHubRepoContributorsAPI(WebClient webClient, ApiErrorHandler errorHandler){
+    public GitHubRepoContributorsAPI(WebClient webClient, ApiErrorInterceptor apiErrorInterceptor){
         this.webClient = webClient;
-        this.errorHandler = errorHandler;
+        this.apiErrorInterceptor = apiErrorInterceptor;
     }
 
-    public Mono<ApiStatus<RepoContributorsInfo>> fetch(String group, String repo){
+    public Mono<FallbackFetch<RepoContributorsInfo>> fetch(String group, String repo){
         System.out.println("Fetching GItHub Repo contributors info from api");
 
         Mono<RepoContributorsInfo> contributors_info = webClient.get()
@@ -58,7 +57,7 @@ public class GitHubRepoContributorsAPI {
                                     .bodyToMono(JsonNode.class)
                                     .timeout(Duration.ofSeconds(10))
                                     .map(response -> proccessResponse(response, null)); //header_payload.getHeaders()
-        Mono<ApiStatus<RepoContributorsInfo>> wrapper_result = errorHandler.handle(contributors_info);
+        Mono<FallbackFetch<RepoContributorsInfo>> wrapper_result = apiErrorInterceptor.handle(contributors_info);
         return wrapper_result;
     }
 
@@ -71,28 +70,20 @@ public class GitHubRepoContributorsAPI {
         int top_contributor_commits = contributors.get(0).get("contributions").asInt();
         double top_commits_ratio;
 
-        //int contributors_count = findContributorCount(header);
+        contributors.forEach(contributor -> {
+            String contributor_name = contributor.get("login").asString();
+            String contributor_type = contributor.get("type").asString();
+            int contributor_commit_amount = contributor.get("contributions").asInt();
 
-        try{
-            contributors.forEach(contributor -> {
-                String contributor_name = contributor.get("login").asString();
-                String contributor_type = contributor.get("type").asString();
-                int contributor_commit_amount = contributor.get("contributions").asInt();
+            if(contributor_name.contains("[bot]") || contributor_type.equals("Bot")){
+                return;
+            }
+            int old_amount = total_commits.get();
+            total_commits.set(contributor_commit_amount + old_amount);
+        });
 
-                if(contributor_name.contains("[bot]") || contributor_type.equals("Bot")){
-                    return;
-                }
-                int old_amount = total_commits.get();
-                total_commits.set(contributor_commit_amount + old_amount);
-            });
-
-            top_commits_ratio = top_contributor_commits / (double) total_commits.get();
-            int contributors_count = contributors.size(); // filtered out bots from contributors list
-            return new RepoContributorsInfo(total_commits.get(), contributors_count, top_contributor_commits, top_commits_ratio);
-        }
-        catch(Exception error){
-            error.printStackTrace();
-            throw new ProcessingException(error.getStackTrace());
-        }
+        top_commits_ratio = top_contributor_commits / (double) total_commits.get();
+        int contributors_count = contributors.size(); // filtered out bots from contributors list
+        return new RepoContributorsInfo(total_commits.get(), contributors_count, top_contributor_commits, top_commits_ratio);
     }
 }

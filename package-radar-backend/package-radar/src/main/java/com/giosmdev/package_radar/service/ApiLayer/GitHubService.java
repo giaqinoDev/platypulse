@@ -1,9 +1,8 @@
 package com.giosmdev.package_radar.service.ApiLayer;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.giosmdev.package_radar.configs.APIResponseLayer.FallbackFetch;
 import com.giosmdev.package_radar.model.GitHubRegistry.RawGitHubResponse;
 import com.giosmdev.package_radar.service.RawGitHubRegistryResponse.RawGitHubRegistryResponse;
 
@@ -16,9 +15,9 @@ public class GitHubService {
         this.rawGitHubResponse = rawGitHubResponse;
     }
     
-    public Mono<ResponseEntity<RawGitHubResponse>> getGitHubResponse(String group, String repo){
+    public Mono<FallbackFetch<RawGitHubResponse>> getGitHubResponse(String group, String repo){
         if(group == null || repo == null){
-            return Mono.just(ResponseEntity.status(HttpStatus.NO_CONTENT).body(null));
+            return Mono.just(new FallbackFetch<RawGitHubResponse>(null, null));
         }
         return rawGitHubResponse.genRawGitHubResponse(group, repo);
     }
