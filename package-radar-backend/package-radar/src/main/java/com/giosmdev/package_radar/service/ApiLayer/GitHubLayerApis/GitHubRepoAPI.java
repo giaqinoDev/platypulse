@@ -8,8 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.configs.APIResponseLayer.FallbackFetch;
-import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
-import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiNotFoundException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiRateLimitException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiUnavailableException;
 import com.giosmdev.package_radar.model.GitHubRegistry.PackageRepoInfo;
 import com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling.ApiErrorInterceptor;
 
@@ -31,6 +32,8 @@ public class GitHubRepoAPI {
     public Mono<PackageRepoInfo> fetch(String group, String repo){
         String search_query_parm = "repo:" + group + "/" + repo + "+type:issue+state:";
         System.out.println("Github repo api call");
+        String route = "https/api.github.com/repos/" + group +"/" + repo;
+
         //Priority API Call
         Mono<PackageRepoInfo> gitHubAPI_res = webClient.get()
                         .uri(uriBuilder -> uriBuilder
@@ -44,15 +47,19 @@ public class GitHubRepoAPI {
                         .header("X-GitHub-Api-Version", "2026-03-10")
                         .retrieve()
                         .onStatus(
-                            status -> status.is4xxClientError(),
-                            response -> {
-                                System.out.println("GitHub Repo 404 Error");
-                                return Mono.error(new PackageNotFoundException());
-                            }
+                                status -> status.value() == 404,
+                                response -> Mono.error(new ExternalApiNotFoundException("Repo not found in GitHub registry", route))
+                        )
+                        .onStatus(
+                            status -> status.value() == 429,
+                            response -> Mono.error(new ExternalApiRateLimitException("GitHub registry rate limit exceeded", route))
                         )
                         .onStatus(
                             status -> status.is5xxServerError(),
-                            response -> Mono.error(new RegistryException())
+                            response -> {
+                                System.out.println("500 Level Error");
+                                return Mono.error(new ExternalApiUnavailableException("GitHub Registry unavailable", route));
+                            }
                         )
                         .bodyToMono(JsonNode.class)
                         .timeout(Duration.ofSeconds(10))
@@ -85,17 +92,18 @@ public class GitHubRepoAPI {
                                         .header("X-GitHub-Api-Version", "2026-03-10")
                                         .retrieve()
                                         .onStatus(
-                                            status -> status.is4xxClientError(),
-                                            response -> {
-                                                System.out.println("GitHub Api Search 400 level error");
-                                                return Mono.error(new PackageNotFoundException());
-                                            }
+                                                status -> status.value() == 404,
+                                                response -> Mono.error(new ExternalApiNotFoundException("Repo not found in GitHub registry", route + search_query_parm + "closed"))
+                                        )
+                                        .onStatus(
+                                            status -> status.value() == 429,
+                                            response -> Mono.error(new ExternalApiRateLimitException("GitHub registry rate limit exceeded", route + search_query_parm + "closed"))
                                         )
                                         .onStatus(
                                             status -> status.is5xxServerError(),
                                             response -> {
-                                                System.out.println("GitHub Repo Api Search 500 level error");
-                                                return Mono.error(new RegistryException());
+                                                System.out.println("500 Level Error");
+                                                return Mono.error(new ExternalApiUnavailableException("GitHub Registry unavailable", route + search_query_parm + "closed"));
                                             }
                                         )
                                         .bodyToMono(JsonNode.class)
@@ -120,17 +128,18 @@ public class GitHubRepoAPI {
                                         .header("X-GitHub-Api-Version", "2026-03-10")
                                         .retrieve()
                                         .onStatus(
-                                            status -> status.is4xxClientError(),
-                                            response -> {
-                                                System.out.println("GitHub Api Search 400 level error");
-                                                return Mono.error(new PackageNotFoundException());
-                                            }
+                                                status -> status.value() == 404,
+                                                response -> Mono.error(new ExternalApiNotFoundException("Repo not found in GitHub registry", route + search_query_parm + "open"))
+                                        )
+                                        .onStatus(
+                                            status -> status.value() == 429,
+                                            response -> Mono.error(new ExternalApiRateLimitException("GitHub registry rate limit exceeded", route + search_query_parm + "open"))
                                         )
                                         .onStatus(
                                             status -> status.is5xxServerError(),
                                             response -> {
-                                                System.out.println("GitHub Api Search 500 level error");
-                                                return Mono.error(new RegistryException());
+                                                System.out.println("500 Level Error");
+                                                return Mono.error(new ExternalApiUnavailableException("GitHub Registry unavailable", route + search_query_parm + "open"));
                                             }
                                         )
                                         .bodyToMono(JsonNode.class)

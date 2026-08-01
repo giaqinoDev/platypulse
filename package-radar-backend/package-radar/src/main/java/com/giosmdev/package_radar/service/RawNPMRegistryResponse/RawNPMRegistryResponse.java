@@ -1,14 +1,9 @@
 package com.giosmdev.package_radar.service.RawNPMRegistryResponse;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.giosmdev.package_radar.configs.APIResponseLayer.FallbackFetch;
-import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
-import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
 import com.giosmdev.package_radar.model.GitHubRegistry.RawGitHubResponse;
 import com.giosmdev.package_radar.model.LibrariesIO.LibrariesIOResponse;
 import com.giosmdev.package_radar.model.NPMRegistry.PackageInfo;

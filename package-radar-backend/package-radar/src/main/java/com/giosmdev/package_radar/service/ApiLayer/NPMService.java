@@ -78,7 +78,6 @@ public class NPMService {
             plp_db_service.writeToDB(pkgName, ecosystem.get(), generated_report, extracted_signals, response);
 
             return generated_report;
-            //return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders()).body(null);
         });
 
         return score_report_javaScript;

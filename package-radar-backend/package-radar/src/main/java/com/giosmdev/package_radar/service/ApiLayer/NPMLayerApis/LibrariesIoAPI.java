@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.configs.APIResponseLayer.FallbackFetch;
-import com.giosmdev.package_radar.configs.custom_exceptions.ProcessingException;
 import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiNotFoundException;
 import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiRateLimitException;
 import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiUnavailableException;
@@ -41,30 +40,25 @@ public class LibrariesIoAPI {
                         .onStatus(
                                 status -> status.value() == 404,
                                 response -> Mono.error(new ExternalApiNotFoundException("Package not found in LibrariesIO registry", route))
-                            )
-                            .onStatus(
-                                status -> status.value() == 429,
-                                response -> Mono.error(new ExternalApiRateLimitException("LibrariesIO registry rate limit exceeded", route))
-                            )
-                            .onStatus(
-                                status -> status.is5xxServerError(),
-                                response -> {
-                                    System.out.println("500 Level Error");
-                                    return Mono.error(new ExternalApiUnavailableException("LibrariesIO Registry unavailable", route));
-                                }
-                            )
+                        )
+                        .onStatus(
+                            status -> status.value() == 429,
+                            response -> Mono.error(new ExternalApiRateLimitException("LibrariesIO registry rate limit exceeded", route))
+                        )
+                        .onStatus(
+                            status -> status.is5xxServerError(),
+                            response -> {
+                                System.out.println("500 Level Error");
+                                return Mono.error(new ExternalApiUnavailableException("LibrariesIO Registry unavailable", route));
+                            }
+                        )
                         .bodyToMono(JsonNode.class)
                         .timeout(Duration.ofSeconds(10))
                         .map(response -> {
-                            try{
-                                int dependent_packages_count = response.get("dependents_count").asInt();
-                                int dependent_repos_count = response.get("dependent_repos_count").asInt();
+                            int dependent_packages_count = response.get("dependents_count").asInt();
+                            int dependent_repos_count = response.get("dependent_repos_count").asInt();
 
-                                return new LibrariesIOResponse(dependent_packages_count, dependent_repos_count);
-                            }
-                            catch(Exception error){
-                                throw new ProcessingException(error.getStackTrace());
-                            }
+                            return new LibrariesIOResponse(dependent_packages_count, dependent_repos_count);
                         });
         Mono<FallbackFetch<LibrariesIOResponse>> wrapped_result = apiErrorInterceptor.handle(package_info);
         return wrapped_result;

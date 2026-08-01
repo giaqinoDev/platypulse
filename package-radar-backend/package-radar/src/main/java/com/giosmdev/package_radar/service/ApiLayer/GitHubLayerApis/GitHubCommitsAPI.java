@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.giosmdev.package_radar.configs.APIResponseLayer.FallbackFetch;
-import com.giosmdev.package_radar.configs.custom_exceptions.PackageNotFoundException;
-import com.giosmdev.package_radar.configs.custom_exceptions.RegistryException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiNotFoundException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiRateLimitException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiUnavailableException;
 import com.giosmdev.package_radar.model.GitHubRegistry.RepoCommitInfo;
 import com.giosmdev.package_radar.service.ApiLayer.ApiErrorHandling.ApiErrorInterceptor;
 
@@ -31,6 +32,7 @@ public class GitHubCommitsAPI {
 
     public Mono<FallbackFetch<RepoCommitInfo>> fetch(String group, String repo){
         System.out.println("Fetching GitHub Repo commit info from api at: " + "https://api.github.com/repos/" + group + "/" + repo + "/commits");
+        String route = "https://api.github.com/repos/" + group + "/" + repo + "/commits";
         Mono<RepoCommitInfo> commit_info = webClient.get()
                             .uri(uriBuilder -> uriBuilder
                                 .scheme("https")
@@ -44,16 +46,19 @@ public class GitHubCommitsAPI {
                             .header("X-GitHub-Api-Version", "2026-03-10")
                             .retrieve()
                             .onStatus(
-                                status -> status.is4xxClientError(),
-                                reponse -> {
-                                    System.out.println("GitHub Commits 404 error");
-                                    return Mono.error(new PackageNotFoundException());
-                                }
+                                    status -> status.value() == 404,
+                                    response -> Mono.error(new ExternalApiNotFoundException("Repo not found in GitHub registry", route))
+                            )
+                            .onStatus(
+                                status -> status.value() == 429,
+                                response -> Mono.error(new ExternalApiRateLimitException("GitHub registry rate limit exceeded", route))
                             )
                             .onStatus(
                                 status -> status.is5xxServerError(),
-                                response -> {System.out.println("AAHHAHAH");
-                                return Mono.error(new RegistryException());}
+                                response -> {
+                                    System.out.println("500 Level Error");
+                                    return Mono.error(new ExternalApiUnavailableException("GitHub Registry unavailable", route));
+                                }
                             )
                             .bodyToMono(JsonNode.class)
                             .timeout(Duration.ofSeconds(10))
