@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.giosmdev.package_radar.exceptions.DataBaseExceptions.EcosystemNotFoundException;
 import com.giosmdev.package_radar.model.DB_Entities.EcosystemEntity;
 import com.giosmdev.package_radar.model.HealthScoreReport.HealthScoreReport;
 import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
@@ -18,6 +19,7 @@ import com.giosmdev.package_radar.service.DB_Service.PlatyPulse_DB_Service.Packa
 import com.giosmdev.package_radar.service.ExtractionLayer.SignalExtraction;
 import com.giosmdev.package_radar.service.ScoringLayer.PackageHealthScoringService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 
 
@@ -27,6 +29,8 @@ public class NPMService {
     private SignalExtraction signalExtractor;
     private PackageHealthScoringService scoringService;
     private PlatyPulse_DB_Service plp_db_service;
+    private HttpServletRequest requestServlet;
+
 
     //Repositories------------------------------------
     private EcosystemRepository ecosystem_repo;
@@ -37,44 +41,44 @@ public class NPMService {
         SignalExtraction signalExtractor, 
         PackageHealthScoringService scoringService, 
         PlatyPulse_DB_Service plp_db_service, 
-        EcosystemRepository ecosystem_repo
+        EcosystemRepository ecosystem_repo,
+        HttpServletRequest requestServlet
     ){
         this.rawNPMRegResponse = rawNPMRegResponse;
         this.ecosystem_repo = ecosystem_repo;
         this.signalExtractor = signalExtractor;
         this.scoringService = scoringService;
         this.plp_db_service = plp_db_service;
+        this.requestServlet = requestServlet;
     }
 
-    public Mono<ResponseEntity<HealthScoreReport>> getReport(String pkgName){
+    public Mono<HealthScoreReport> getReport(String pkgName){
         PackageLookUpResult latest_report = plp_db_service.getHealthScore(pkgName);
         if(latest_report.status() == LookupStatus.REPORT_FOUND || latest_report.status() == LookupStatus.RAW_SIGNALS_MISSING){
-            return Mono.just(ResponseEntity.ok(latest_report.report()));
+            return Mono.just(latest_report.report()); //WORK ON!!!!
         }
-        Mono<ResponseEntity<HealthScoreReport>> generated_report = genReport(pkgName);
+        Mono<HealthScoreReport> generated_report = genReport(pkgName);
         return generated_report;
         
     }
 
-    private Mono<ResponseEntity<HealthScoreReport>> genReport(String pkgName){
-        Mono<ResponseEntity<RawNpmPayload>> raw_response = rawNPMRegResponse.genRawNPMResponse(pkgName);
+    private Mono<HealthScoreReport> genReport(String pkgName){
+        Mono<RawNpmPayload> raw_response = rawNPMRegResponse.genRawNPMResponse(pkgName);
 
-        Mono<ResponseEntity<HealthScoreReport>> score_report_javaScript = raw_response.map((response) -> {
-            if(response.getStatusCode().isSameCodeAs(HttpStatus.OK)){
-                Optional<EcosystemEntity> ecosystem = ecosystem_repo.findById(1); //npm entry
-                if(!ecosystem.isPresent()){
-                    System.out.println("Ecosystem Does not Exist");
-                    return ResponseEntity.status(404).build();
-                }
-
-                UniversalPackageFeatures extracted_signals = signalExtractor.extractSignals(response.getBody());
-                HealthScoreReport generated_report = scoringService.score(extracted_signals, response.getBody());
-
-                plp_db_service.writeToDB(pkgName, ecosystem.get(), generated_report, extracted_signals, response.getBody());
-
-                return ResponseEntity.ok(generated_report);
+        Mono<HealthScoreReport> score_report_javaScript = raw_response.map((response) -> {
+            Optional<EcosystemEntity> ecosystem = ecosystem_repo.findById(1); //npm entry
+            if(!ecosystem.isPresent()){
+                System.out.println("Ecosystem Does not Exist");
+                throw new EcosystemNotFoundException("Ecosystem not found in DB", requestServlet.getRequestURI().toString());
             }
-            return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders()).body(null);
+
+            UniversalPackageFeatures extracted_signals = signalExtractor.extractSignals(response);
+            HealthScoreReport generated_report = scoringService.score(extracted_signals, response);
+
+            plp_db_service.writeToDB(pkgName, ecosystem.get(), generated_report, extracted_signals, response);
+
+            return generated_report;
+            //return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders()).body(null);
         });
 
         return score_report_javaScript;

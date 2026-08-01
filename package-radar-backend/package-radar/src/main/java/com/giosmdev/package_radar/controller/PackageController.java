@@ -31,7 +31,9 @@ public class PackageController {
     @GetMapping("/npm/{pkgName}")
     public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String pkgName){
         if(requestBucket.tryConsume(1)){
-            return npmService.getReport(pkgName);
+            return npmService.getReport(pkgName).map(response -> {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            });
         }
         return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }
@@ -41,7 +43,9 @@ public class PackageController {
         System.out.println("Scoped Package");
         String concatenatedQuery = scope + "/" + pkgName;
         if(requestBucket.tryConsume(1)){
-            return npmService.getReport(concatenatedQuery);
+            return npmService.getReport(concatenatedQuery).map(response -> {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            });
         }
         return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }

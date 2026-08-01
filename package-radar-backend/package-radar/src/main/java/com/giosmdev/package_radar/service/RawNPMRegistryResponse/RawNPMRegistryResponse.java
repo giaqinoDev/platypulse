@@ -35,7 +35,7 @@ public class RawNPMRegistryResponse {
         this.gitHubService = gitHubService;
     }
 
-    public Mono<ResponseEntity<RawNpmPayload>> genRawNPMResponse(String pkgName){
+    public Mono<RawNpmPayload> genRawNPMResponse(String pkgName){
         //Call NPM registry call
         Mono<PackageInfo> npm_reg_response = npmRegistryAPI.getPackageInfo(pkgName);
 
@@ -46,7 +46,7 @@ public class RawNPMRegistryResponse {
 
         // Merge downloads timeline into response
         // if any of the arguements in Mono.zip are Mono.empty() then Mono.zip will return empty
-        Mono<ResponseEntity<RawNpmPayload>> NPMResponse = npm_reg_response.flatMap(package_info -> {
+        Mono<RawNpmPayload> NPMResponse = npm_reg_response.flatMap(package_info -> {
             System.out.println("DO IT!");
             String group = null;
             String repo = null;
@@ -74,23 +74,10 @@ public class RawNPMRegistryResponse {
 
                         LibrariesIOResponse libIO_Response = tuple.getT2().getData();
 
-                        return ResponseEntity.ok(new RawNpmPayload(package_info, downloads_timeline, libIO_Response, gitHub_response));
+                        return new RawNpmPayload(package_info, downloads_timeline, libIO_Response, gitHub_response);
                     });
             }
-        )
-        .onErrorResume(PackageNotFoundException.class, error ->
-                            Mono.just(ResponseEntity.status(404).build())
-                        )
-                        .onErrorResume(RegistryException.class, error ->
-                            Mono.just(ResponseEntity.status(503).build())
-                        )
-                        .onErrorResume(TimeoutException.class, error ->
-                            Mono.just(ResponseEntity.status(504).build())
-                        )
-                        .onErrorResume(error -> {
-                            error.printStackTrace();
-                            return Mono.just(ResponseEntity.status(500).build());
-                        });
+        );
         return NPMResponse;
     }
 
