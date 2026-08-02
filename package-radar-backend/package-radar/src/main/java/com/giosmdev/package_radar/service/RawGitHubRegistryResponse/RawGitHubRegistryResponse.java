@@ -2,7 +2,7 @@ package com.giosmdev.package_radar.service.RawGitHubRegistryResponse;
 
 import org.springframework.stereotype.Service;
 
-import com.giosmdev.package_radar.configs.APIResponseLayer.FallbackFetch;
+import com.giosmdev.package_radar.dto.FallbackFetch;
 import com.giosmdev.package_radar.model.GitHubRegistry.PackageRepoInfo;
 import com.giosmdev.package_radar.model.GitHubRegistry.RawGitHubResponse;
 import com.giosmdev.package_radar.model.GitHubRegistry.RepoCommitInfo;

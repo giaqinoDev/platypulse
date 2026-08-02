@@ -1,4 +1,4 @@
-package com.giosmdev.package_radar.configs.APIResponseLayer;
+package com.giosmdev.package_radar.dto;
 
 import com.giosmdev.package_radar.exceptions.BaseException;
 
