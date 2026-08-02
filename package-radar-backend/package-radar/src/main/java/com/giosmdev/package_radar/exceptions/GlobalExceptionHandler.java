@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.reactive.function.UnsupportedMediaTypeException;
 
 import com.giosmdev.package_radar.dto.ApiResponse;
 import com.giosmdev.package_radar.dto.ErrorDetails;
@@ -33,5 +34,19 @@ public class GlobalExceptionHandler {
         
         ApiResponse<Void> response = ApiResponse.error(error, request.getRequestURI());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UnsupportedMediaTypeException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnsuportedApiResponse(UnsupportedMediaTypeException exception, HttpServletRequest request){
+        ErrorDetails error = ErrorDetails.builder()
+                                .errorCode("UNSUPPORTED_MEDIA_TYPE")
+                                .message("Unable to handle api response")
+                                .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
+                                .details(null)
+                                .suggestions(null)
+                                .debugMessage(null)
+                                .build();
+        ApiResponse<Void> response = ApiResponse.error(error, request.getRequestURI());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
