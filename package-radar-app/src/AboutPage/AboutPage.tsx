@@ -4,6 +4,7 @@ import "./AboutPage.css"
 import useNPMFetch from "../NPMFetch/useNPMFetch";
 import { useState, useEffect } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
+import SideNavBar from "./SideNavBarComponents/SideNavBar";
 
 function AboutPage(){
     const {ecosystem, scope, packageName} = useParams();
@@ -33,34 +34,37 @@ function AboutPage(){
 
     }, [ecosystem, scope, packageName])
     return(
-        <div>
-            <MenuHeader/>
-            <div className="about-page-body">
-                <h1 className="about-page-hero">Package Health Insights</h1>
-                <p className="about-page-subheading">Platypulse analyzes open-source packages across ecosystems and transforms hundreds of maintenance, 
-                    adoption, activity, and risk signals into a single health score.</p>
-            </div>
-            <div>
-                
-            </div>
-            {exResult.loading && 
-                <div>Loading</div>
-            }
+        <div className="report-page-root">
+            <SideNavBar/>
+            <div className="report-page-body">
+                <MenuHeader/>
+                <div className="about-page-body">
+                    <h1 className="about-page-hero">Package Health Insights</h1>
+                    <p className="about-page-subheading">Platypulse analyzes open-source packages across ecosystems and transforms hundreds of maintenance, 
+                        adoption, activity, and risk signals into a single health score.</p>
+                </div>
+                <div>
+                    
+                </div>
+                {exResult.loading && 
+                    <div>Loading</div>
+                }
 
-            {exResult.fetchError && 
-                <div id="info">
-                    <p className="info">{exResult.fetchError.toString()}</p>
-                </div>
-            }
-            {exResult.packageData && 
-                <div id="info">
-                    {Object.entries(exResult.packageData).map(([key, value]) => (
-                        <div key={key}>
-                            <p className="info">{`${key}: ${String(value)}`}</p>
-                        </div>
-                    ))}
-                </div>
-            }
+                {exResult.fetchError && 
+                    <div id="info">
+                        <p className="info">{exResult.fetchError.toString()}</p>
+                    </div>
+                }
+                {exResult.packageData && 
+                    <div id="info">
+                        {Object.entries(exResult.packageData).map(([key, value]) => (
+                            <div key={key}>
+                                <p className="info">{`${key}: ${String(value)}`}</p>
+                            </div>
+                        ))}
+                    </div>
+                }
+            </div>
         </div>
     );
 }

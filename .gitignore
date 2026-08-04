@@ -5,3 +5,4 @@ build/
 
 .VSCodeCounter/
 .vscode/
+**/application.properties

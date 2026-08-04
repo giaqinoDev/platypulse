@@ -21,7 +21,11 @@
 .grid-element{
     background-color: white;/*#edf2f4;*/
     box-sizing: border-box; /* Includes padding within the width */
+    border-style: solid;
     border-radius: 8px;
+    border-color: #95a1b9;
+    border-width: 1px;
+    box-shadow: 0 10px 20px -10px rgba(41, 50, 65, 0.45);
     padding: 20px;
     margin: 3px;
 }

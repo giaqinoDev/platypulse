@@ -1,16 +1,16 @@
 import { IoSearchOutline } from "react-icons/io5";
 import EcosystemDropdown from "./EcosystemDropdown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./SearchBar.css"
 import { EcosystemsList } from "./EcosystemsList";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 function SearchBar(){
     const [searchTerm, setSearchTerm] = useState<string>("");
     //const regSearchContext = useContext(RegistrySearchContext);
     const ecosystemOptions = new EcosystemsList().getEcosystemOptions();
     const [activeOptionId, setActiveOptionId] = useState<number>(1);
-
+    const location = useLocation();
     const navigate = useNavigate();
 
     function constructSearchQuery(searchTerm : string){
@@ -21,6 +21,18 @@ function SearchBar(){
             ecosystem: activeOptionName
         };
     }
+
+    useEffect(() => {
+        if(location.pathname.includes("package/npm/")){
+            setActiveOptionId(1);
+        }
+        else if(location.pathname.includes("package/pypi/")){
+            setActiveOptionId(2);
+        }
+        else if(location.pathname.includes("package/yarn/")){
+            setActiveOptionId(3);
+        }
+    }, []);
 
     return (
         <form 
