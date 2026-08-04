@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.UnsupportedMediaTypeException;
 import com.giosmdev.package_radar.dto.ApiResponse;
 import com.giosmdev.package_radar.dto.ErrorDetails;
 import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiNotFoundException;
+import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiRateLimitException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -44,6 +45,20 @@ public class GlobalExceptionHandler {
                                 .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
                                 .details(null)
                                 .suggestions(null)
+                                .debugMessage(null)
+                                .build();
+        ApiResponse<Void> response = ApiResponse.error(error, request.getRequestURI());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ExternalApiRateLimitException.class)
+    public ResponseEntity<ApiResponse<Void>> handApiRateLimitException(ExternalApiRateLimitException exception, HttpServletRequest request){
+        ErrorDetails error = ErrorDetails.builder()
+                                .errorCode("TOO_MANY_REQUESTS")
+                                .message("Unable to execute report generation")
+                                .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
+                                .details(null)
+                                .suggestions(Arrays.asList("Please wait a few seconds before trying to generating a new report."))
                                 .debugMessage(null)
                                 .build();
         ApiResponse<Void> response = ApiResponse.error(error, request.getRequestURI());

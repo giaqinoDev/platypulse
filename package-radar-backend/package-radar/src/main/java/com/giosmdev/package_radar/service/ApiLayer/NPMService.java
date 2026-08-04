@@ -59,7 +59,6 @@ public class NPMService {
         }
         Mono<HealthScoreReport> generated_report = genReport(pkgName);
         return generated_report;
-        
     }
 
     private Mono<HealthScoreReport> genReport(String pkgName){
