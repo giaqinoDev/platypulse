@@ -23,6 +23,10 @@ public class PackageHealthScoringService {
             new double[]{activity, maintenance, adoption, risk},
             new double[]{0.15, 0.30, 0.35, 0.20}
         );
+
+        if(overall > 100.00){
+            overall = 100.00;
+        }
         
         System.out.println(maintenance);
         return new HealthScoreReport(
@@ -43,10 +47,15 @@ public class PackageHealthScoringService {
         double commitVolume = scoreCommitVolume(features.getCommits_last_30_days());
 
         //Sub category weighting
-        return weightedAverage(
+        Double avg = weightedAverage(
             new double[]{commitRecency, releaseRecency, commitVolume},
             new double[]{0.40, 0.35, 0.25}
         );
+
+        if(avg > 100.00){
+            return 100.00;
+        }
+        return avg;
     }
 
     //maintenance scoring
@@ -62,10 +71,15 @@ public class PackageHealthScoringService {
         System.out.println("releaseCadence: " + releaseCadence);
         System.out.println("Days since latest release: " + features.getDays_since_last_release());
         //Sub Category weighting
-        return weightedAverage(
+        Double avg = weightedAverage(
             new double[]{issueResponsiveness, busFactor, releaseCadence},
             new double[]{0.40, 0.35, 0.25}
         );
+
+        if(avg > 100.00){
+            return 100.00;
+        }
+        return avg;
     }
 
     //Adoption scoring
@@ -76,10 +90,15 @@ public class PackageHealthScoringService {
         double community = scoreCommunity(features.getStars(), features.getForks());
 
         //Sub category weighting
-        return weightedAverage(
+        Double avg =  weightedAverage(
             new double[]{downloads, dependents, community},
             new double[]{0.50, 0.30, 0.20}
         );
+
+        if(avg > 100.00){
+            return 100.00;
+        }
+        return avg;
     }
 
     //Risk scoring
@@ -90,10 +109,15 @@ public class PackageHealthScoringService {
         double deprecatedDependencies = scoreDeprecatedDependencies(features.getDirect_deprecated_dependencies(), features.getDirect_dependencies_count());
 
         //Sub category weighting
-        return weightedAverage(
+        Double avg = weightedAverage(
             new double[]{archived, dependencyDepth, deprecatedDependencies},
             new double[]{0.40, 0.35, 0.25}
         );
+
+        if(avg > 100.00){
+            return 100.00;
+        }
+        return avg;
     }
 
 
