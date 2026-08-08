@@ -160,7 +160,13 @@ public class NPMRegistryAPI {
                 .flatMap(name -> {
                         String dependency_name = name;
                         String dependency_version_raw = dependencies.get(name).asString();
-                        String dependency_version = dependency_version_raw.substring(1);
+                        String dependency_version;
+                        if(dependency_version_raw.length() > 0){
+                            dependency_version = dependency_version_raw.substring(1);
+                        }
+                        else{
+                            dependency_version = null;
+                        }
 
                         Mono<DependenciesInfo> dependency_info = webClient.get()
                                     .uri(BASE_PACKAGE_URL + "/{dependency_name}", dependency_name)
