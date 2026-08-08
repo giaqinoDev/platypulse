@@ -5,6 +5,7 @@ import useNPMFetch from "../NPMFetch/useNPMFetch";
 import { useState, useEffect } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import SideNavBar from "./SideNavBarComponents/SideNavBar";
+import HealthScoreRadialChart from "../util-components/ReportVisuals/HealthScoreRadialChart";
 
 function AboutPage(){
     const {ecosystem, scope, packageName} = useParams();
@@ -38,14 +39,7 @@ function AboutPage(){
             <SideNavBar/>
             <div className="report-page-body">
                 <MenuHeader/>
-                <div className="about-page-body">
-                    <h1 className="about-page-hero">Package Health Insights</h1>
-                    <p className="about-page-subheading">Platypulse analyzes open-source packages across ecosystems and transforms hundreds of maintenance, 
-                        adoption, activity, and risk signals into a single health score.</p>
-                </div>
-                <div>
-                    
-                </div>
+                <HealthScoreRadialChart input={exResult.packageData?.["overall"]}/>
                 {exResult.loading && 
                     <div>Loading</div>
                 }
@@ -56,6 +50,7 @@ function AboutPage(){
                     </div>
                 }
                 {exResult.packageData && 
+                    
                     <div id="info">
                         {Object.entries(exResult.packageData).map(([key, value]) => (
                             <div key={key}>

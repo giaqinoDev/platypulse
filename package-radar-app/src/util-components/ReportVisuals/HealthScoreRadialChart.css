@@ -1,0 +1,15 @@
+.radial-health-chart-container{
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+}
+.radial-health-score-label{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #293241;
+    font-family: "Geist Sans", sans-serif;
+    margin: 0;
+    font-weight: 700;
+}

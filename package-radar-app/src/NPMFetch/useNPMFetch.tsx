@@ -5,7 +5,7 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
     //const [queryResult, setQueryResult] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
-    const [packageData, setPackageData] = useState<JSON|null>(null);
+    const [packageData, setPackageData] = useState<Record<string, any> | null>(null);
 
     useEffect(() => {
         if(!queriedSearch){
