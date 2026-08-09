@@ -10,6 +10,7 @@ import tools.jackson.databind.JsonNode;
 @AllArgsConstructor
 public class PackageInfo {
     private String pkge_name;
+    private String description;
     private String latest_version;
     private LatestVersionInfo latest_version_info;
     private JsonNode versions_release_info;

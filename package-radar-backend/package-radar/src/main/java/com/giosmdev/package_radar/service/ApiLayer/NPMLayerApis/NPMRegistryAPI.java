@@ -103,6 +103,7 @@ public class NPMRegistryAPI {
     private Mono<PackageInfo> formatReponse(JsonNode response){   
         //JsonNode represents a general abstract node in a Json tree structure and allows you to handle Json data dynamicaly
         String name = response.path("name").asString(null);
+        String description = response.path("description").asString(null);
         String latest_v = response.path("dist-tags").path("latest").asString(null);
         JsonNode latest_v_reference = response.get("versions").get(latest_v);
         JsonNode repository = latest_v_reference.get("repository");
@@ -122,7 +123,7 @@ public class NPMRegistryAPI {
             homepage,node_version,npm_version, null,null);
 
         JsonNode versions_release_info = response.get("time");
-        PackageInfo package_info = new PackageInfo(name, latest_v, null, versions_release_info);
+        PackageInfo package_info = new PackageInfo(name, description, latest_v, null, versions_release_info);
         
         if(rawDependencies == null || rawDependencies.isEmpty()){
             latest_v_info.setDependencies(null);
