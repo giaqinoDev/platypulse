@@ -39,7 +39,12 @@ function AboutPage(){
             <SideNavBar/>
             <div className="report-page-body">
                 <MenuHeader/>
-                <HealthScoreRadialChart input={exResult.packageData?.["overall"]}/>
+                <div>
+                    <h1>{exResult.packageData?.raw_signals.package_info.pkge_name}</h1>
+                    <h3>{exResult.packageData?.raw_signals.package_info.description}</h3>
+                    <HealthScoreRadialChart input={exResult.packageData?.["overall"]}/>
+                </div>
+                
                 {exResult.loading && 
                     <div>Loading</div>
                 }

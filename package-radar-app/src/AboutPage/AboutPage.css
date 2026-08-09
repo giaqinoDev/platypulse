@@ -3,6 +3,9 @@
     flex-direction: row;
     height: 100dvh;
 }
+body{
+    font-family: "Geist Sans", sans-serif;
+}
 
 .report-page-body{
     width: 100%;
