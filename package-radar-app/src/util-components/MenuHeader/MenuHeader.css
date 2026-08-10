@@ -13,9 +13,11 @@
 
 .nav-section{
     margin-left: auto;
-
     display: flex;
     flex-direction: row;
+}
+.menu-header-search-bar{
+    width: 350px;
 }
 
 .nav-button{

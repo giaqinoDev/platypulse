@@ -38,13 +38,14 @@
     position: absolute;
     width: 20px;
     height: auto;
-    left: 10px;
+    left: 1px;
     color: #293241;
     cursor: pointer;
     transition: 0.25s ease;
+    margin: 0px 10px;
 }
 
 .search-icon:hover{
-    transform: scale(1.2);
+    transform: scale(1.1) rotate(20deg);
     transition: 0.25s ease;
 }

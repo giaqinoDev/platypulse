@@ -7,18 +7,13 @@ function MenuHeader(){
     const location = useLocation();
     return(
         <div className="menu-header-container">
-            {/* <Link to="/home">
-                <img src={platyPulse_svg} className="platy-pulse-svg"></img>
-            </Link> */}
             <div className="nav-section">
-                {location.pathname != "/home" && <SearchBar/>}
+                <div className="menu-header-search-bar">
+                    {location.pathname != "/home" && <SearchBar/>}
+                </div>
                 <Link to="/home" className="nav-button">
                     <p>Home</p>
                 </Link>
-                {/*<Link to="/about" className="nav-button">
-                    <p>About</p>
-                </Link>
-                */}
             </div>
         </div>
     );
