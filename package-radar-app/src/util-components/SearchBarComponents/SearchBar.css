@@ -40,4 +40,11 @@
     height: auto;
     left: 10px;
     color: #293241;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.search-icon:hover{
+    transform: scale(1.2);
+    transition: 0.25s ease;
 }

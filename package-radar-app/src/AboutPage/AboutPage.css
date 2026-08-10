@@ -7,8 +7,22 @@ body{
     font-family: "Geist Sans", sans-serif;
 }
 
+.report-overview-header{
+    display: flex;
+    margin: 50px;
+}
+.overview-header-container{
+}
 .report-page-body{
     width: 100%;
+}
+
+#overview-header-title{
+    color: #293241;
+}
+#overview-sub-header{
+    color: #646d7d;
+    font-size: larger;
 }
 .about-page-hero{
     font-family: "Geist Sans", sans-serif;

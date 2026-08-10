@@ -1,6 +1,6 @@
 import { IoSearchOutline } from "react-icons/io5";
 import EcosystemDropdown from "./EcosystemDropdown";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./SearchBar.css"
 import { EcosystemsList } from "./EcosystemsList";
 import { useLocation, useNavigate } from "react-router";
@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router";
 function SearchBar(){
     const [searchTerm, setSearchTerm] = useState<string>("");
     //const regSearchContext = useContext(RegistrySearchContext);
+    const formRef = useRef<HTMLFormElement>(null);
     const ecosystemOptions = new EcosystemsList().getEcosystemOptions();
     const [activeOptionId, setActiveOptionId] = useState<number>(1);
     const location = useLocation();
@@ -20,6 +21,12 @@ function SearchBar(){
             search_term: parsedSearchTerm,
             ecosystem: activeOptionName
         };
+    }
+
+    function handleIconClick(){
+        if(formRef.current){
+            formRef.current.requestSubmit();
+        }
     }
 
     useEffect(() => {
@@ -36,7 +43,8 @@ function SearchBar(){
 
     return (
         <form 
-            className="search-container" 
+            className="search-container"
+            ref={formRef} 
             onSubmit={(event) => {
                 event.preventDefault();
                 const query = constructSearchQuery(searchTerm.trim());
@@ -49,7 +57,7 @@ function SearchBar(){
                 }
             }}>
             <div className="search-field-container">
-                <IoSearchOutline className="search-icon"/>
+                <IoSearchOutline className="search-icon" onClick={() => {handleIconClick()}}/>
                 <input
                     className="package-search-bar" 
                     type="text" 
