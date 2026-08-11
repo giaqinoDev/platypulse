@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-
+import com.giosmdev.package_radar.dto.FallbackFetch;
 import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiNotFoundException;
 import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiRateLimitException;
 import com.giosmdev.package_radar.exceptions.ExternalAPIExceptions.ExternalApiUnavailableException;
@@ -26,14 +26,18 @@ import tools.jackson.databind.JsonNode;
 public class NPMRegistryAPI {
     private final WebClient webClient;
     private final GenDependenciesTree genDependenciesTree;
-    private final ApiErrorInterceptor apiErrorHandler;
     private final String BASE_PACKAGE_URL = "https://registry.npmjs.org";
     private final String BASE_DOWNLOAD_URL = "https://api.npmjs.org/downloads/range/last-year";
+    private final ApiErrorInterceptor apiErrorInterceptor;
 
-    public NPMRegistryAPI(WebClient webClient, GenDependenciesTree genDependenciesTree, ApiErrorInterceptor apiErrorHandler){
+    public NPMRegistryAPI(
+        WebClient webClient, 
+        GenDependenciesTree genDependenciesTree, 
+        ApiErrorInterceptor apiErrorHandler,
+        ApiErrorInterceptor apiErrorInterceptor){
         this.webClient = webClient;
         this.genDependenciesTree = genDependenciesTree;
-        this.apiErrorHandler = apiErrorHandler;
+        this.apiErrorInterceptor = apiErrorInterceptor;
     }
 
     public Mono<PackageInfo> getPackageInfo(String pkgName){
@@ -133,7 +137,7 @@ public class NPMRegistryAPI {
         }
 
         return formatDependenciesInfo(rawDependencies).flatMap(deps -> { //use .map when cuttin tree out
-            latest_v_info.setDependencies(deps);
+            latest_v_info.setDependencies(deps.stream().map(dep -> dep.getData()).toList());
             //return latest_v_info; //Use if you choose to cut out dependency trees as a whole
             return buildLatestVersionDepTree(latest_v_info, name, rawDependencies);
         })
@@ -150,14 +154,14 @@ public class NPMRegistryAPI {
         });
     }
 
-    private Mono<List<DependenciesInfo>> formatDependenciesInfo(JsonNode dependencies){
+    private Mono<List<FallbackFetch<DependenciesInfo>>> formatDependenciesInfo(JsonNode dependencies){
 
         if(dependencies == null){
             return null;
         }
 
         //Flux.fromIterable() converts argurments into a flux stream
-        Mono<List<DependenciesInfo>> formattedDependencies = Flux.fromIterable(dependencies.propertyNames())
+        Mono<List<FallbackFetch<DependenciesInfo>>> formattedDependencies = Flux.fromIterable(dependencies.propertyNames())
                 .flatMap(name -> {
                         String dependency_name = name;
                         String dependency_version_raw = dependencies.get(name).asString();
@@ -168,17 +172,24 @@ public class NPMRegistryAPI {
                         else{
                             dependency_version = null;
                         }
-
+                        String route = BASE_PACKAGE_URL + "/" + dependency_name;
                         Mono<DependenciesInfo> dependency_info = webClient.get()
                                     .uri(BASE_PACKAGE_URL + "/{dependency_name}", dependency_name)
                                     .retrieve()
                                     .onStatus(
-                                        status -> status.is4xxClientError(),
-                                        response -> Mono.error(new RuntimeException("Package not found"))
+                                            status -> status.value() == 404,
+                                            response -> Mono.error(new ExternalApiNotFoundException("Package not found in NPM registry", route))
+                                    )
+                                    .onStatus(
+                                        status -> status.value() == 429,
+                                        response -> Mono.error(new ExternalApiRateLimitException("NPM registry rate limit exceeded", route))
                                     )
                                     .onStatus(
                                         status -> status.is5xxServerError(),
-                                        response -> Mono.error(new RuntimeException("NPM Registry Error"))
+                                        response -> {
+                                            System.out.println("500 Level Error");
+                                            return Mono.error(new ExternalApiUnavailableException("NPM Registry unavailable", route));
+                                        }
                                     )
                                     .bodyToMono(JsonNode.class)
                                     .map(response -> {
@@ -193,7 +204,8 @@ public class NPMRegistryAPI {
                                         
                                         return new DependenciesInfo(dependency_name, dependency_version_raw, deprecated, null);
                                     });
-                        return dependency_info;
+                        Mono<FallbackFetch<DependenciesInfo>> dependency_info_fallback = apiErrorInterceptor.handle(dependency_info);
+                        return dependency_info_fallback;
                     }
                 ).collectList();
         return formattedDependencies;
