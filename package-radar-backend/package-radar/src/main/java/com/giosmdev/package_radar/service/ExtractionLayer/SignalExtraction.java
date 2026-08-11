@@ -75,7 +75,7 @@ public class SignalExtraction {
             DependencyTree dependency_tree = pkg_info.getLatest_version_info().getDependency_tree();
             if (dependencies != null) {
                 direct_dependencies_count = (double) dependencies.size();
-                direct_deprecated_dependencies = (double) dependencies.stream().filter(dep -> dep.getDepreciated() == true)
+                direct_deprecated_dependencies = (double) dependencies.stream().filter(dep -> dep !=null && dep.getDepreciated() == true)
                         .count();
             }
             if (dependency_tree != null) {
