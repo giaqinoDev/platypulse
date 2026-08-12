@@ -6,6 +6,12 @@ import { useState, useEffect } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import SideNavBar from "./SideNavBarComponents/SideNavBar";
 import HealthScoreRadialChart from "../util-components/ReportVisuals/HealthScoreRadialChart";
+import { FaNpm } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
+import { FaSquareGithub } from "react-icons/fa6";
+
+
+
 
 function AboutPage(){
     const {ecosystem, scope, packageName} = useParams();
@@ -43,6 +49,16 @@ function AboutPage(){
                     <div className="overview-header-container">
                         <h1 id="overview-header-title">{exResult.packageData?.raw_signals?.package_info?.pkge_name}</h1>
                         <p id="overview-sub-header">{exResult.packageData?.raw_signals?.package_info?.description}</p>
+                        <div className="icons-header">
+                            <a href={"https://www.npmjs.com/package/" + exResult.packageData?.raw_signals?.package_info?.pkge_name} target="_blank">
+                                <FaNpm className="reg-icon" id="npm-icon"/>
+                            </a>
+                            {exResult.packageData?.raw_signals?.package_info?.latest_version_info?.repository?.url &&
+                                <a href={"https://github.com" + exResult.packageData?.raw_signals?.package_info?.latest_version_info?.repository?.url.split("github.com")[1]} target="_blank">
+                                    <FaSquareGithub className="reg-icon" id="github-icon"/>
+                                </a>
+                            }
+                        </div>
                     </div>
                     <HealthScoreRadialChart input={exResult.packageData?.["overall"]}/>
                 </div>

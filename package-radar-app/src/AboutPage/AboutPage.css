@@ -41,3 +41,27 @@ body{
     font-weight: 100;
     color: #293241;
 }
+.icons-header{
+    display: flex;
+    align-items: center;
+}
+
+.reg-icon{
+    width: 30px;
+    height: auto;
+    margin-right: 15px;
+    color:#646d7d;
+    cursor: pointer;
+}
+
+#npm-icon{
+    width: 40px;
+}
+#npm-icon:hover{
+    color: #CB3837;
+    transition: color 0.25s ease;
+}
+#github-icon:hover{
+    color:#101411;
+    transition: color 0.25s ease;
+}
