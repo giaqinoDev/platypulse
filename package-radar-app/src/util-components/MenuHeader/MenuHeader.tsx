@@ -2,6 +2,8 @@ import { Link, useLocation } from "react-router";
 import platyPulse_svg from "../../../public/Platypulse_logo.svg"
 import "./MenuHeader.css"
 import SearchBar from "../SearchBarComponents/SearchBar";
+import { FaHouse } from "react-icons/fa6";
+
 
 function MenuHeader(){
     const location = useLocation();
@@ -12,7 +14,7 @@ function MenuHeader(){
                     {location.pathname != "/home" && <SearchBar/>}
                 </div>
                 <Link to="/home" className="nav-button">
-                    <p>Home</p>
+                    <FaHouse className="nav-button-icon"/>
                 </Link>
             </div>
         </div>
