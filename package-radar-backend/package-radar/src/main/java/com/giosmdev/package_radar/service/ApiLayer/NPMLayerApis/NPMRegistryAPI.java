@@ -109,17 +109,46 @@ public class NPMRegistryAPI {
         String name = response.path("name").asString(null);
         String description = response.path("description").asString(null);
         String latest_v = response.path("dist-tags").path("latest").asString(null);
-        JsonNode latest_v_reference = response.get("versions").get(latest_v);
-        JsonNode repository = latest_v_reference.get("repository");
-        JsonNode rawDependencies = latest_v_reference.get("dependencies");
+        
+        // JsonNode latest_v_reference = null;
+        // JsonNode repository = null;
+        // JsonNode rawDependencies = null;
+        // JsonNode keywords = null;
+        // JsonNode author = null;
+        // String license = null;
+        // String homepage = null;
+        // String node_version = null;
+        // String npm_version = null;
 
-        JsonNode keywords = latest_v_reference.get("keywords");
-        JsonNode author = latest_v_reference.get("author");
+        // if(latest_v != null){ 
+        //     latest_v_reference = response.get("versions").get(latest_v);
+        // }
+
+        // if(latest_v_reference != null){
+        //     repository = latest_v_reference.get("repository");
+        //     rawDependencies = latest_v_reference.path("dependencies");
+
+        //     keywords = latest_v_reference.get("keywords");
+        //     author = latest_v_reference.get("author");
+        //     license = latest_v_reference.path("license").asString(null);
+        //     homepage = latest_v_reference.path("homepage").asString(null);
+
+        //     node_version = latest_v_reference.path("_nodeVersion").asString(null);
+        //     npm_version = latest_v_reference.path("_npmVersion").asString(null);
+        // }
+
+        JsonNode latest_v_reference = response.path("versions").path(latest_v);
+        JsonNode repository = latest_v_reference.path("repository");
+        JsonNode rawDependencies = latest_v_reference.path("dependencies");
+
+        JsonNode keywords = latest_v_reference.path("keywords");
+        JsonNode author = latest_v_reference.path("author");
         String license = latest_v_reference.path("license").asString(null);
         String homepage = latest_v_reference.path("homepage").asString(null);
 
         String node_version = latest_v_reference.path("_nodeVersion").asString(null);
         String npm_version = latest_v_reference.path("_npmVersion").asString(null);
+
 
 
         LatestVersionInfo latest_v_info = new LatestVersionInfo(
