@@ -69,6 +69,7 @@ public class NPMRegistryAPI {
                             }
                         )
                         .bodyToMono(JsonNode.class) //Convert the response body into a Mono<String>
+                        .retry(1)
                         .timeout(Duration.ofSeconds(10))
                         .flatMap(response -> formatReponse(response));
         return npm_package_info;
@@ -97,6 +98,7 @@ public class NPMRegistryAPI {
                             )
                             .bodyToMono(JsonNode.class)
                             .timeout(Duration.ofSeconds(10))
+                            .retry(1)
                             .map(response -> formatDownloadsTimeline(response));
         return dwnld_timeline;
         //Mono<ApiStatus<List<WeeklyDownloads>>> wrapped_result = apiErrorHandler.handle(dwnld_timeline);
