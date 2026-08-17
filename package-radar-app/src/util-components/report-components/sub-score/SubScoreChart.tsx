@@ -7,10 +7,10 @@ function SubScoreChart({category, score}: SubScoreChartProps){
     const floored_score = score !== undefined ? Math.floor(score): 0;
     return(
         floored_score !== undefined &&
-            <div >
+            <div id="sub-score-chart">
                 <div className="sub-score-category-container">
                     <p>{category}</p>
-                    <p className="sub-score">{floored_score}</p>
+                    <p className="sub-score">{floored_score}%</p>
                 </div>
                 
                     <div id="score-bar-container">

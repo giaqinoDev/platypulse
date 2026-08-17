@@ -7,7 +7,6 @@ import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchCo
 import SideNavBar from "./SideNavBarComponents/SideNavBar";
 import HealthScoreRadialChart from "../util-components/ReportVisuals/HealthScoreRadialChart";
 import { FaNpm } from "react-icons/fa";
-import { FaGithub } from "react-icons/fa";
 import { FaSquareGithub } from "react-icons/fa6";
 import SubScoreChart from "../util-components/report-components/sub-score/SubScoreChart";
 
@@ -67,6 +66,8 @@ function AboutPage(){
                 </div>
                 <SubScoreChart category={"Activity"} score={exResult.packageData?.["activity"]}/>
                 <SubScoreChart category={"Maintenence"} score={exResult.packageData?.["maintenance"]}/>
+                <SubScoreChart category={"Adoption"} score={exResult.packageData?.["adoption"]}/>
+                <SubScoreChart category={"Risk"} score={exResult.packageData?.["risk"]}/>
                 
                 {exResult.loading && 
                     <div>Loading</div>
