@@ -9,9 +9,17 @@ body{
 
 .report-overview-header{
     display: flex;
-    margin: 50px;
+    max-width: 100%;
+    margin-left: 5%;
+    margin-right: 5%;
+
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 .overview-header-container{
+}
+.health-score-container{
+    margin-left: auto;
 }
 .report-page-body{
     width: 100%;

@@ -9,7 +9,7 @@ import { FaShareNodes } from "react-icons/fa6";
 import platyPulse_svg from "../../../public/Platypulse_logo.svg"
 
 import "../SideNavBarComponents/SideNavBar.css"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 function SideNavBar(){
     const overViewButtonRef = useRef(null);
     //const {activeButton, setActiveButton} = useState(null);
@@ -32,7 +32,7 @@ function SideNavBar(){
                 </div>
             </div>
 
-            <a className="side-nav-bar-button active" ref={overViewButtonRef}>
+            <a className="side-nav-bar-button active-button" ref={overViewButtonRef}>
                 <MdOutlineAutoAwesomeMosaic className="button-icon"/>
                 <p className="button-title">Overview</p>
             </a>

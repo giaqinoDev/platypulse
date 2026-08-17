@@ -30,7 +30,7 @@
     align-items: center;
     transition: background-color 0.25s ease;
 }
-.active{
+.active-button{
     background-color: #ff6139;
     color: #571100;
 }

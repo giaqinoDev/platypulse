@@ -1,6 +1,10 @@
 import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
 import "../ReportVisuals/HealthScoreRadialChart.css"
-function HealthScoreRadialChart({ input }){
+
+interface HealthScoreRadialChartProps{
+    input: number|undefined;
+}
+function HealthScoreRadialChart({input}: HealthScoreRadialChartProps){
     const chartData = [
         {
             name: "Health Score",
@@ -29,7 +33,7 @@ function HealthScoreRadialChart({ input }){
                 <RadialBar background={{fill : "#e9f2ff"}} dataKey="value" className="radial-bar"/>
             </RadialBarChart>
             <h1 className="radial-health-score-label">
-                {Math.floor(input)}
+                {input != undefined && Math.floor(input)}
             </h1>
         </div>
 

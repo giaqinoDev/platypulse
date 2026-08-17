@@ -9,6 +9,7 @@ import HealthScoreRadialChart from "../util-components/ReportVisuals/HealthScore
 import { FaNpm } from "react-icons/fa";
 import { FaGithub } from "react-icons/fa";
 import { FaSquareGithub } from "react-icons/fa6";
+import SubScoreChart from "../util-components/report-components/sub-score/SubScoreChart";
 
 
 
@@ -60,8 +61,12 @@ function AboutPage(){
                             }
                         </div>
                     </div>
-                    <HealthScoreRadialChart input={exResult.packageData?.["overall"]}/>
+                    <div className="health-score-container">
+                        <HealthScoreRadialChart input={exResult.packageData?.["overall"]}/>
+                    </div>
                 </div>
+                <SubScoreChart category={"Activity"} score={exResult.packageData?.["activity"]}/>
+                <SubScoreChart category={"Maintenence"} score={exResult.packageData?.["maintenance"]}/>
                 
                 {exResult.loading && 
                     <div>Loading</div>

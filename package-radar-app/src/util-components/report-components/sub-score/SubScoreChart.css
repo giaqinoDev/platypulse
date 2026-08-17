@@ -1,0 +1,21 @@
+#score-bar-container{
+    display: flex;
+    flex-direction: row;
+}
+.sub-score-bar{
+    width: 50px;
+    height: 8px;
+    
+    margin-right: 3px;
+    background-color: #d6e4f9;
+}
+.sub-score-category-container{
+    display: flex;
+    flex-direction: row;
+}
+.sub-score{
+    margin-left: auto;
+}
+.active{
+    background-color: #ff6139;
+}
