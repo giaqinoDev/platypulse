@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DependenciesInfo {
-    private String dependnecy_name;
+    private String dependency_name;
     private String dependency_version;
-    private Boolean depreciated;
+    private Boolean deprecated;
     private List<DependenciesInfo> dependencies;
 }
