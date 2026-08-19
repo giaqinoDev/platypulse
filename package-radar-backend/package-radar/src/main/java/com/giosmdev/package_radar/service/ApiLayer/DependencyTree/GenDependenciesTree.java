@@ -10,7 +10,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -101,7 +100,7 @@ public class GenDependenciesTree {
     }
     
     private List<DependenciesInfo> fetchSubDependencies(DependenciesInfo dep) {
-        String name = dep.getDependnecy_name();
+        String name = dep.getDependency_name();
         String versionRaw = dep.getDependency_version();
         String version = versionRaw.startsWith("^") ? versionRaw.substring(1) : versionRaw;
 
@@ -153,7 +152,7 @@ public class GenDependenciesTree {
                                         .path(version)
                                         .has("deprecated");
 
-            dep.setDepreciated(deprecated);
+            dep.setDeprecated(deprecated);
 
             JsonNode depsNode = response_data.path("versions")
                                         .path(version)
