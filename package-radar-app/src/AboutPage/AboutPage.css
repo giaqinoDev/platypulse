@@ -16,7 +16,10 @@ body{
     margin-top: 50px;
     margin-bottom: 50px;
 }
-.overview-header-container{
+
+#quick-look-container{
+    display: flex;
+    flex-direction: row;
 }
 .health-score-container{
     margin-left: auto;

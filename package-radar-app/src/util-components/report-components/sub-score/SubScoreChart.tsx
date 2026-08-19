@@ -9,7 +9,7 @@ function SubScoreChart({category, score}: SubScoreChartProps){
         floored_score !== undefined &&
             <div id="sub-score-chart">
                 <div className="sub-score-category-container">
-                    <p>{category}</p>
+                    <p style={{"color": "#293241"}}>{category}</p>
                     <p className="sub-score">{floored_score}%</p>
                 </div>
                 

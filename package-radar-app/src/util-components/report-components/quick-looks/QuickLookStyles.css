@@ -1,0 +1,26 @@
+.quick-look-widget{
+    background-color: white;/*#edf2f4;*/
+    box-sizing: border-box; /* Includes padding within the width */
+    border-style: solid;
+    border-radius: 8px;
+    border-color: #95a1b9;
+    border-width: 1px;
+    box-shadow: 0 10px 20px -10px rgba(41, 50, 65, 0.25);
+
+}
+
+.quick-look-title-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.quick-look-title{
+    font-size: larger;
+    color: #293241;
+}
+.quick-look-icon{
+    color: #ff6139;
+    margin-right: 5px;
+    width: 20px;
+    height: auto;
+}

@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
+import { NpmFetchResponseSchema, type NpmFetchResponse } from "./NpmFetchResponse";
 
 function useNPMFetch(queriedSearch: SearchContextStructure|null){
     //const [queryResult, setQueryResult] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
-    const [packageData, setPackageData] = useState<Record<string, undefined> | null>(null);
-
+    const [packageData, setPackageData] = useState<NpmFetchResponse | null>(null);
     useEffect(() => {
+
         if(!queriedSearch){
             return;
         }
+
         const fetchFromBackend = async () => {
             setLoading(true);
             try{
@@ -22,10 +24,11 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
                     response = await fetch(`/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}`);
                 }
 
-                if(response != null){
-                    console.log(response.status);
-                    const info = await response.json();
-                    setPackageData(info);
+                if(response?.status != 404){
+                    console.log(response?.status);
+                    const info = await response?.json();
+                    const packageData = NpmFetchResponseSchema.parse(info);
+                    setPackageData(packageData);
                 }
                 else{
                     setFetchError("Response was empty");
@@ -41,8 +44,10 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
             }
             setLoading(false);
         }
+
         fetchFromBackend();
     }, [queriedSearch])
+
     return {packageData, loading, fetchError}
 }
 export default useNPMFetch;

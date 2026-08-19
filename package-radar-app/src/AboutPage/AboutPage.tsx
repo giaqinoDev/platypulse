@@ -9,6 +9,7 @@ import HealthScoreRadialChart from "../util-components/ReportVisuals/HealthScore
 import { FaNpm } from "react-icons/fa";
 import { FaSquareGithub } from "react-icons/fa6";
 import SubScoreChart from "../util-components/report-components/sub-score/SubScoreChart";
+import MaintenanceQuickLook from "../util-components/report-components/quick-looks/MaintenanceQuickLook";
 
 
 
@@ -64,10 +65,15 @@ function AboutPage(){
                         <HealthScoreRadialChart input={exResult.packageData?.["overall"]}/>
                     </div>
                 </div>
-                <SubScoreChart category={"Activity"} score={exResult.packageData?.["activity"]}/>
-                <SubScoreChart category={"Maintenence"} score={exResult.packageData?.["maintenance"]}/>
-                <SubScoreChart category={"Adoption"} score={exResult.packageData?.["adoption"]}/>
-                <SubScoreChart category={"Risk"} score={exResult.packageData?.["risk"]}/>
+                <div id="quick-look-container">
+                    <div>
+                        <SubScoreChart category={"Activity"} score={exResult.packageData?.["activity"]}/>
+                        <SubScoreChart category={"Maintenence"} score={exResult.packageData?.["maintenance"]}/>
+                        <SubScoreChart category={"Adoption"} score={exResult.packageData?.["adoption"]}/>
+                        <SubScoreChart category={"Risk"} score={exResult.packageData?.["risk"]}/>
+                    </div>
+                    <MaintenanceQuickLook/>
+                </div>
                 
                 {exResult.loading && 
                     <div>Loading</div>
