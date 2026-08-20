@@ -4,6 +4,8 @@
     height: 100dvh;
 }
 .report-page-body{
+    display: flex;
+    flex-direction: column;
     width: 100%;
 }
 
@@ -25,10 +27,13 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex-grow: 1;
+    overflow-y: scroll;
 }
 .report-content{
     width: 80%;
     max-width: 1500px;
+    
 }
 
 .report-overview-header{
@@ -93,4 +98,10 @@ body{
 #github-icon:hover{
     color:#101411;
     transition: color 0.25s ease;
+}
+
+#loading-visual{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }

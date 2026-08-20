@@ -1,6 +1,7 @@
 import { PiWrenchFill } from "react-icons/pi";
 import "../quick-looks/QuickLookStyles.css";
 import type { NpmFetchResponse } from "../../../NPMFetch/NpmFetchResponse";
+import formatNumber from "../../NumFormatter";
 
 interface MaintenanceQuickLookProps{
     data: NpmFetchResponse|undefined;
@@ -73,7 +74,7 @@ function MaintenanceQuickLook({data}: MaintenanceQuickLookProps){
                 <p className="section-hero">{commit_momentum}</p>
 
                 <p className="section-title">Open Issues</p>
-                <p className="section-hero">{data?.raw_signals?.git_hub_reg?.repo_info?.open_issues_count ?? "Not Available"}</p>
+                <p className="section-hero">{formatNumber(data?.raw_signals?.git_hub_reg?.repo_info?.open_issues_count) ?? "Not Available"}</p>
             </div>
         </div>
     );

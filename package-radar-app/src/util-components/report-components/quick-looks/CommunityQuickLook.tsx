@@ -2,6 +2,7 @@ import { HiMiniUserGroup } from "react-icons/hi2";
 import "../quick-looks/QuickLookStyles.css";
 import type { NpmFetchResponse } from "../../../NPMFetch/NpmFetchResponse";
 import type { DownloadDP } from "../../../NPMFetch/DownloadDP";
+import formatNumber from "../../NumFormatter";
 
 interface CommunityQuickLookProps{
     data: NpmFetchResponse|undefined;
@@ -32,13 +33,13 @@ function CommunityQuickLook({data}: CommunityQuickLookProps){
             </div>
             <div>
                 <p className="section-title">GitHub Stars</p>
-                <p className="section-hero">{github_stars ?? "Not Available"}</p>
+                <p className="section-hero">{formatNumber(github_stars) ?? "Not Available"}</p>
 
                 <p className="section-title">GitHub Forks</p>
-                <p className="section-hero">{github_forks ?? "Not Available"}</p>
+                <p className="section-hero">{formatNumber(github_forks) ?? "Not Available"}</p>
 
                 <p className="section-title">Monthly Downloads</p>
-                <p className="section-hero">{monthly_downloads ?? "Not Available"}</p>
+                <p className="section-hero">{formatNumber(monthly_downloads) ?? "Not Available"}</p>
             </div>
         </div>
     );
