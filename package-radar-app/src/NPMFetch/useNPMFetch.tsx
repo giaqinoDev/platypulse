@@ -24,7 +24,7 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
                     response = await fetch(`/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}`);
                 }
 
-                if(response?.status != 404){
+                if(response?.status == 200){
                     console.log(response?.status);
                     const info = await response?.json();
                     const packageData = NpmFetchResponseSchema.parse(info);

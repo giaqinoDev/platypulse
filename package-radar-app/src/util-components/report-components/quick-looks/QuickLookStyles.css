@@ -6,7 +6,9 @@
     border-color: #95a1b9;
     border-width: 1px;
     box-shadow: 0 10px 20px -10px rgba(41, 50, 65, 0.25);
-
+    padding: 15px;
+    flex: 1;
+    margin-right: 15px;
 }
 
 .quick-look-title-container{
@@ -17,10 +19,23 @@
 .quick-look-title{
     font-size: larger;
     color: #293241;
+    margin: 10px;
+    margin-left: 5px;
 }
 .quick-look-icon{
     color: #ff6139;
     margin-right: 5px;
     width: 20px;
     height: auto;
+}
+
+.section-title{
+    color: #646d7d;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+.section-hero{
+    color: #212a3b;
+    font-size: large;
+    margin: 0;
 }

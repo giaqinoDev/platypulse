@@ -40,8 +40,8 @@ export const NpmFetchResponseSchema = z.object({
             latest_version: z.string().nullable(),
             latest_version_info: z.object({
                 author: z.object({
-                    name: z.string(),
-                    email: z.string().nullable()
+                    name: z.string().optional(),
+                    email: z.string().nullable().optional()
                 }).nullable(),
                 license: z.string().nullable(),
                 homepage: z.string().nullable(),

@@ -3,15 +3,36 @@
     flex-direction: row;
     height: 100dvh;
 }
+.report-page-body{
+    width: 100%;
+}
+
 body{
     font-family: "Geist Sans", sans-serif;
 }
 
+#sub-scores{
+    box-sizing: border-box; /* Includes padding within the width */
+    border-style: solid;
+    border-radius: 8px;
+    border-color: #95a1b9;
+    border-width: 1px;
+    box-shadow: 0 10px 20px -10px rgba(41, 50, 65, 0.25);
+    margin-right: 15px;
+    padding: 30px;
+}
+.report-body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.report-content{
+    width: 80%;
+    max-width: 1500px;
+}
+
 .report-overview-header{
     display: flex;
-    max-width: 100%;
-    margin-left: 5%;
-    margin-right: 5%;
 
     margin-top: 50px;
     margin-bottom: 50px;
@@ -24,12 +45,9 @@ body{
 .health-score-container{
     margin-left: auto;
 }
-.report-page-body{
-    width: 100%;
-}
 
 #overview-header-title{
-    color: #293241;
+    color: #212a3b;
 }
 #overview-sub-header{
     color: #646d7d;
