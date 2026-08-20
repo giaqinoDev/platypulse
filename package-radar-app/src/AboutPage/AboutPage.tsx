@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { data, useParams } from "react-router";
 import MenuHeader from "../util-components/MenuHeader/MenuHeader";
 import "./AboutPage.css"
 import useNPMFetch from "../NPMFetch/useNPMFetch";
@@ -12,6 +12,7 @@ import SubScoreChart from "../util-components/report-components/sub-score/SubSco
 import MaintenanceQuickLook from "../util-components/report-components/quick-looks/MaintenanceQuickLook";
 import CommunityQuickLook from "../util-components/report-components/quick-looks/CommunityQuickLook";
 import { BarLoader } from "react-spinners";
+import DownloadsChart from "../util-components/ReportVisuals/DownloadsChart";
 
 
 
@@ -80,6 +81,7 @@ function AboutPage(){
                                     <MaintenanceQuickLook data={exResult.packageData}/>
                                     <CommunityQuickLook data={exResult.packageData}/>
                                 </div>
+                                <DownloadsChart data={exResult.packageData?.raw_signals?.downloads_timeline}/>
                             </div>
                         }
                         {exResult.loading == true &&
