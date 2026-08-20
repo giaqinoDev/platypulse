@@ -51,7 +51,9 @@ public class RawNPMRegistryResponse {
                     String repo_url = repo_node.path("url").asString(null);
                     String[] segments = repo_url.split("/");
                     group = segments[segments.length - 2];
-                    repo = segments[segments.length - 1].substring(0, segments[segments.length - 1].indexOf("."));
+                    repo = segments[segments.length - 1].substring(0, segments[segments.length - 1].indexOf(".git"));
+                    System.out.println("GitHub Group: " + group);
+                    System.out.println("GitHub Repo: " + repo);
                 }
             }
             catch(Exception error){
