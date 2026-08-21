@@ -38,13 +38,13 @@ function SideNavBar(){
             </a>
 
             <a className="side-nav-bar-button">
-                <LuWrench className="button-icon"/>
-                <p className="button-title">Maintenance</p>
-            </a>
-
-            <a className="side-nav-bar-button">
                 <MdOutlineGroups className="button-icon"/>
                 <p className="button-title">Community</p>
+            </a>
+            
+            <a className="side-nav-bar-button">
+                <LuWrench className="button-icon"/>
+                <p className="button-title">Maintenance</p>
             </a>
 
             <a className="side-nav-bar-button">

@@ -43,9 +43,10 @@ body{
     margin-bottom: 50px;
 }
 
-#quick-look-container{
+.quick-look-container{
     display: flex;
     flex-direction: row;
+    width: 100%;
 }
 .health-score-container{
     margin-left: auto;

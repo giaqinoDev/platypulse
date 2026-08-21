@@ -14,6 +14,8 @@ import CommunityQuickLook from "../util-components/report-components/quick-looks
 import { BarLoader } from "react-spinners";
 import DownloadsChart from "../util-components/ReportVisuals/DownloadsChart";
 import ContributorsQuickLook from "../util-components/report-components/quick-looks/ContributorsQuickLook";
+import RepositoryQuickLook from "../util-components/report-components/quick-looks/RepositoryQuickLook";
+import CommitsChart from "../util-components/ReportVisuals/CommitsChart";
 
 
 
@@ -72,7 +74,7 @@ function AboutPage(){
                                         <HealthScoreRadialChart input={exResult.packageData?.["overall"]}/>
                                     </div>
                                 </div>
-                                <div id="quick-look-container">
+                                <div className="quick-look-container">
                                     <div id="sub-scores">
                                         <SubScoreChart category={"Activity"} score={exResult.packageData?.["activity"]}/>
                                         <SubScoreChart category={"Maintenence"} score={exResult.packageData?.["maintenance"]}/>
@@ -83,7 +85,11 @@ function AboutPage(){
                                     <CommunityQuickLook data={exResult.packageData}/>
                                 </div>
                                 <DownloadsChart data={exResult.packageData?.raw_signals?.downloads_timeline}/>
-                                <ContributorsQuickLook data={exResult.packageData}/>
+                                <CommitsChart data={exResult.packageData?.raw_signals?.git_hub_reg?.commit_info?.commit_timeline_volume}/>
+                                <div className="quick-look-container">
+                                    <ContributorsQuickLook data={exResult.packageData}/>
+                                    <RepositoryQuickLook data={exResult.packageData}/>
+                                </div>
                             </div>
                         }
                         {exResult.loading == true &&
