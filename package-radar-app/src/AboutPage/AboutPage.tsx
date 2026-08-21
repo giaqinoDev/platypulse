@@ -13,6 +13,7 @@ import MaintenanceQuickLook from "../util-components/report-components/quick-loo
 import CommunityQuickLook from "../util-components/report-components/quick-looks/CommunityQuickLook";
 import { BarLoader } from "react-spinners";
 import DownloadsChart from "../util-components/ReportVisuals/DownloadsChart";
+import ContributorsQuickLook from "../util-components/report-components/quick-looks/ContributorsQuickLook";
 
 
 
@@ -82,6 +83,7 @@ function AboutPage(){
                                     <CommunityQuickLook data={exResult.packageData}/>
                                 </div>
                                 <DownloadsChart data={exResult.packageData?.raw_signals?.downloads_timeline}/>
+                                <ContributorsQuickLook data={exResult.packageData}/>
                             </div>
                         }
                         {exResult.loading == true &&

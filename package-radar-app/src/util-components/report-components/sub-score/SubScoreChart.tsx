@@ -14,19 +14,19 @@ function SubScoreChart({category, score}: SubScoreChartProps){
                 </div>
                 
                     <div id="score-bar-container">
-                        <div id="bar-one" className={`sub-score-bar ${floored_score >= 25 && "active"}`}>
+                        <div id="bar-one" className={`sub-score-bar ${floored_score >= 25 && "active-bar"}`}>
 
                         </div>
 
-                        <div id="bar-two" className={`sub-score-bar ${floored_score >= 50 && "active"}`}>
+                        <div id="bar-two" className={`sub-score-bar ${floored_score >= 50 && "active-bar"}`}>
 
                         </div>
 
-                        <div id="bar-three" className={`sub-score-bar ${floored_score >=75  && "active"}`}>
+                        <div id="bar-three" className={`sub-score-bar ${floored_score >=75  && "active-bar"}`}>
 
                         </div>
 
-                        <div id="bar-four" className={`sub-score-bar ${floored_score <= 100 && floored_score >=90 && "active"}`}>
+                        <div id="bar-four" className={`sub-score-bar ${floored_score <= 100 && floored_score >=90 && "active-bar"}`}>
 
                         </div>
                     </div>
