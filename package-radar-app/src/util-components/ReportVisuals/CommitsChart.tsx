@@ -74,7 +74,7 @@ export default function CommitsChart({data}: CommitsChartProps) {
                 }}
                 formatter={(value) => [
                     Number(value).toLocaleString(),
-                    "Downloads",
+                    "Commits",
                 ]}
             />
 

@@ -1,0 +1,58 @@
+#tree-container{
+  box-sizing: border-box; /* Includes padding within the width */
+  box-shadow: 0 10px 20px -10px rgba(41, 50, 65, 0.25);
+  border-radius: 8px;
+  border-style: solid;
+  border-color: #95a1b9;
+  border-width: 1px;
+  margin: 20px 0px;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /*prevent children elements from rendering over parent*/
+}
+
+
+#tree-container-body{
+    width: 100%;
+    flex-grow: 1;
+    z-index: 0;
+    background-color: #f8fafc;
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+
+#tree-container-header-bar{
+    width: 100%;
+    height: 50px;
+    background-color: #293241;
+    box-shadow: 0 10px 20px -10px rgba(41, 50, 65, 0.45);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+}
+#tree-render-options{
+    margin-left: auto;
+    display: flex;
+    flex-direction: row;
+    margin-right: 20px;
+}
+.render-option-button{
+    border-style: none;
+    border-radius: 5px;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+.render-option-button:hover{
+    background-color: #323c4f;
+}
+.render-option-icon{
+    width: 35px;
+    height: 35px;
+}

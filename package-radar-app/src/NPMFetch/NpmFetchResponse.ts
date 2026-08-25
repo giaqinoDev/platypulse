@@ -1,4 +1,5 @@
 import { DependencySchema } from "./Dependency"
+import { DependencyTreeSchema } from "./DependencyTree";
 import { DownloadDPSchema } from "./DownloadDP"
 import { z } from "zod";
 
@@ -54,11 +55,12 @@ export const NpmFetchResponseSchema = z.object({
                 npm_version: z.string().nullable(),
                 dependencies: z.array(DependencySchema).nullable(),
                 node_version: z.string().nullable(),
-                dependency_tree: z.object({
-                    tree_depth: z.number(),
-                    dependencies: z.array(DependencySchema).nullable(),
-                    package_name: z.string().nullable()
-                }).nullable().optional()
+                dependency_tree: DependencyTreeSchema.nullable().optional()
+                // dependency_tree: z.object({
+                //     tree_depth: z.number(),
+                //     dependencies: z.array(DependencySchema).nullable(),
+                //     package_name: z.string().nullable()
+                // }).nullable().optional()
             }).nullable(),
             versions_release_info: z.record(z.string(), z.string()).nullable(),
         }),

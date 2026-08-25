@@ -29,6 +29,7 @@ body{
     align-items: center;
     flex-grow: 1;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 .report-content{
     width: 80%;

@@ -1,0 +1,111 @@
+:root{
+    --icon-scale: 20px;
+}
+
+.toolTip-container{/*contains icon and tooltip*/
+    width: calc(var(--icon-scale) + 10px);
+    height: calc(var(--icon-scale) + 10px);;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+}
+.toolTip-container:hover{
+    cursor: pointer;
+    --hover-color: none;
+    background-color: var(--hover-color);
+    border-radius: 5px;
+    transition: 0.25s ease;
+}
+.toolTip-icon{
+    width: var(--icon-scale);
+    height: auto;
+}
+.toolTip-content{
+    --offset-Y: 0px;
+    position: absolute;
+    top: calc(var(--offset-Y) + 5px); /*5px acts as extra space*/
+
+    width: max-content;
+    text-align: center;
+    background-color: white;
+    border-radius: 5px;
+    padding: 5px 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+    visibility: hidden;
+    animation-name: delayAppear;
+    animation-fill-mode: forwards;
+    animation-delay: 1s;
+
+}
+/*Creates delay for tool tip pop up*/
+@keyframes delayAppear{
+    0%{
+        visibility: hidden;
+    }
+    100%{
+        visibility: visible;
+    }
+}
+.dot-menu-icon{
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    padding: 5px;
+    position: relative;
+}
+.options-window{
+    position: absolute;
+    background-color: white;
+    top: calc(var(--offset-Y) + 5px); /*5px acts as extra space*/
+
+    width: max-content;
+    border-radius: 5px;
+    padding: 10px 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    z-index: 1;
+
+    animation-name: fadeIn;
+    animation-duration: 0.10s;
+    animation-timing-function: ease;
+    animation-fill-mode: forwards;
+}
+.menu-options-button{
+    font-size: 15px;
+    padding: 5px;
+    display: flex;
+   
+    align-items: center;
+}
+.menu-options-button:hover{
+    border-radius: 5px;
+    background-color: #f1f5f6;
+}
+.button-title{
+    margin: 0;
+    margin-left: 5px;
+}
+
+@keyframes fadeIn{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+
+.sort-options-button{
+    display: flex;
+    flex-direction: row;
+    font-size: 15px;
+    padding: 5px;
+}
+.sort-options-button:hover{
+    border-radius: 5px;
+    background-color: #f1f5f6;
+}
