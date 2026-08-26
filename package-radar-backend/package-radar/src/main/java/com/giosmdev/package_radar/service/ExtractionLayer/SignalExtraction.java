@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -160,7 +161,7 @@ public class SignalExtraction {
 
         //Trim spikes over the last 8 weeks
         List<WeeklyDownloads> eight_week_timeline = downloads_timeline.subList(timeline_length - 9, timeline_length-1);
-        eight_week_timeline.stream().sorted(Comparator.comparing(WeeklyDownloads::getVolume)).collect(Collectors.toList());
+        eight_week_timeline = eight_week_timeline.stream().sorted(Comparator.comparing(WeeklyDownloads::getVolume)).collect(Collectors.toList());
 
         //Removes possbile outliers (spikes) in downloads data
         eight_week_timeline.remove(0); //removes smallest amount of weekly downlaods
