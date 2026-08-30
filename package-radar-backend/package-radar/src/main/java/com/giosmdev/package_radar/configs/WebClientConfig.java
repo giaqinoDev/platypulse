@@ -1,7 +1,5 @@
 package com.giosmdev.package_radar.configs;
 
-import java.net.http.HttpClient;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
