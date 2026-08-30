@@ -32,22 +32,22 @@ function SideNavBar(){
                 </div>
             </div>
 
-            <a className="side-nav-bar-button active-button" ref={overViewButtonRef}>
+            <a className="side-nav-bar-button active-button" ref={overViewButtonRef} href="#overview-section">
                 <MdOutlineAutoAwesomeMosaic className="button-icon"/>
                 <p className="button-title">Overview</p>
             </a>
 
-            <a className="side-nav-bar-button">
+            <a className="side-nav-bar-button" href="#community-section">
                 <MdOutlineGroups className="button-icon"/>
                 <p className="button-title">Community</p>
             </a>
             
-            <a className="side-nav-bar-button">
+            <a className="side-nav-bar-button" href="#maintenance-section">
                 <LuWrench className="button-icon"/>
                 <p className="button-title">Maintenance</p>
             </a>
 
-            <a className="side-nav-bar-button">
+            <a className="side-nav-bar-button" href="#dependencies-section">
                 <FaShareNodes className="button-icon"/>
                 <p className="button-title">Dependencies</p>
             </a>
