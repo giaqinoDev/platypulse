@@ -1,8 +1,8 @@
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import MenuHeader from "../util-components/MenuHeader/MenuHeader";
 import "./AboutPage.css"
 import useNPMFetch from "../NPMFetch/useNPMFetch";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import SideNavBar from "./SideNavBarComponents/SideNavBar";
 import HealthScoreRadialChart from "../util-components/ReportVisuals/HealthScoreRadialChart";
@@ -23,6 +23,7 @@ import DependencyGraph from "../util-components/report-components/dependency-gra
 
 function AboutPage(){
     const {ecosystem, scope, packageName} = useParams();
+    const location = useLocation();
     // const [query, setQuery] = useState<SearchContextStructure|null>(null);
     const query = useMemo<SearchContextStructure | null>(() => { //useMemo lets you store the result of a calculation between renders
         if (!ecosystem || !packageName) {
@@ -36,28 +37,15 @@ function AboutPage(){
     }, [ecosystem, scope, packageName]);
     const exResult = useNPMFetch(query);
 
-    // useEffect(() => {
-    //     if(!ecosystem || !packageName){
-    //         return;
-    //     }
-
-    //     let constructedQuery : SearchContextStructure;
-    //     if(scope){
-    //         constructedQuery = {
-    //             search_term: ["@" + scope, packageName],
-    //             ecosystem: ecosystem
-    //         }
-    //     }
-    //     else{
-    //         constructedQuery = {
-    //             search_term: [packageName],
-    //             ecosystem: ecosystem
-    //         }
-    //     }
-
-    //     setQuery(constructedQuery);
-
-    // }, [ecosystem, scope, packageName])
+    useEffect(() => {
+        if(location.hash){
+            console.log(location.hash);
+            const element = document.getElementById(location.hash.split("#")[1]);
+            if(element){
+                element.scrollIntoView();
+            }
+        }
+    }, [])
     return(
         <div className="report-page-root">
             <SideNavBar/>
