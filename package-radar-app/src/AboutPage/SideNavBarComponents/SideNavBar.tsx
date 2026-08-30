@@ -10,6 +10,7 @@ import platyPulse_svg from "../../../public/Platypulse_logo.svg"
 
 import "../SideNavBarComponents/SideNavBar.css"
 import { useEffect, useRef, useState } from "react";
+
 function SideNavBar(){
     const [activeSection, setActiveSection] = useState<HTMLAnchorElement|null>(null);
 
@@ -23,29 +24,42 @@ function SideNavBar(){
     //const {activeButton, setActiveButton} = useState(null);
 
     function handleSection(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>){
-        activeSection?.classList.remove("active-section");
-        setActiveSection(event.currentTarget);
+        if(event.currentTarget != activeSection){
+            activeSection?.classList.remove("active-section");
+            activeSection?.classList.add("inactive-section");
+            setActiveSection(event.currentTarget);
+        }
+    }
+
+    function handleUrlReload(element: HTMLAnchorElement| null){
+        if(element != activeSection && element != null){
+            activeSection?.classList.remove("active-section");
+            activeSection?.classList.add("inactive-section");
+            setActiveSection(element);
+        }
     }
 
     useEffect(() => {
         const section = location.hash;
+
         if(section == "#overview-section"){
-            setActiveSection(overviewRef.current);
+            handleUrlReload(overviewRef.current);
         }
         else if(section == "#community-section"){
-            setActiveSection(communityRef.current);
+            handleUrlReload(communityRef.current);
         }
         else if(section == "#maintenance-section"){
-            setActiveSection(maintenanceRef.current);
+            handleUrlReload(maintenanceRef.current);
         }
         else if(section == "#dependencies-section"){
-            setActiveSection(dependenciesRef.current);
+            handleUrlReload(dependenciesRef.current);
         }
 
-    }, []);
+    }, [location.hash]);
 
     useEffect(() => {
         if(activeSection){
+            activeSection.classList.remove("inactive-section");
             activeSection.classList.add("active-section");
         }
     }, [activeSection]);
@@ -61,7 +75,7 @@ function SideNavBar(){
                 </div>
             </div>
 
-            <a className="side-nav-bar-button" 
+            <a className="side-nav-bar-button inactive-section" 
                 ref={overviewRef} 
                 href="#overview-section"
                 onClick={handleSection}>
@@ -69,7 +83,7 @@ function SideNavBar(){
                 <p className="button-title">Overview</p>
             </a>
 
-            <a className="side-nav-bar-button" 
+            <a className="side-nav-bar-button inactive-section" 
                 ref={communityRef}
                 href="#community-section"
                 onClick={handleSection}>
@@ -77,7 +91,7 @@ function SideNavBar(){
                 <p className="button-title">Community</p>
             </a>
             
-            <a className="side-nav-bar-button"
+            <a className="side-nav-bar-button inactive-section"
                 ref={maintenanceRef}
                 href="#maintenance-section"
                 onClick={handleSection}>
@@ -85,7 +99,7 @@ function SideNavBar(){
                 <p className="button-title">Maintenance</p>
             </a>
 
-            <a className="side-nav-bar-button" 
+            <a className="side-nav-bar-button inactive-section" 
                 ref={dependenciesRef}
                 href="#dependencies-section"
                 onClick={handleSection}>

@@ -38,7 +38,11 @@
     background-color: #ff6139;
     color: #571100;
 }
-.side-nav-bar-button:hover{
+
+.inactive-section{
+    
+}
+.inactive-section:hover{
     background-color: #d1e2fa;
 }
 

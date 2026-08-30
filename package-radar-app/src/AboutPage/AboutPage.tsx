@@ -45,7 +45,7 @@ function AboutPage(){
                 element.scrollIntoView();
             }
         }
-    }, [])
+    }, [location.hash])
     return(
         <div className="report-page-root">
             <SideNavBar/>
