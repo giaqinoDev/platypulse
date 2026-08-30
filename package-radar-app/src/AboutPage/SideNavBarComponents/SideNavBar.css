@@ -30,6 +30,9 @@
     display: flex;
     align-items: center;
     transition: background-color 0.25s ease;
+
+    text-decoration: none;
+    color: #293241;
 }
 .active-button{
     background-color: #ff6139;
