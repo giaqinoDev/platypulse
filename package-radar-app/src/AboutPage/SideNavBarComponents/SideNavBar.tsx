@@ -42,10 +42,7 @@ function SideNavBar(){
     useEffect(() => {
         const section = location.hash;
 
-        if(section == "#overview-section"){
-            handleUrlReload(overviewRef.current);
-        }
-        else if(section == "#community-section"){
+        if(section == "#community-section"){
             handleUrlReload(communityRef.current);
         }
         else if(section == "#maintenance-section"){
@@ -53,6 +50,9 @@ function SideNavBar(){
         }
         else if(section == "#dependencies-section"){
             handleUrlReload(dependenciesRef.current);
+        }
+        else {
+            handleUrlReload(overviewRef.current);
         }
 
     }, [location.hash]);
@@ -75,38 +75,47 @@ function SideNavBar(){
                 </div>
             </div>
 
-            <a className="side-nav-bar-button inactive-section" 
-                ref={overviewRef} 
-                href="#overview-section"
-                onClick={handleSection}>
-                <MdOutlineAutoAwesomeMosaic className="button-icon"/>
-                <p className="button-title">Overview</p>
-            </a>
+            <div>
+                <a className="side-nav-bar-button inactive-section" 
+                    ref={overviewRef} 
+                    href="#overview-section"
+                    onClick={handleSection}>
+                    
+                        <MdOutlineAutoAwesomeMosaic className="button-icon"/>
+                        <p className="button-title">Overview</p>
+                    
+                </a>
 
-            <a className="side-nav-bar-button inactive-section" 
-                ref={communityRef}
-                href="#community-section"
-                onClick={handleSection}>
-                <MdOutlineGroups className="button-icon"/>
-                <p className="button-title">Community</p>
-            </a>
-            
-            <a className="side-nav-bar-button inactive-section"
-                ref={maintenanceRef}
-                href="#maintenance-section"
-                onClick={handleSection}>
-                <LuWrench className="button-icon"/>
-                <p className="button-title">Maintenance</p>
-            </a>
+                <a className="side-nav-bar-button inactive-section" 
+                    ref={communityRef}
+                    href="#community-section"
+                    onClick={handleSection}>
+                    
+                        <MdOutlineGroups className="button-icon"/>
+                        <p className="button-title">Community</p>
+                    
+                </a>
+                
+                <a className="side-nav-bar-button inactive-section"
+                    ref={maintenanceRef}
+                    href="#maintenance-section"
+                    onClick={handleSection}>
+                    
+                        <LuWrench className="button-icon"/>
+                        <p className="button-title">Maintenance</p>
+                    
+                </a>
 
-            <a className="side-nav-bar-button inactive-section" 
-                ref={dependenciesRef}
-                href="#dependencies-section"
-                onClick={handleSection}>
-                <FaShareNodes className="button-icon"/>
-                <p className="button-title">Dependencies</p>
-            </a>
-
+                <a className="side-nav-bar-button inactive-section" 
+                    ref={dependenciesRef}
+                    href="#dependencies-section"
+                    onClick={handleSection}>
+                    <div className="button-contents">
+                        <FaShareNodes className="button-icon"/>
+                        <p className="button-title">Dependencies</p>
+                    </div>
+                </a>
+            </div>
         </div>
     );
 }

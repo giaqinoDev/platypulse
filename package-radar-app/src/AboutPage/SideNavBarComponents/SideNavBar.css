@@ -6,7 +6,7 @@
     font-family: "Geist Sans", sans-serif;
     color: #293241;
     padding: 20px 15px;
-    width: 16%;
+    width: 200px;
 }
 
 .platy-pulse-svg{
@@ -29,6 +29,8 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+
+    width: 80%;
     transition: background-color 0.25s ease;
 
     text-decoration: none;
@@ -40,7 +42,7 @@
 }
 
 .inactive-section{
-    
+
 }
 .inactive-section:hover{
     background-color: #d1e2fa;
@@ -53,4 +55,11 @@
 
 .button-title{
     margin: 0px 10px;
+    font-size: 80%;
+}
+
+.button-contents{
+    width: 100%;
+    display: flex;
+    align-items: center;
 }

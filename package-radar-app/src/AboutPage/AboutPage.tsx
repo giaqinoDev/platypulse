@@ -75,14 +75,18 @@ function AboutPage(){
                                         </div>
                                     </div>
                                     <div className="quick-look-container">
-                                        <div id="sub-scores">
-                                            <SubScoreChart category={"Activity"} score={exResult.packageData?.["activity"]}/>
-                                            <SubScoreChart category={"Maintenence"} score={exResult.packageData?.["maintenance"]}/>
-                                            <SubScoreChart category={"Adoption"} score={exResult.packageData?.["adoption"]}/>
-                                            <SubScoreChart category={"Risk"} score={exResult.packageData?.["risk"]}/>
+                                        <div className="container-one">
+                                            <div id="sub-scores">
+                                                <SubScoreChart category={"Activity"} score={exResult.packageData?.["activity"]}/>
+                                                <SubScoreChart category={"Maintenence"} score={exResult.packageData?.["maintenance"]}/>
+                                                <SubScoreChart category={"Adoption"} score={exResult.packageData?.["adoption"]}/>
+                                                <SubScoreChart category={"Risk"} score={exResult.packageData?.["risk"]}/>
+                                            </div>
+                                            <MaintenanceQuickLook data={exResult.packageData}/>
                                         </div>
-                                        <MaintenanceQuickLook data={exResult.packageData}/>
-                                        <CommunityQuickLook data={exResult.packageData}/>
+                                        <div className="container-two">
+                                            <CommunityQuickLook data={exResult.packageData}/>
+                                        </div>
                                     </div>
                                 </section>
                                 <section id="community-section">
