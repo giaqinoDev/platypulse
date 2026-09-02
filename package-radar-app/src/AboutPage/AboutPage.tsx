@@ -2,7 +2,7 @@ import { useLocation, useParams } from "react-router";
 import MenuHeader from "../util-components/MenuHeader/MenuHeader";
 import "./AboutPage.css"
 import useNPMFetch from "../NPMFetch/useNPMFetch";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import SideNavBar from "./SideNavBarComponents/SideNavBar";
 import HealthScoreRadialChart from "../util-components/ReportVisuals/HealthScoreRadialChart";
@@ -24,6 +24,24 @@ import DependencyGraph from "../util-components/report-components/dependency-gra
 function AboutPage(){
     const {ecosystem, scope, packageName} = useParams();
     const location = useLocation();
+    const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
+
+    function viewPortSetter(){
+        setViewPortWidth(window.innerWidth)
+    }
+
+    useEffect(() => {
+        //load: waits to execute when windows resources are finished loading
+        window.addEventListener("load", viewPortSetter)
+        //resize: waits to execute when window is resized
+        window.addEventListener("resize", viewPortSetter)
+
+        return () => {
+            window.removeEventListener("load", viewPortSetter);
+            window.removeEventListener("resize", viewPortSetter);
+        }
+    }, [])
+    
     // const [query, setQuery] = useState<SearchContextStructure|null>(null);
     const query = useMemo<SearchContextStructure | null>(() => { //useMemo lets you store the result of a calculation between renders
         if (!ecosystem || !packageName) {
@@ -48,7 +66,7 @@ function AboutPage(){
     }, [location.hash])
     return(
         <div className="report-page-root">
-            <SideNavBar/>
+            {viewPortWidth > 600 && <SideNavBar/>}
             <div className="report-page-body">
                 <MenuHeader/>
                     <div className="report-body" style={{"justifyContent": exResult.loading ? "center": "initial"}}>

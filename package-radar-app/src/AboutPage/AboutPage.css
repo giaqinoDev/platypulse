@@ -142,4 +142,8 @@ body{
     .quick-look-container{
         flex-direction: column;
     }
+
+    #overview-sub-header{
+        font-size: smaller;
+    }
 }
