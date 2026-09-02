@@ -20,8 +20,11 @@ body{
     border-color: #95a1b9;
     border-width: 1px;
     box-shadow: 0 10px 20px -10px rgba(41, 50, 65, 0.25);
-    margin-right: 15px;
+    margin: 10px;
+    box-sizing: border-box;
+    flex: 1;
     padding: 30px;
+    height: 100%;
 }
 .report-body{
     display: flex;
@@ -49,7 +52,24 @@ body{
     display: flex;
     flex-direction: row;
     width: 100%;
+    flex-wrap: wrap;
 }
+.container-one{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    margin: 5px 0px;
+}
+
+.container-two{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    margin: 5px 0px;
+    width: 100%;
+}
+
+
 .health-score-container{
     margin-left: auto;
 }
@@ -107,4 +127,23 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+@media(max-width: 830px){
+    .container-one{
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .container-twp{
+        margin: 0;
+    }
+
+    .quick-look-container{
+        flex-direction: column;
+    }
+
+    #overview-sub-header{
+        font-size: smaller;
+    }
 }

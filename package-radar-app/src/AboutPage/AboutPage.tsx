@@ -1,8 +1,8 @@
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import MenuHeader from "../util-components/MenuHeader/MenuHeader";
 import "./AboutPage.css"
 import useNPMFetch from "../NPMFetch/useNPMFetch";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import SideNavBar from "./SideNavBarComponents/SideNavBar";
 import HealthScoreRadialChart from "../util-components/ReportVisuals/HealthScoreRadialChart";
@@ -23,6 +23,25 @@ import DependencyGraph from "../util-components/report-components/dependency-gra
 
 function AboutPage(){
     const {ecosystem, scope, packageName} = useParams();
+    const location = useLocation();
+    const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
+
+    function viewPortSetter(){
+        setViewPortWidth(window.innerWidth)
+    }
+
+    useEffect(() => {
+        //load: waits to execute when windows resources are finished loading
+        window.addEventListener("load", viewPortSetter)
+        //resize: waits to execute when window is resized
+        window.addEventListener("resize", viewPortSetter)
+
+        return () => {
+            window.removeEventListener("load", viewPortSetter);
+            window.removeEventListener("resize", viewPortSetter);
+        }
+    }, [])
+    
     // const [query, setQuery] = useState<SearchContextStructure|null>(null);
     const query = useMemo<SearchContextStructure | null>(() => { //useMemo lets you store the result of a calculation between renders
         if (!ecosystem || !packageName) {
@@ -36,31 +55,18 @@ function AboutPage(){
     }, [ecosystem, scope, packageName]);
     const exResult = useNPMFetch(query);
 
-    // useEffect(() => {
-    //     if(!ecosystem || !packageName){
-    //         return;
-    //     }
-
-    //     let constructedQuery : SearchContextStructure;
-    //     if(scope){
-    //         constructedQuery = {
-    //             search_term: ["@" + scope, packageName],
-    //             ecosystem: ecosystem
-    //         }
-    //     }
-    //     else{
-    //         constructedQuery = {
-    //             search_term: [packageName],
-    //             ecosystem: ecosystem
-    //         }
-    //     }
-
-    //     setQuery(constructedQuery);
-
-    // }, [ecosystem, scope, packageName])
+    useEffect(() => {
+        if(location.hash){
+            console.log(location.hash);
+            const element = document.getElementById(location.hash.split("#")[1]);
+            if(element){
+                element.scrollIntoView();
+            }
+        }
+    }, [location.hash])
     return(
         <div className="report-page-root">
-            <SideNavBar/>
+            {viewPortWidth > 600 && <SideNavBar/>}
             <div className="report-page-body">
                 <MenuHeader/>
                     <div className="report-body" style={{"justifyContent": exResult.loading ? "center": "initial"}}>
@@ -87,14 +93,18 @@ function AboutPage(){
                                         </div>
                                     </div>
                                     <div className="quick-look-container">
-                                        <div id="sub-scores">
-                                            <SubScoreChart category={"Activity"} score={exResult.packageData?.["activity"]}/>
-                                            <SubScoreChart category={"Maintenence"} score={exResult.packageData?.["maintenance"]}/>
-                                            <SubScoreChart category={"Adoption"} score={exResult.packageData?.["adoption"]}/>
-                                            <SubScoreChart category={"Risk"} score={exResult.packageData?.["risk"]}/>
+                                        <div className="container-one">
+                                            <div id="sub-scores">
+                                                <SubScoreChart category={"Activity"} score={exResult.packageData?.["activity"]}/>
+                                                <SubScoreChart category={"Maintenence"} score={exResult.packageData?.["maintenance"]}/>
+                                                <SubScoreChart category={"Adoption"} score={exResult.packageData?.["adoption"]}/>
+                                                <SubScoreChart category={"Risk"} score={exResult.packageData?.["risk"]}/>
+                                            </div>
+                                            <MaintenanceQuickLook data={exResult.packageData}/>
                                         </div>
-                                        <MaintenanceQuickLook data={exResult.packageData}/>
-                                        <CommunityQuickLook data={exResult.packageData}/>
+                                        <div className="container-two">
+                                            <CommunityQuickLook data={exResult.packageData}/>
+                                        </div>
                                     </div>
                                 </section>
                                 <section id="community-section">
