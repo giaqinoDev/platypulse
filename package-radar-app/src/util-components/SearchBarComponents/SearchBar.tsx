@@ -50,10 +50,10 @@ function SearchBar(){
                 const query = constructSearchQuery(searchTerm.trim());
                 //console.log(query);
                 if(query.search_term.length == 2){
-                    navigate(`/package/${query.ecosystem}/${query.search_term[0].replace("@", "")}/${query.search_term[1]}`);
+                    navigate(`/package/${query.ecosystem}/${query.search_term[0].replace("@", "")}/${query.search_term[1]}/latest`);
                 }
                 else if(query.search_term.length == 1){
-                    navigate(`/package/${query.ecosystem}/${query.search_term[0]}`);
+                    navigate(`/package/${query.ecosystem}/${query.search_term[0]}/latest`);
                 }
             }}>
             <div className="search-field-container">

@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router";
 import MenuHeader from "../util-components/MenuHeader/MenuHeader";
-import "./AboutPage.css"
+import "./ReportPage.css"
 import useNPMFetch from "../NPMFetch/useNPMFetch";
 import { useEffect, useMemo, useState } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";

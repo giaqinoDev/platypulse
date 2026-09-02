@@ -18,10 +18,10 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
             try{
                 let response = null;
                 if(queriedSearch.search_term.length == 2){
-                    response = await fetch(`/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}/${queriedSearch.search_term[1]}`);
+                    response = await fetch(`/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}/${queriedSearch.search_term[1]}/latest`);
                 }
                 else if(queriedSearch.search_term.length == 1){
-                    response = await fetch(`/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}`);
+                    response = await fetch(`/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}/latest`);
                 }
 
                 if(response?.status == 200){

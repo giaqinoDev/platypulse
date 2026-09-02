@@ -4,6 +4,7 @@ import { DownloadDPSchema } from "./DownloadDP"
 import { z } from "zod";
 
 export const NpmFetchResponseSchema = z.object({
+    report_id: z.uuid(),
     overall: z.number(),
     activity: z.number(),
     maintenance: z.number(),

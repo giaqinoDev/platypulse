@@ -28,7 +28,7 @@ public class PackageController {
         this.requestBucket = requestBucket;
     }
 
-    @GetMapping("/npm/{pkgName}")
+    @GetMapping("/npm/{pkgName}/latest")
     public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String pkgName){
         if(requestBucket.tryConsume(1)){
             return npmService.getReport(pkgName).map(response -> {
@@ -38,7 +38,7 @@ public class PackageController {
         return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }//#2d3e50
 
-    @GetMapping("/npm/{scope}/{pkgName}")
+    @GetMapping("/npm/{scope}/{pkgName}/latest")
     public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String scope, @PathVariable String pkgName){
         System.out.println("Scoped Package");
         String concatenatedQuery = scope + "/" + pkgName;
