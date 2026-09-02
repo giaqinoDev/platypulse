@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -87,6 +88,7 @@ public class PlatyPulse_DB_Service {
         if(!raw_signals.isPresent()){
             //Raw Signals Missing or unretreivable
             HealthScoreReport partialReport = new HealthScoreReport(
+                latest_snapShot.getId(),
                 latest_snapShot.getAggregate_score().doubleValue(),
                 latest_snapShot.getActivity_score().doubleValue(),
                 latest_snapShot.getMaintenance_score().doubleValue(),
@@ -99,6 +101,7 @@ public class PlatyPulse_DB_Service {
 
         JsonNode raw_data = raw_signals.get().getRaw_data();
         HealthScoreReport fullReport =  new HealthScoreReport(
+            latest_snapShot.getId(),
             latest_snapShot.getAggregate_score().doubleValue(),
             latest_snapShot.getActivity_score().doubleValue(),
             latest_snapShot.getMaintenance_score().doubleValue(),
@@ -110,53 +113,57 @@ public class PlatyPulse_DB_Service {
         return new PackageLookUpResult(LookupStatus.REPORT_FOUND, pkg, fullReport);
     }
 
-    public void writeToDB(
+    public UUID writeToDB(
         String pkgName,
         EcosystemEntity ecosystem,
         HealthScoreReport generated_report, 
         UniversalPackageFeatures extracted_universal_signals, 
         RawNpmPayload raw_payload){
+
         //DB Entity Mapping----------------------------------------------------------------------
-                Instant timeInstant = Instant.now();
-                PackageHealthSnapShots_Entity snapShot = new PackageHealthSnapShots_Entity();
-                snapShot.setAggregate_score(BigDecimal.valueOf(generated_report.getOverall()));
-                snapShot.setActivity_score(BigDecimal.valueOf(generated_report.getActivity()));
-                snapShot.setMaintenance_score(BigDecimal.valueOf(generated_report.getMaintenance()));
-                snapShot.setAdoption_score(BigDecimal.valueOf(generated_report.getAdoption()));
-                snapShot.setRisk_score(BigDecimal.valueOf(generated_report.getRisk()));
-                snapShot.setCreated_at(timeInstant);
-                snapShot.setAlgorithm_v(System.getenv("ALGORITHM_VERSION"));
+        Instant timeInstant = Instant.now();
+        PackageHealthSnapShots_Entity snapShot = new PackageHealthSnapShots_Entity();
+        snapShot.setAggregate_score(BigDecimal.valueOf(generated_report.getOverall()));
+        snapShot.setActivity_score(BigDecimal.valueOf(generated_report.getActivity()));
+        snapShot.setMaintenance_score(BigDecimal.valueOf(generated_report.getMaintenance()));
+        snapShot.setAdoption_score(BigDecimal.valueOf(generated_report.getAdoption()));
+        snapShot.setRisk_score(BigDecimal.valueOf(generated_report.getRisk()));
+        snapShot.setCreated_at(timeInstant);
+        snapShot.setAlgorithm_v(System.getenv("ALGORITHM_VERSION"));
 
-                UniversalSignals_Entity universal_signals = usE_Mapper.toEntity(extracted_universal_signals);
-                universal_signals.setCalculated_at(timeInstant);
-                
-                
-                RawSignals_Entity raw_signals = new RawSignals_Entity();
-                raw_signals.setFetched_at(timeInstant);
-                JsonNode ex = objectMapper.valueToTree(raw_payload);
-                raw_signals.setRaw_data(ex);
-                
+        UniversalSignals_Entity universal_signals = usE_Mapper.toEntity(extracted_universal_signals);
+        universal_signals.setCalculated_at(timeInstant);
+        
+        
+        RawSignals_Entity raw_signals = new RawSignals_Entity();
+        raw_signals.setFetched_at(timeInstant);
+        JsonNode ex = objectMapper.valueToTree(raw_payload);
+        raw_signals.setRaw_data(ex);
+        
 
-                Optional<PackagesEntity> queried_pkg = pkgRepo.findByPackageNameAndEcosystem_id(pkgName, 1);
-                PackagesEntity pkg;
-                if(!queried_pkg.isPresent()){
-                    pkg = new PackagesEntity(null, ecosystem, pkgName, null);
-                }
-                else{
-                    pkg = queried_pkg.get();
-                }
+        Optional<PackagesEntity> queried_pkg = pkgRepo.findByPackageNameAndEcosystem_id(pkgName, 1);
+        PackagesEntity pkg;
+        if(!queried_pkg.isPresent()){
+            pkg = new PackagesEntity(null, ecosystem, pkgName, null);
+        }
+        else{
+            pkg = queried_pkg.get();
+        }
 
-                pkg = pkgRepo.save(pkg);
-                snapShot.setPkg(pkg);
-                snapShot= pkgHealthRepo.save(snapShot);
+        pkg = pkgRepo.save(pkg);
+        snapShot.setPkg(pkg);
+        snapShot = pkgHealthRepo.save(snapShot);
+        UUID report_id = snapShot.getId();
 
-                universal_signals.setPkgHealthSnapShot(snapShot);
-                raw_signals.setPkgHealthSnapShot(snapShot);
+        universal_signals.setPkgHealthSnapShot(snapShot);
+        raw_signals.setPkgHealthSnapShot(snapShot);
 
-                uni_signals_repo.save(universal_signals);
-                rawSignalsRepo.save(raw_signals);
+        uni_signals_repo.save(universal_signals);
+        rawSignalsRepo.save(raw_signals);
 
-                pkg.setLatest_report(snapShot);
-                pkgRepo.save(pkg);
+        pkg.setLatest_report(snapShot);
+        pkgRepo.save(pkg);
+        
+        return report_id;
     }
 }

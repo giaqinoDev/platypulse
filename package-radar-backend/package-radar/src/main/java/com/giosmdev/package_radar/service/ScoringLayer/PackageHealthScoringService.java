@@ -30,6 +30,7 @@ public class PackageHealthScoringService {
         
         System.out.println(maintenance);
         return new HealthScoreReport(
+            null,
             round(overall),
             round(activity),
             round(maintenance),

@@ -1,5 +1,6 @@
 package com.giosmdev.package_radar.service.ApiLayer;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -61,7 +62,6 @@ public class NPMService {
 
     private Mono<HealthScoreReport> genReport(String pkgName){
         Mono<RawNpmPayload> raw_response = rawNPMRegResponse.genRawNPMResponse(pkgName);
-
         Mono<HealthScoreReport> score_report_javaScript = raw_response.map((response) -> {
             Optional<EcosystemEntity> ecosystem = ecosystem_repo.findById(1); //npm entry
             if(!ecosystem.isPresent()){
@@ -72,8 +72,9 @@ public class NPMService {
             UniversalPackageFeatures extracted_signals = signalExtractor.extractSignals(response);
             HealthScoreReport generated_report = scoringService.score(extracted_signals, response);
 
-            plp_db_service.writeToDB(pkgName, ecosystem.get(), generated_report, extracted_signals, response);
+            UUID report_id = plp_db_service.writeToDB(pkgName, ecosystem.get(), generated_report, extracted_signals, response);
 
+            generated_report.setReport_id(report_id);
             return generated_report;
         });
 
