@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.giosmdev.package_radar.model.DB_Entities.PackageHealthSnapShots_Entity;
 
 public interface PackageHealthScoreRepository extends JpaRepository<PackageHealthSnapShots_Entity, UUID>{
-    Optional<List<PackageHealthSnapShots_Entity>> getByPkg_id(UUID pkgId);
+    Optional<List<PackageHealthSnapShots_Entity>> findByPkg_IdOrderByCreatedAtDesc(UUID pkgId);
 }

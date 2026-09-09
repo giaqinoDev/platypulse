@@ -1,6 +1,6 @@
 import { FaLaptopCode } from "react-icons/fa6";
 import "../quick-looks/QuickLookStyles.css";
-import type { NpmFetchResponse } from "../../../NPMFetch/NpmFetchResponse";
+import type { NpmFetchResponse } from "../../../NPMFetchHook/NpmFetchResponse";
 import formatNumber from "../../NumFormatter";
 
 interface ContributorsQuickLookProps{

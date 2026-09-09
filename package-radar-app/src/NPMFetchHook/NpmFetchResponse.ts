@@ -5,6 +5,7 @@ import { z } from "zod";
 
 export const NpmFetchResponseSchema = z.object({
     report_id: z.uuid(),
+    package_id: z.uuid(),
     overall: z.number(),
     activity: z.number(),
     maintenance: z.number(),
@@ -35,22 +36,22 @@ export const NpmFetchResponseSchema = z.object({
                 contributors_count: z.number(),
                 top_contributor_commits: z.number(),
             }).nullable()
-        }).nullable(),
+        }).nullable().optional(),
         package_info: z.object({
             pkge_name: z.string(),
             description: z.string().nullable(),
             latest_version: z.string().nullable(),
             latest_version_info: z.object({
-                author: z.object({
+                author: z.union([z.object({
                     name: z.string().optional(),
                     email: z.string().nullable().optional()
-                }).nullable(),
-                license: z.string().nullable(),
-                homepage: z.string().nullable(),
+                }), z.string()]).nullable(),
+                license: z.string().nullable().optional(),
+                homepage: z.string().nullable().optional(),
                 keywords: z.array(z.string()).nullable(),
                 repository: z.object({
-                    url: z.string().nullable(),
-                    type: z.string().nullable(),
+                    url: z.string().nullable().optional(),
+                    type: z.string().nullable().optional(),
                     directory: z.string().nullable().optional()
                 }).nullable(),
                 npm_version: z.string().nullable(),
@@ -65,7 +66,11 @@ export const NpmFetchResponseSchema = z.object({
             }).nullable(),
             versions_release_info: z.record(z.string(), z.string()).nullable(),
         }),
-        downloads_timeline: z.array(DownloadDPSchema).nullable()
+        downloads_timeline: z.array(DownloadDPSchema).nullable(),
+        dependents_count: z.object({
+            dependent_repo_count: z.number().nullable().optional(),
+            dependent_packages_count: z.number().nullable().optional()
+        })
     }).nullable()
 }).nullable();
 

@@ -1,7 +1,7 @@
 import { HiMiniUserGroup } from "react-icons/hi2";
 import "../quick-looks/QuickLookStyles.css";
-import type { NpmFetchResponse } from "../../../NPMFetch/NpmFetchResponse";
-import type { DownloadDP } from "../../../NPMFetch/DownloadDP";
+import type { NpmFetchResponse } from "../../../NPMFetchHook/NpmFetchResponse";
+import type { DownloadDP } from "../../../NPMFetchHook/DownloadDP";
 import formatNumber from "../../NumFormatter";
 
 interface CommunityQuickLookProps{

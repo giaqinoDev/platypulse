@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.giosmdev.package_radar.dto.PackageAndSnapShotIDs;
 import com.giosmdev.package_radar.mappers.UniversalSignalsEntityMapper;
 import com.giosmdev.package_radar.model.DB_Entities.EcosystemEntity;
 import com.giosmdev.package_radar.model.DB_Entities.PackageHealthSnapShots_Entity;
@@ -89,6 +90,7 @@ public class PlatyPulse_DB_Service {
             //Raw Signals Missing or unretreivable
             HealthScoreReport partialReport = new HealthScoreReport(
                 latest_snapShot.getId(),
+                pkg.getId(),
                 latest_snapShot.getAggregate_score().doubleValue(),
                 latest_snapShot.getActivity_score().doubleValue(),
                 latest_snapShot.getMaintenance_score().doubleValue(),
@@ -102,6 +104,7 @@ public class PlatyPulse_DB_Service {
         JsonNode raw_data = raw_signals.get().getRaw_data();
         HealthScoreReport fullReport =  new HealthScoreReport(
             latest_snapShot.getId(),
+            pkg.getId(),
             latest_snapShot.getAggregate_score().doubleValue(),
             latest_snapShot.getActivity_score().doubleValue(),
             latest_snapShot.getMaintenance_score().doubleValue(),
@@ -113,7 +116,7 @@ public class PlatyPulse_DB_Service {
         return new PackageLookUpResult(LookupStatus.REPORT_FOUND, pkg, fullReport);
     }
 
-    public UUID writeToDB(
+    public PackageAndSnapShotIDs writeToDB(
         String pkgName,
         EcosystemEntity ecosystem,
         HealthScoreReport generated_report, 
@@ -128,7 +131,7 @@ public class PlatyPulse_DB_Service {
         snapShot.setMaintenance_score(BigDecimal.valueOf(generated_report.getMaintenance()));
         snapShot.setAdoption_score(BigDecimal.valueOf(generated_report.getAdoption()));
         snapShot.setRisk_score(BigDecimal.valueOf(generated_report.getRisk()));
-        snapShot.setCreated_at(timeInstant);
+        snapShot.setCreatedAt(timeInstant);
         snapShot.setAlgorithm_v(System.getenv("ALGORITHM_VERSION"));
 
         UniversalSignals_Entity universal_signals = usE_Mapper.toEntity(extracted_universal_signals);
@@ -144,7 +147,10 @@ public class PlatyPulse_DB_Service {
         Optional<PackagesEntity> queried_pkg = pkgRepo.findByPackageNameAndEcosystem_id(pkgName, 1);
         PackagesEntity pkg;
         if(!queried_pkg.isPresent()){
-            pkg = new PackagesEntity(null, ecosystem, pkgName, null);
+            pkg = new PackagesEntity();
+            pkg.setEcosystem(ecosystem);
+            pkg.setPackageName(pkgName);
+            pkg.setLatest_report(null);
         }
         else{
             pkg = queried_pkg.get();
@@ -154,6 +160,7 @@ public class PlatyPulse_DB_Service {
         snapShot.setPkg(pkg);
         snapShot = pkgHealthRepo.save(snapShot);
         UUID report_id = snapShot.getId();
+        UUID package_id = pkg.getId();
 
         universal_signals.setPkgHealthSnapShot(snapShot);
         raw_signals.setPkgHealthSnapShot(snapShot);
@@ -164,6 +171,6 @@ public class PlatyPulse_DB_Service {
         pkg.setLatest_report(snapShot);
         pkgRepo.save(pkg);
         
-        return report_id;
+        return new PackageAndSnapShotIDs(report_id, package_id);
     }
 }

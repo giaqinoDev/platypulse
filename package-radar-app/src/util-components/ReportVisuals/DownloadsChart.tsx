@@ -7,7 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { DownloadDP } from "../../NPMFetch/DownloadDP";
+import type { DownloadDP } from "../../NPMFetchHook/DownloadDP";
 import formatNumber from "../NumFormatter";
 
 

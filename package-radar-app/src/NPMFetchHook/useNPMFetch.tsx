@@ -25,10 +25,17 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
                 }
 
                 if(response?.status == 200){
-                    console.log(response?.status);
-                    const info = await response?.json();
-                    const packageData = NpmFetchResponseSchema.parse(info);
-                    setPackageData(packageData);
+                    try{
+                        console.log(response?.status);
+                        const info = await response.json();
+                        const packageData = NpmFetchResponseSchema.parse(info);
+                        console.log(packageData);
+                        
+                        setPackageData(packageData);
+                    }
+                    catch(error){
+                        console.log("Zod Error:", error)
+                    }
                 }
                 else{
                     setFetchError("Response was empty");

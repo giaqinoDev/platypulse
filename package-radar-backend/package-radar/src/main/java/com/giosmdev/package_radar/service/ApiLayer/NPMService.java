@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.giosmdev.package_radar.dto.PackageAndSnapShotIDs;
 import com.giosmdev.package_radar.exceptions.DataBaseExceptions.EcosystemNotFoundException;
 import com.giosmdev.package_radar.model.DB_Entities.EcosystemEntity;
 import com.giosmdev.package_radar.model.HealthScoreReport.HealthScoreReport;
@@ -52,9 +53,10 @@ public class NPMService {
     }
 
     public Mono<HealthScoreReport> getReport(String pkgName){
+
         PackageLookUpResult latest_report = plp_db_service.getHealthScore(pkgName);
         if(latest_report.status() == LookupStatus.REPORT_FOUND || latest_report.status() == LookupStatus.RAW_SIGNALS_MISSING){
-            return Mono.just(latest_report.report()); //WORK ON!!!!
+            return Mono.just(latest_report.report());
         }
         Mono<HealthScoreReport> generated_report = genReport(pkgName);
         return generated_report;
@@ -72,9 +74,10 @@ public class NPMService {
             UniversalPackageFeatures extracted_signals = signalExtractor.extractSignals(response);
             HealthScoreReport generated_report = scoringService.score(extracted_signals, response);
 
-            UUID report_id = plp_db_service.writeToDB(pkgName, ecosystem.get(), generated_report, extracted_signals, response);
+            PackageAndSnapShotIDs ids = plp_db_service.writeToDB(pkgName, ecosystem.get(), generated_report, extracted_signals, response);
 
-            generated_report.setReport_id(report_id);
+            generated_report.setReport_id(ids.getReport_id());
+            generated_report.setPackage_id(ids.getPackage_id());
             return generated_report;
         });
 

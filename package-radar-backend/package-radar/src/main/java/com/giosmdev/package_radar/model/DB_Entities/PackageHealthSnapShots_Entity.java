@@ -50,7 +50,7 @@ public class PackageHealthSnapShots_Entity {
 
     //No need to handle default now()
     @Column(name = "created_at", nullable = false)
-    private Instant created_at;
+    private Instant createdAt;
     
     @Column(name = "algorithm_v", nullable = false)
     private String algorithm_v;

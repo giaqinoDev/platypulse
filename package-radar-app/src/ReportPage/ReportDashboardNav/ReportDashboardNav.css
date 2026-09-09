@@ -1,0 +1,24 @@
+#dashboard-nav-container{
+    display: flex;
+    flex-direction: row;
+
+}
+
+.dashboard-nav-button{
+    background-color: #f5faff;
+    padding: 10px;
+    border-style: solid;
+    border-bottom-style: none;
+    margin-right: 5px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-color: #3d4960;
+    color: #3d4960;
+    cursor: pointer;
+    transition: padding 0.25s ease;
+}
+
+.dashboard-nav-button:hover{
+    padding: 10px 20px;
+    transition: padding 0.25s ease;
+}

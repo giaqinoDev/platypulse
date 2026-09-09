@@ -12,6 +12,7 @@ import tools.jackson.databind.JsonNode;
 @NoArgsConstructor
 public class HealthScoreReport {
     private UUID report_id;
+    private UUID package_id;
     private double overall;
     private double activity;
     private double maintenance;

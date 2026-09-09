@@ -1,6 +1,6 @@
 import { PiWrenchFill } from "react-icons/pi";
 import "../quick-looks/QuickLookStyles.css";
-import type { NpmFetchResponse } from "../../../NPMFetch/NpmFetchResponse";
+import type { NpmFetchResponse } from "../../../NPMFetchHook/NpmFetchResponse";
 import formatNumber from "../../NumFormatter";
 
 interface MaintenanceQuickLookProps{

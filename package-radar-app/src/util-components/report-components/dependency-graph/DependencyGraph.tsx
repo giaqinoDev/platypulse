@@ -1,5 +1,5 @@
 import '@xyflow/react/dist/style.css';
-import type { DependencyTree } from '../../../NPMFetch/DependencyTree';
+import type { DependencyTree } from '../../../NPMFetchHook/DependencyTree.ts';
 import Tree from 'react-d3-tree';
 import { useEffect, useRef, useState } from 'react';
 import "../dependency-graph/DependencyGraph.css";

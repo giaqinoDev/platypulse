@@ -1,7 +1,7 @@
 import { useLocation, useParams } from "react-router";
 import MenuHeader from "../util-components/MenuHeader/MenuHeader";
 import "./ReportPage.css"
-import useNPMFetch from "../NPMFetch/useNPMFetch";
+import useNPMFetch from "../NPMFetchHook/useNPMFetch";
 import { useEffect, useMemo, useState } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import SideNavBar from "./SideNavBarComponents/SideNavBar";
@@ -17,11 +17,12 @@ import ContributorsQuickLook from "../util-components/report-components/quick-lo
 import RepositoryQuickLook from "../util-components/report-components/quick-looks/RepositoryQuickLook";
 import CommitsChart from "../util-components/ReportVisuals/CommitsChart";
 import DependencyGraph from "../util-components/report-components/dependency-graph/DependencyGraph";
+import ReportDashboardNav from "./ReportDashboardNav/ReportDashboardNav";
 
 
 
 
-function AboutPage(){
+function ReportPage(){
     const {ecosystem, scope, packageName} = useParams();
     const location = useLocation();
     const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
@@ -72,6 +73,7 @@ function AboutPage(){
                     <div className="report-body" style={{"justifyContent": exResult.loading ? "center": "initial"}}>
                         {exResult.loading == false && 
                             <div className="report-content">
+                                <ReportDashboardNav pkg_id={exResult.packageData?.package_id}/>
                                 <section id="overview-section">
                                     <div className="report-overview-header">
                                         <div className="overview-header-container">
@@ -134,4 +136,4 @@ function AboutPage(){
     );
 }
 
-export default AboutPage;
+export default ReportPage;
