@@ -13,6 +13,7 @@ import tools.jackson.databind.JsonNode;
 public class HealthScoreReport {
     private UUID report_id;
     private UUID package_id;
+    private Boolean can_analyze;
     private double overall;
     private double activity;
     private double maintenance;

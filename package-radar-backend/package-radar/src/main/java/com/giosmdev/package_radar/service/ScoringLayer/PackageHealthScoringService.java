@@ -32,6 +32,7 @@ public class PackageHealthScoringService {
         return new HealthScoreReport(
             null,
             null,
+            null,
             round(overall),
             round(activity),
             round(maintenance),

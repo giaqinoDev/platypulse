@@ -1,11 +1,13 @@
 package com.giosmdev.package_radar.service.DB_Service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.giosmdev.package_radar.dto.PackageAndSnapShotIDs;
@@ -36,6 +38,9 @@ public class PlatyPulse_DB_Service {
     private RawSignalsRepository rawSignalsRepo;
     private PackageRepository pkgRepo;
     private UnviersalSignalsRepository uni_signals_repo;
+
+    @Value("${hr_duration_between_analysis}")
+    private double time_between_analysis;//Double.parseDouble(System.getenv("HR_DURATION_BETWEEN_REPORT_ANALYZING"));
 
     //Mappers-----------------------------------------
     private UniversalSignalsEntityMapper usE_Mapper;
@@ -86,11 +91,13 @@ public class PlatyPulse_DB_Service {
             return new PackageLookUpResult(LookupStatus.REPORT_NOT_GENERATED, pkg, null);
         }
         Optional<RawSignals_Entity> raw_signals = rawSignalsRepo.findBypkgHealthSnapShot_id(latest_snapShot.getId());
+        boolean can_analyze = (Duration.between(latest_snapShot.getCreatedAt(), Instant.now()).toHours() > time_between_analysis) ? true: false;
         if(!raw_signals.isPresent()){
             //Raw Signals Missing or unretreivable
             HealthScoreReport partialReport = new HealthScoreReport(
                 latest_snapShot.getId(),
                 pkg.getId(),
+                can_analyze,
                 latest_snapShot.getAggregate_score().doubleValue(),
                 latest_snapShot.getActivity_score().doubleValue(),
                 latest_snapShot.getMaintenance_score().doubleValue(),
@@ -105,6 +112,7 @@ public class PlatyPulse_DB_Service {
         HealthScoreReport fullReport =  new HealthScoreReport(
             latest_snapShot.getId(),
             pkg.getId(),
+            can_analyze,
             latest_snapShot.getAggregate_score().doubleValue(),
             latest_snapShot.getActivity_score().doubleValue(),
             latest_snapShot.getMaintenance_score().doubleValue(),
