@@ -18,6 +18,7 @@ import RepositoryQuickLook from "../util-components/report-components/quick-look
 import CommitsChart from "../util-components/ReportVisuals/CommitsChart";
 import DependencyGraph from "../util-components/report-components/dependency-graph/DependencyGraph";
 import ReportDashboardNav from "./ReportDashboardNav/ReportDashboardNav";
+import { SnapShotsTimelineSchema, type SnapShotTimeline } from "../FetchSnapShotsHook/SnapShot";
 
 
 
@@ -26,6 +27,48 @@ function ReportPage(){
     const {ecosystem, scope, packageName} = useParams();
     const location = useLocation();
     const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
+    const [reportActiveNav, setReportActiveNav] = useState("report");
+
+    const [snapShotsLoading, setSnapShotsLoading] = useState<boolean>(false);
+    const [fetchError, setFetchError] = useState<string|null|Error>(null);
+    const [fetchedSnapShots, setFetchedSnapShots] = useState<SnapShotTimeline|null>();
+    const [snapshotsRetrieved, setSnapshotsRetrieved] = useState<boolean>(false);
+
+    async function getSnapShots(packageId: string|null|undefined){
+        if(!packageId){
+            return;
+        }
+        setSnapShotsLoading(true);
+
+        try{
+            let response = null;
+            response = await fetch(`/bend/api/package/${packageId}/snapshots`);
+            if(response.status == 200){
+                const data = await response.json();
+                const snapshots = SnapShotsTimelineSchema.parse(data);
+                setFetchedSnapShots(snapshots);
+            }
+            else{
+                setFetchError("Response was empty");
+            }
+        }
+        catch(responseError: unknown){
+            if(responseError instanceof Error){
+                setFetchError("Backend Error: " + responseError);
+            }
+            else{
+                setFetchError("Unkown Error");
+            }
+        }
+        setSnapShotsLoading(false);
+        return fetchedSnapShots;
+    }
+    async function handleSnapShotRetreival(){
+        if(!snapshotsRetrieved){
+            await getSnapShots(reportFetchResponse.packageData?.package_id);
+            setSnapshotsRetrieved(true);
+        }
+    }
 
     function viewPortSetter(){
         setViewPortWidth(window.innerWidth)
@@ -54,7 +97,7 @@ function ReportPage(){
             ecosystem
         };
     }, [ecosystem, scope, packageName]);
-    const exResult = useNPMFetch(query);
+    const reportFetchResponse = useNPMFetch(query);
 
     useEffect(() => {
         if(location.hash){
@@ -70,63 +113,73 @@ function ReportPage(){
             {viewPortWidth > 600 && <SideNavBar/>}
             <div className="report-page-body">
                 <MenuHeader/>
-                    <div className="report-body" style={{"justifyContent": exResult.loading ? "center": "initial"}}>
-                        {exResult.loading == false && 
+                    <div className="report-body" style={{"justifyContent": (reportFetchResponse.loading || snapShotsLoading) ? "center": "initial"}}>
+                        {(reportFetchResponse.loading == false) && 
                             <div className="report-content">
-                                <ReportDashboardNav pkg_id={exResult.packageData?.package_id}/>
-                                <section id="overview-section">
-                                    <div className="report-overview-header">
-                                        <div className="overview-header-container">
-                                            <h1 id="overview-header-title">{exResult.packageData?.raw_signals?.package_info?.pkge_name}</h1>
-                                            <p id="overview-sub-header">{exResult.packageData?.raw_signals?.package_info?.description}</p>
-                                            <div className="icons-header">
-                                                <a href={"https://www.npmjs.com/package/" + exResult.packageData?.raw_signals?.package_info?.pkge_name} target="_blank">
-                                                    <FaNpm className="reg-icon" id="npm-icon"/>
-                                                </a>
-                                                {exResult.packageData?.raw_signals?.package_info?.latest_version_info?.repository?.url &&
-                                                    <a href={"https://github.com" + exResult.packageData?.raw_signals?.package_info?.latest_version_info?.repository?.url.split("github.com")[1]} target="_blank">
-                                                        <FaSquareGithub className="reg-icon" id="github-icon"/>
+                                <ReportDashboardNav handleSnapShotRetreival={handleSnapShotRetreival} setReportActiveNav={setReportActiveNav}/>
+                                {reportActiveNav == "report" && 
+                                <div>
+                                    <section id="overview-section">
+                                        <div className="report-overview-header">
+                                            <div className="overview-header-container">
+                                                <h1 id="overview-header-title">{reportFetchResponse.packageData?.raw_signals?.package_info?.pkge_name}</h1>
+                                                <p id="overview-sub-header">{reportFetchResponse.packageData?.raw_signals?.package_info?.description}</p>
+                                                <div className="icons-header">
+                                                    <a href={"https://www.npmjs.com/package/" + reportFetchResponse.packageData?.raw_signals?.package_info?.pkge_name} target="_blank">
+                                                        <FaNpm className="reg-icon" id="npm-icon"/>
                                                     </a>
-                                                }
+                                                    {reportFetchResponse.packageData?.raw_signals?.package_info?.latest_version_info?.repository?.url &&
+                                                        <a href={"https://github.com" + reportFetchResponse.packageData?.raw_signals?.package_info?.latest_version_info?.repository?.url.split("github.com")[1]} target="_blank">
+                                                            <FaSquareGithub className="reg-icon" id="github-icon"/>
+                                                        </a>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div className="health-score-container">
+                                                <HealthScoreRadialChart input={reportFetchResponse.packageData?.["overall"]}/>
                                             </div>
                                         </div>
-                                        <div className="health-score-container">
-                                            <HealthScoreRadialChart input={exResult.packageData?.["overall"]}/>
-                                        </div>
-                                    </div>
-                                    <div className="quick-look-container">
-                                        <div className="container-one">
-                                            <div id="sub-scores">
-                                                <SubScoreChart category={"Activity"} score={exResult.packageData?.["activity"]}/>
-                                                <SubScoreChart category={"Maintenence"} score={exResult.packageData?.["maintenance"]}/>
-                                                <SubScoreChart category={"Adoption"} score={exResult.packageData?.["adoption"]}/>
-                                                <SubScoreChart category={"Risk"} score={exResult.packageData?.["risk"]}/>
+                                        <div className="quick-look-container">
+                                            <div className="container-one">
+                                                <div id="sub-scores">
+                                                    <SubScoreChart category={"Activity"} score={reportFetchResponse.packageData?.["activity"]}/>
+                                                    <SubScoreChart category={"Maintenence"} score={reportFetchResponse.packageData?.["maintenance"]}/>
+                                                    <SubScoreChart category={"Adoption"} score={reportFetchResponse.packageData?.["adoption"]}/>
+                                                    <SubScoreChart category={"Risk"} score={reportFetchResponse.packageData?.["risk"]}/>
+                                                </div>
+                                                <MaintenanceQuickLook data={reportFetchResponse.packageData}/>
                                             </div>
-                                            <MaintenanceQuickLook data={exResult.packageData}/>
+                                            <div className="container-two">
+                                                <CommunityQuickLook data={reportFetchResponse.packageData}/>
+                                            </div>
                                         </div>
-                                        <div className="container-two">
-                                            <CommunityQuickLook data={exResult.packageData}/>
+                                    </section>
+                                    <section id="community-section">
+                                        <DownloadsChart data={reportFetchResponse.packageData?.raw_signals?.downloads_timeline}/>
+                                    </section>
+                                    <section id="maintenance-section">
+                                        <CommitsChart data={reportFetchResponse.packageData?.raw_signals?.git_hub_reg?.commit_info?.commit_timeline_volume}/>
+                                        <div className="quick-look-container">
+                                            <ContributorsQuickLook data={reportFetchResponse.packageData}/>
+                                            <RepositoryQuickLook data={reportFetchResponse.packageData}/>
                                         </div>
-                                    </div>
-                                </section>
-                                <section id="community-section">
-                                    <DownloadsChart data={exResult.packageData?.raw_signals?.downloads_timeline}/>
-                                </section>
-                                <section id="maintenance-section">
-                                    <CommitsChart data={exResult.packageData?.raw_signals?.git_hub_reg?.commit_info?.commit_timeline_volume}/>
-                                    <div className="quick-look-container">
-                                        <ContributorsQuickLook data={exResult.packageData}/>
-                                        <RepositoryQuickLook data={exResult.packageData}/>
-                                    </div>
-                                </section>
-                                <section id="dependencies-section">
-                                    <DependencyGraph dependencies={exResult.packageData?.raw_signals?.package_info.latest_version_info?.dependency_tree}/>
-                                </section>
+                                    </section>
+                                    <section id="dependencies-section">
+                                        <DependencyGraph dependencies={reportFetchResponse.packageData?.raw_signals?.package_info.latest_version_info?.dependency_tree}/>
+                                    </section>
+                                </div>
+                                }
                             </div>
                         }
-                        {exResult.loading == true &&
+                        {reportFetchResponse.loading == true &&
                             <div id="loading-visual">
                                 <p style={{"color": "#293241"}}>Grabbing Package...</p>
+                                <BarLoader color="#ff6139"/>
+                            </div>
+                        }
+                        {snapShotsLoading == true &&
+                            <div id="loading-visual">
+                                <p style={{"color": "#293241"}}>Grabbing Snap Shots...</p>
                                 <BarLoader color="#ff6139"/>
                             </div>
                         }

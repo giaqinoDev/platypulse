@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { SnapShotsTimelineSchema, type SnapShotTimeline } from "./SnapShot";
-function useFetchSnapShots(){
-    const [loading, setLoading] = useState<boolean>(false);
-    const [fetchError, setFetchError] = useState<string|null|Error>(null);
+
+interface UseFetchSnapShotsInterface{
+    setSnapShotsLoading: Dispatch<SetStateAction<boolean>>;
+    setFetchError: Dispatch<SetStateAction<string|null|Error>>;
+}
+function useFetchSnapShots({setSnapShotsLoading, setFetchError}: UseFetchSnapShotsInterface){
+    //const [snapShotsLoading, setSnapShotsLoading] = useState<boolean>(false);
+    //const [fetchError, setFetchError] = useState<string|null|Error>(null);
     const [fetchedSnapShots, setFetchedSnapShots] = useState<SnapShotTimeline|null>();
 
     async function getSnapShots(packageId: string|null|undefined){
@@ -10,7 +15,7 @@ function useFetchSnapShots(){
         if(!packageId){
             return;
         }
-        setLoading(true);
+        setSnapShotsLoading(true);
 
         try{
             let response = null;
@@ -32,11 +37,11 @@ function useFetchSnapShots(){
                 setFetchError("Unkown Error");
             }
         }
-        setLoading(false);
+        setSnapShotsLoading(false);
         return fetchedSnapShots;
     }
 
-    return {loading, getSnapShots, fetchError}
+    return {getSnapShots}
 }
 
 export default useFetchSnapShots;
