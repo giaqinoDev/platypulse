@@ -26,6 +26,16 @@ body{
     padding: 30px;
     height: 100%;
 }
+#generate-new-report-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: green;
+    
+}
+#generate-report-button{
+    margin-left: auto;
+}
 .report-body{
     display: flex;
     flex-direction: column;

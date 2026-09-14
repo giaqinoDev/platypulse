@@ -120,6 +120,14 @@ function ReportPage(){
                                 {reportActiveNav == "report" && 
                                 <div>
                                     <section id="overview-section">
+                                        {reportFetchResponse.packageData?.can_analyze &&
+                                            <div id="generate-new-report-container">
+                                                <p>A new report is ready to generate!</p>
+                                                <button id="generate-report-button">
+                                                    Generate Report
+                                                </button>
+                                            </div>
+                                        }
                                         <div className="report-overview-header">
                                             <div className="overview-header-container">
                                                 <h1 id="overview-header-title">{reportFetchResponse.packageData?.raw_signals?.package_info?.pkge_name}</h1>
