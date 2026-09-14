@@ -6,6 +6,7 @@ import { z } from "zod";
 export const NpmFetchResponseSchema = z.object({
     report_id: z.uuid(),
     package_id: z.uuid(),
+    can_analyze: z.boolean(),
     overall: z.number(),
     activity: z.number(),
     maintenance: z.number(),

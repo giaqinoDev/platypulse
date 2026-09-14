@@ -67,7 +67,7 @@ function SideNavBar(){
         <div className="side-nav-bar-root">
             <div className="side-bar-header">
                 <Link to="/home">
-                    <img src={platyPulse_svg} className="platy-pulse-svg"></img>
+                    {<img src={platyPulse_svg} className="platy-pulse-svg"></img>}
                 </Link>
                 <div className="side-bar-header-body">
                     <h2 style={{"margin": "10px 0px"}}>Platy Pulse Reports</h2>
