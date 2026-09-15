@@ -30,11 +30,26 @@ body{
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: green;
-    
+    padding: 0px 15px;
+    background-color: rgb(140, 228, 140);
+    border-style: solid;
+    border-color: green;
+    border-width: 1px;
+    border-radius: 5px;
+    margin-top: 30px;
+    color: #212a3b;
 }
 #generate-report-button{
     margin-left: auto;
+    padding: 8px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: green;
+    background-color: #e9f2ff;
+    cursor: pointer;
+}
+#generate-report-button:hover{
+    background-color: #c6d3e3;
 }
 .report-body{
     display: flex;

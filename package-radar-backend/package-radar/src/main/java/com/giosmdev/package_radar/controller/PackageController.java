@@ -3,6 +3,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,18 +31,40 @@ public class PackageController {
 
     @GetMapping("/npm/{pkgName}/latest")
     public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String pkgName){
-        if(requestBucket.tryConsume(1)){
-            return npmService.getReport(pkgName).map(response -> {
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            });
-        }
-        return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
-    }//#2d3e50
+        return condensedGet(pkgName);
+        // if(requestBucket.tryConsume(1)){
+        //     return npmService.getReport(pkgName).map(response -> {
+        //         return ResponseEntity.status(HttpStatus.OK).body(response);
+        //     });
+        // }
+        // return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
+    }
 
     @GetMapping("/npm/{scope}/{pkgName}/latest")
     public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String scope, @PathVariable String pkgName){
         System.out.println("Scoped Package");
         String concatenatedQuery = scope + "/" + pkgName;
+        return condensedGet(concatenatedQuery);
+        // if(requestBucket.tryConsume(1)){
+        //     return npmService.getReport(concatenatedQuery).map(response -> {
+        //         return ResponseEntity.status(HttpStatus.OK).body(response);
+        //     });
+        // }
+        // return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
+    }
+
+    @PostMapping("/npm/{scope}/{pkgName}/generateReport")
+    public Mono<ResponseEntity<HealthScoreReport>> generateNewReport(@PathVariable String scope, @PathVariable String pkgName){
+        String concatinatedQuery = scope + "/" + pkgName;
+        return condensedPost(concatinatedQuery);
+    }
+
+    @PostMapping("/npm/{pkgName}/generateReport")
+    public Mono<ResponseEntity<HealthScoreReport>> generateNewReport(@PathVariable String pkgName){
+        return condensedPost(pkgName);
+    }
+
+    private Mono<ResponseEntity<HealthScoreReport>> condensedGet(String concatenatedQuery){
         if(requestBucket.tryConsume(1)){
             return npmService.getReport(concatenatedQuery).map(response -> {
                 return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -50,5 +73,12 @@ public class PackageController {
         return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }
 
-    
+    private Mono<ResponseEntity<HealthScoreReport>> condensedPost(String concatenatedQuery){
+        if(requestBucket.tryConsume(1)){
+            return npmService.genReport(concatenatedQuery).map(response -> {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            });
+        }
+        return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
+    }
 }

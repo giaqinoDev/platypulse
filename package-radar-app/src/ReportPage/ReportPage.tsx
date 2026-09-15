@@ -19,6 +19,8 @@ import CommitsChart from "../util-components/ReportVisuals/CommitsChart";
 import DependencyGraph from "../util-components/report-components/dependency-graph/DependencyGraph";
 import ReportDashboardNav from "./ReportDashboardNav/ReportDashboardNav";
 import { SnapShotsTimelineSchema, type SnapShotTimeline } from "../FetchSnapShotsHook/SnapShot";
+import { BsBarChartFill } from "react-icons/bs";
+
 
 
 
@@ -63,6 +65,7 @@ function ReportPage(){
         setSnapShotsLoading(false);
         return fetchedSnapShots;
     }
+    
     async function handleSnapShotRetreival(){
         if(!snapshotsRetrieved){
             await getSnapShots(reportFetchResponse.packageData?.package_id);
@@ -122,7 +125,8 @@ function ReportPage(){
                                     <section id="overview-section">
                                         {reportFetchResponse.packageData?.can_analyze &&
                                             <div id="generate-new-report-container">
-                                                <p>A new report is ready to generate!</p>
+                                                <BsBarChartFill style={{"marginRight": "5px"}}/>
+                                                <p>A new report is ready to generate!</p>                                                
                                                 <button id="generate-report-button">
                                                     Generate Report
                                                 </button>

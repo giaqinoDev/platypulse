@@ -54,7 +54,7 @@ public class NPMService {
 
     public Mono<HealthScoreReport> getReport(String pkgName){
 
-        PackageLookUpResult latest_report = plp_db_service.getHealthScore(pkgName);
+        PackageLookUpResult latest_report = plp_db_service.getLatestHealthScore(pkgName);
         if(latest_report.status() == LookupStatus.REPORT_FOUND || latest_report.status() == LookupStatus.RAW_SIGNALS_MISSING){
             return Mono.just(latest_report.report());
         }
@@ -62,7 +62,7 @@ public class NPMService {
         return generated_report;
     }
 
-    private Mono<HealthScoreReport> genReport(String pkgName){
+    public Mono<HealthScoreReport> genReport(String pkgName){
         Mono<RawNpmPayload> raw_response = rawNPMRegResponse.genRawNPMResponse(pkgName);
         Mono<HealthScoreReport> score_report_javaScript = raw_response.map((response) -> {
             Optional<EcosystemEntity> ecosystem = ecosystem_repo.findById(1); //npm entry

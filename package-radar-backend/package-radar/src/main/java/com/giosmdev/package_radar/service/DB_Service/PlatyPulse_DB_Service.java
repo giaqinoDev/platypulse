@@ -78,7 +78,7 @@ public class PlatyPulse_DB_Service {
         return ecosystemRepo.findAll();
     }
 
-    public PackageLookUpResult getHealthScore(String pkgName){
+    public PackageLookUpResult getLatestHealthScore(String pkgName){
         Optional<PackagesEntity> queriedPkg = pkgRepo.findByPackageNameAndEcosystem_id(pkgName, 1);
         if(!queriedPkg.isPresent()){
             //Package does not exist
