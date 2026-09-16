@@ -20,6 +20,7 @@ import DependencyGraph from "../util-components/report-components/dependency-gra
 import ReportDashboardNav from "./ReportDashboardNav/ReportDashboardNav";
 import { SnapShotsTimelineSchema, type SnapShotTimeline } from "../FetchSnapShotsHook/SnapShot";
 import { BsBarChartFill } from "react-icons/bs";
+import useFetchSnapShots from "../FetchSnapShotsHook/useFetchSnapShots";
 
 
 
@@ -29,46 +30,54 @@ function ReportPage(){
     const {ecosystem, scope, packageName} = useParams();
     const location = useLocation();
     const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
-    const [reportActiveNav, setReportActiveNav] = useState("report");
+    const [reportActiveNav, setReportActiveNav] = useState<number>(1);
 
-    const [snapShotsLoading, setSnapShotsLoading] = useState<boolean>(false);
-    const [fetchError, setFetchError] = useState<string|null|Error>(null);
-    const [fetchedSnapShots, setFetchedSnapShots] = useState<SnapShotTimeline|null>();
+    // const [snapShotsLoading, setSnapShotsLoading] = useState<boolean>(false);
+    // const [fetchError, setFetchError] = useState<string|null|Error>(null);
+    // const [fetchedSnapShots, setFetchedSnapShots] = useState<SnapShotTimeline|null|undefined>();
     const [snapshotsRetrieved, setSnapshotsRetrieved] = useState<boolean>(false);
 
-    async function getSnapShots(packageId: string|null|undefined){
-        if(!packageId){
-            return;
-        }
-        setSnapShotsLoading(true);
+    //const [generatingReport, setGeneratingReport] = useState<boolean>(false);
+    //const [generatedReport, setGeneratedReport] = useState<
+    const {getSnapShots, snapShotsLoading, fetchError, fetchedSnapShots} = useFetchSnapShots(); //{setSnapShotsLoading, setFetchError, setFetchedSnapShots}
+    // async function getSnapShots(packageId: string|null|undefined){
+    //     if(!packageId){
+    //         return;
+    //     }
+    //     setSnapShotsLoading(true);
 
-        try{
-            let response = null;
-            response = await fetch(`/bend/api/package/${packageId}/snapshots`);
-            if(response.status == 200){
-                const data = await response.json();
-                const snapshots = SnapShotsTimelineSchema.parse(data);
-                setFetchedSnapShots(snapshots);
-            }
-            else{
-                setFetchError("Response was empty");
-            }
-        }
-        catch(responseError: unknown){
-            if(responseError instanceof Error){
-                setFetchError("Backend Error: " + responseError);
-            }
-            else{
-                setFetchError("Unkown Error");
-            }
-        }
-        setSnapShotsLoading(false);
-        return fetchedSnapShots;
-    }
-    
+    //     try{
+    //         let response = null;
+    //         response = await fetch(`/bend/api/package/${packageId}/snapshots`);
+    //         if(response.status == 200){
+    //             const data = await response.json();
+    //             const snapshots = SnapShotsTimelineSchema.parse(data);
+    //             setFetchedSnapShots(snapshots);
+    //         }
+    //         else{
+    //             setFetchError("Response was empty");
+    //         }
+    //     }
+    //     catch(responseError: unknown){
+    //         if(responseError instanceof Error){
+    //             setFetchError("Backend Error: " + responseError);
+    //         }
+    //         else{
+    //             setFetchError("Unkown Error");
+    //         }
+    //     }
+    //     setSnapShotsLoading(false);
+    //     return fetchedSnapShots;
+    // }
     async function handleSnapShotRetreival(){
+        console.log("handleSnapShotRetreival called");
+        console.log(
+            "package ID:",
+            reportFetchResponse.packageData?.package_id
+        );
         if(!snapshotsRetrieved){
             await getSnapShots(reportFetchResponse.packageData?.package_id);
+            console.log("get snap shot request made")
             setSnapshotsRetrieved(true);
         }
     }
@@ -76,6 +85,11 @@ function ReportPage(){
     function viewPortSetter(){
         setViewPortWidth(window.innerWidth)
     }
+
+    useEffect(() => {
+        console.log("--Fetched Snap Shots--");
+        console.log(fetchedSnapShots);
+    }, [fetchedSnapShots]);
 
     useEffect(() => {
         //load: waits to execute when windows resources are finished loading
@@ -120,7 +134,7 @@ function ReportPage(){
                         {(reportFetchResponse.loading == false) && 
                             <div className="report-content">
                                 <ReportDashboardNav handleSnapShotRetreival={handleSnapShotRetreival} setReportActiveNav={setReportActiveNav}/>
-                                {reportActiveNav == "report" && 
+                                {reportActiveNav == 1 && 
                                 <div>
                                     <section id="overview-section">
                                         {reportFetchResponse.packageData?.can_analyze &&
@@ -180,6 +194,15 @@ function ReportPage(){
                                         <DependencyGraph dependencies={reportFetchResponse.packageData?.raw_signals?.package_info.latest_version_info?.dependency_tree}/>
                                     </section>
                                 </div>
+                                }
+                                {reportActiveNav == 2 &&
+                                    <div>
+                                        {fetchedSnapShots?.map((snapshot) => (
+                                            <div>
+                                                {snapshot.overall_score}
+                                            </div>
+                                        ))}
+                                    </div>
                                 }
                             </div>
                         }

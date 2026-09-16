@@ -3,7 +3,7 @@ import "./ReportDashboardNav.css"
 interface ReportDashboardNavInterface{
     // pkg_id : string|null|undefined;
     handleSnapShotRetreival: () => Promise<void>;
-    setReportActiveNav: Dispatch<SetStateAction<string>>;
+    setReportActiveNav: Dispatch<SetStateAction<number>>;
 }
 function ReportDashboardNav({handleSnapShotRetreival, setReportActiveNav}: ReportDashboardNavInterface){
     // const [snapshotsRetrieved, setSnapshotsRetrieved] = useState<boolean>(false);
@@ -18,10 +18,10 @@ function ReportDashboardNav({handleSnapShotRetreival, setReportActiveNav}: Repor
     
     return(
         <div id="dashboard-nav-container">
-            <button className="dashboard-nav-button" onClick={() => setReportActiveNav("report")}>
+            <button className="dashboard-nav-button" onClick={() => setReportActiveNav(1)}>
                 Report
             </button>
-            <button className="dashboard-nav-button" onClick={() => {handleSnapShotRetreival(); setReportActiveNav("snapshots");}}>
+            <button className="dashboard-nav-button" onClick={() => {handleSnapShotRetreival(); setReportActiveNav(2);}}>
                 Snap Shots
             </button>
         </div>
