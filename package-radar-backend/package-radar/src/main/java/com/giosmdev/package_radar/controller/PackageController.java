@@ -1,4 +1,6 @@
 package com.giosmdev.package_radar.controller;
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,12 +34,6 @@ public class PackageController {
     @GetMapping("/npm/{pkgName}/latest")
     public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String pkgName){
         return condensedGet(pkgName);
-        // if(requestBucket.tryConsume(1)){
-        //     return npmService.getReport(pkgName).map(response -> {
-        //         return ResponseEntity.status(HttpStatus.OK).body(response);
-        //     });
-        // }
-        // return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }
 
     @GetMapping("/npm/{scope}/{pkgName}/latest")
@@ -45,22 +41,16 @@ public class PackageController {
         System.out.println("Scoped Package");
         String concatenatedQuery = scope + "/" + pkgName;
         return condensedGet(concatenatedQuery);
-        // if(requestBucket.tryConsume(1)){
-        //     return npmService.getReport(concatenatedQuery).map(response -> {
-        //         return ResponseEntity.status(HttpStatus.OK).body(response);
-        //     });
-        // }
-        // return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }
 
     @PostMapping("/npm/{scope}/{pkgName}/generateReport")
-    public Mono<ResponseEntity<HealthScoreReport>> generateNewReport(@PathVariable String scope, @PathVariable String pkgName){
+    public Mono<ResponseEntity<UUID>> generateNewReport(@PathVariable String scope, @PathVariable String pkgName){
         String concatinatedQuery = scope + "/" + pkgName;
         return condensedPost(concatinatedQuery);
     }
 
     @PostMapping("/npm/{pkgName}/generateReport")
-    public Mono<ResponseEntity<HealthScoreReport>> generateNewReport(@PathVariable String pkgName){
+    public Mono<ResponseEntity<UUID>> generateNewReport(@PathVariable String pkgName){
         return condensedPost(pkgName);
     }
 
@@ -73,10 +63,10 @@ public class PackageController {
         return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }
 
-    private Mono<ResponseEntity<HealthScoreReport>> condensedPost(String concatenatedQuery){
+    private Mono<ResponseEntity<UUID>> condensedPost(String concatenatedQuery){
         if(requestBucket.tryConsume(1)){
             return npmService.genReport(concatenatedQuery).map(response -> {
-                return ResponseEntity.status(HttpStatus.OK).body(response);
+                return ResponseEntity.status(HttpStatus.OK).body(response.getReport_id());
             });
         }
         return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));

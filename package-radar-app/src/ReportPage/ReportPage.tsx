@@ -18,7 +18,6 @@ import RepositoryQuickLook from "../util-components/report-components/quick-look
 import CommitsChart from "../util-components/ReportVisuals/CommitsChart";
 import DependencyGraph from "../util-components/report-components/dependency-graph/DependencyGraph";
 import ReportDashboardNav from "./ReportDashboardNav/ReportDashboardNav";
-import { SnapShotsTimelineSchema, type SnapShotTimeline } from "../FetchSnapShotsHook/SnapShot";
 import { BsBarChartFill } from "react-icons/bs";
 import useFetchSnapShots from "../FetchSnapShotsHook/useFetchSnapShots";
 
@@ -32,43 +31,9 @@ function ReportPage(){
     const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
     const [reportActiveNav, setReportActiveNav] = useState<number>(1);
 
-    // const [snapShotsLoading, setSnapShotsLoading] = useState<boolean>(false);
-    // const [fetchError, setFetchError] = useState<string|null|Error>(null);
-    // const [fetchedSnapShots, setFetchedSnapShots] = useState<SnapShotTimeline|null|undefined>();
     const [snapshotsRetrieved, setSnapshotsRetrieved] = useState<boolean>(false);
-
-    //const [generatingReport, setGeneratingReport] = useState<boolean>(false);
-    //const [generatedReport, setGeneratedReport] = useState<
-    const {getSnapShots, snapShotsLoading, fetchError, fetchedSnapShots} = useFetchSnapShots(); //{setSnapShotsLoading, setFetchError, setFetchedSnapShots}
-    // async function getSnapShots(packageId: string|null|undefined){
-    //     if(!packageId){
-    //         return;
-    //     }
-    //     setSnapShotsLoading(true);
-
-    //     try{
-    //         let response = null;
-    //         response = await fetch(`/bend/api/package/${packageId}/snapshots`);
-    //         if(response.status == 200){
-    //             const data = await response.json();
-    //             const snapshots = SnapShotsTimelineSchema.parse(data);
-    //             setFetchedSnapShots(snapshots);
-    //         }
-    //         else{
-    //             setFetchError("Response was empty");
-    //         }
-    //     }
-    //     catch(responseError: unknown){
-    //         if(responseError instanceof Error){
-    //             setFetchError("Backend Error: " + responseError);
-    //         }
-    //         else{
-    //             setFetchError("Unkown Error");
-    //         }
-    //     }
-    //     setSnapShotsLoading(false);
-    //     return fetchedSnapShots;
-    // }
+    const {getSnapShots, snapShotsLoading, fetchError, fetchedSnapShots} = useFetchSnapShots();
+    
     async function handleSnapShotRetreival(){
         console.log("handleSnapShotRetreival called");
         console.log(

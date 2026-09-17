@@ -1,11 +1,6 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState } from "react";
 import { SnapShotsTimelineSchema, type SnapShotTimeline } from "./SnapShot";
 
-interface UseFetchSnapShotsInterface{
-    setSnapShotsLoading: Dispatch<SetStateAction<boolean>>;
-    setFetchError: Dispatch<SetStateAction<string|null|Error>>;
-    setFetchedSnapShots: Dispatch<SetStateAction<SnapShotTimeline|null|undefined>>;
-}
 function useFetchSnapShots(){
     const [snapShotsLoading, setSnapShotsLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);

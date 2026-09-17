@@ -4,10 +4,6 @@ import { LuWrench } from "react-icons/lu";
 import { MdOutlineGroups } from "react-icons/md";
 import { FaShareNodes } from "react-icons/fa6";
 
-
-
-import platyPulse_svg from "../../../public/Platypulse_logo.svg"
-
 import "../SideNavBarComponents/SideNavBar.css"
 import { useEffect, useRef, useState } from "react";
 
