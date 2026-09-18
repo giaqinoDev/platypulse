@@ -8,4 +8,6 @@ import com.giosmdev.package_radar.model.DB_Entities.PackagesEntity;
 
 public interface PackageRepository extends JpaRepository<PackagesEntity, UUID>{
     Optional<PackagesEntity> findByPackageNameAndEcosystem_id(String package_name, Integer eco_id);
+
+    Optional<PackagesEntity> findById(UUID pkg_id);
 }

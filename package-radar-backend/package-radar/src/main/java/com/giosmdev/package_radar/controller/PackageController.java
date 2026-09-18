@@ -2,6 +2,7 @@ package com.giosmdev.package_radar.controller;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,41 +33,49 @@ public class PackageController {
     }
 
     @GetMapping("/npm/{pkgName}/latest")
-    public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String pkgName){
-        return condensedGet(pkgName);
+    public Mono<ResponseEntity<HealthScoreReport>> getLatestReport(@PathVariable String pkgName){
+        return condensedGetLatest(pkgName);
     }
 
     @GetMapping("/npm/{scope}/{pkgName}/latest")
-    public Mono<ResponseEntity<HealthScoreReport>> getReport(@PathVariable String scope, @PathVariable String pkgName){
+    public Mono<ResponseEntity<HealthScoreReport>> getLatestReport(@PathVariable String scope, @PathVariable String pkgName){
         System.out.println("Scoped Package");
         String concatenatedQuery = scope + "/" + pkgName;
-        return condensedGet(concatenatedQuery);
+        return condensedGetLatest(concatenatedQuery);
     }
 
-    @PostMapping("/npm/{scope}/{pkgName}/generateReport")
-    public Mono<ResponseEntity<UUID>> generateNewReport(@PathVariable String scope, @PathVariable String pkgName){
-        String concatinatedQuery = scope + "/" + pkgName;
-        return condensedPost(concatinatedQuery);
+    @GetMapping("/npm/{pkgName}/id/{report_id}")
+    public Mono<ResponseEntity<HealthScoreReport>> getReportbyId(@PathVariable String pkgName, @PathVariable UUID report_id){
+        return npmService.getReportById(report_id).map((response) -> {
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        })
+        .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
-    @PostMapping("/npm/{pkgName}/generateReport")
-    public Mono<ResponseEntity<UUID>> generateNewReport(@PathVariable String pkgName){
-        return condensedPost(pkgName);
+    @GetMapping("/npm/{scope}/{pkgName}/id/{report_id}")
+    public Mono<ResponseEntity<HealthScoreReport>> getReportbyId(@PathVariable String scope, @PathVariable String pkgName, @PathVariable UUID report_id){
+        return npmService.getReportById(report_id).map((response) -> {
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        })
+        .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
-    private Mono<ResponseEntity<HealthScoreReport>> condensedGet(String concatenatedQuery){
+    @PostMapping("/npm/{pkgId}/generateReport")
+    public Mono<ResponseEntity<UUID>> generateNewReport(@PathVariable UUID pkgId){
+        System.out.println("GENERATING NEW REPORT!!!");
         if(requestBucket.tryConsume(1)){
-            return npmService.getReport(concatenatedQuery).map(response -> {
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            });
+            return npmService.genReportByPkgId(pkgId).map(response -> {
+                return ResponseEntity.status(HttpStatus.OK).body(response.getReport_id());
+            })
+            .defaultIfEmpty(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
         }
         return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }
 
-    private Mono<ResponseEntity<UUID>> condensedPost(String concatenatedQuery){
+    private Mono<ResponseEntity<HealthScoreReport>> condensedGetLatest(String concatenatedQuery){
         if(requestBucket.tryConsume(1)){
-            return npmService.genReport(concatenatedQuery).map(response -> {
-                return ResponseEntity.status(HttpStatus.OK).body(response.getReport_id());
+            return npmService.getLatestReport(concatenatedQuery).map(response -> {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
             });
         }
         return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));

@@ -15,15 +15,19 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
 
         const fetchFromBackend = async () => {
             setLoading(true);
+            let api_root = `/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}`;
+            let api_branch = "/latest";
             try{
                 let response = null;
                 if(queriedSearch.search_term.length == 2){
-                    response = await fetch(`/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}/${queriedSearch.search_term[1]}/latest`);
+                    api_root = `/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}/${queriedSearch.search_term[1]}`;
                 }
-                else if(queriedSearch.search_term.length == 1){
-                    response = await fetch(`/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}/latest`);
+                if(queriedSearch.report_id !== undefined){
+                    api_branch = `/id/${queriedSearch.report_id}`;
                 }
 
+
+                response = await fetch(api_root + api_branch);
                 if(response?.status == 200){
                     try{
                         console.log(response?.status);

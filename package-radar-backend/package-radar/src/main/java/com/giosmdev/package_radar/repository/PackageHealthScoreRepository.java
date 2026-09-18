@@ -10,4 +10,7 @@ import com.giosmdev.package_radar.model.DB_Entities.PackageHealthSnapShots_Entit
 
 public interface PackageHealthScoreRepository extends JpaRepository<PackageHealthSnapShots_Entity, UUID>{
     Optional<List<PackageHealthSnapShots_Entity>> findByPkg_IdOrderByCreatedAtDesc(UUID pkgId);
+    // Optional<String> getPackage_NameById(UUID pkgID);
+
+    Optional<PackageHealthSnapShots_Entity> findById(UUID report_id);
 }

@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import MenuHeader from "../util-components/MenuHeader/MenuHeader";
 import "./ReportPage.css"
 import useNPMFetch from "../NPMFetchHook/useNPMFetch";
@@ -20,20 +20,37 @@ import DependencyGraph from "../util-components/report-components/dependency-gra
 import ReportDashboardNav from "./ReportDashboardNav/ReportDashboardNav";
 import { BsBarChartFill } from "react-icons/bs";
 import useFetchSnapShots from "../FetchSnapShotsHook/useFetchSnapShots";
+import useGenerateSnapShot from "../generateSnapShotHook/useGenerateSnapShotHook";
 
 
 
 
 
 function ReportPage(){
-    const {ecosystem, scope, packageName} = useParams();
+    const {ecosystem, scope, packageName, report_id} = useParams();
     const location = useLocation();
     const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
     const [reportActiveNav, setReportActiveNav] = useState<number>(1);
 
     const [snapshotsRetrieved, setSnapshotsRetrieved] = useState<boolean>(false);
     const {getSnapShots, snapShotsLoading, fetchError, fetchedSnapShots} = useFetchSnapShots();
-    
+    const {generateNewReport, generatingReport, generationError, generatedReportId} = useGenerateSnapShot();
+
+    const navigate = useNavigate();
+
+    const query = useMemo<SearchContextStructure | null>(() => { //useMemo lets you store the result of a calculation between renders
+        if (!ecosystem || !packageName) {
+            return null;
+        }
+
+        return {
+            search_term: scope ? ["@" + scope, packageName] : [packageName],
+            ecosystem: ecosystem,
+            report_id: report_id
+        };
+    }, [ecosystem, scope, packageName, report_id]);
+    const reportFetchResponse = useNPMFetch(query);
+
     async function handleSnapShotRetreival(){
         console.log("handleSnapShotRetreival called");
         console.log(
@@ -46,6 +63,24 @@ function ReportPage(){
             setSnapshotsRetrieved(true);
         }
     }
+
+    async function handleNewReportGen(){
+        const package_id = reportFetchResponse?.packageData?.package_id;
+        if(package_id){
+            await generateNewReport(package_id);
+        }
+    }
+
+    useEffect(() => {
+        if(query?.search_term.length == 2){
+            console.log(generatedReportId);
+            navigate(`/package/${query.ecosystem}/${query.search_term[0].replace("@", "")}/${query.search_term[1]}/id/${generatedReportId}`);
+        }
+        else if(query?.search_term.length == 1){
+            console.log(generatedReportId);
+            navigate(`/package/${query.ecosystem}/${query.search_term[0]}/id/${generatedReportId}`);
+        }
+    }, [generatedReportId])
 
     function viewPortSetter(){
         setViewPortWidth(window.innerWidth)
@@ -68,18 +103,6 @@ function ReportPage(){
         }
     }, [])
     
-    // const [query, setQuery] = useState<SearchContextStructure|null>(null);
-    const query = useMemo<SearchContextStructure | null>(() => { //useMemo lets you store the result of a calculation between renders
-        if (!ecosystem || !packageName) {
-            return null;
-        }
-
-        return {
-            search_term: scope ? ["@" + scope, packageName] : [packageName],
-            ecosystem
-        };
-    }, [ecosystem, scope, packageName]);
-    const reportFetchResponse = useNPMFetch(query);
 
     useEffect(() => {
         if(location.hash){
@@ -106,7 +129,7 @@ function ReportPage(){
                                             <div id="generate-new-report-container">
                                                 <BsBarChartFill style={{"marginRight": "5px"}}/>
                                                 <p>A new report is ready to generate!</p>                                                
-                                                <button id="generate-report-button">
+                                                <button id="generate-report-button" onClick={handleNewReportGen}>
                                                     Generate Report
                                                 </button>
                                             </div>

@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jackson.autoconfigure.JacksonProperties.Json;
 import org.springframework.stereotype.Service;
 
 import com.giosmdev.package_radar.dto.PackageAndSnapShotIDs;
@@ -78,6 +79,45 @@ public class PlatyPulse_DB_Service {
         return ecosystemRepo.findAll();
     }
 
+    public PackageLookUpResult getReportById(UUID report_id){
+        Optional<PackageHealthSnapShots_Entity> queried_report = pkgHealthRepo.findById(report_id);
+        if(queried_report.isPresent()){
+            PackageHealthSnapShots_Entity report = queried_report.get();
+            PackagesEntity accociated_pkg_entity = report.getPkg();
+            PackageHealthSnapShots_Entity latest_snapShot = accociated_pkg_entity.getLatest_report();
+            boolean can_analyze = canGenerateNewReport(latest_snapShot.getCreatedAt());
+            Optional<RawSignals_Entity> queried_raw_signals = rawSignalsRepo.findBypkgHealthSnapShot_id(report_id);
+            if(queried_raw_signals.isPresent()){
+                JsonNode raw_signal_data = queried_raw_signals.get().getRaw_data();
+                HealthScoreReport full_report = new HealthScoreReport(
+                    report.getId(),
+                    accociated_pkg_entity.getId(),
+                    can_analyze,
+                    report.getAggregate_score().doubleValue(),
+                    report.getActivity_score().doubleValue(),
+                    report.getMaintenance_score().doubleValue(),
+                    report.getAdoption_score().doubleValue(),
+                    report.getRisk_score().doubleValue(),
+                    raw_signal_data
+                );
+
+                return new PackageLookUpResult(LookupStatus.REPORT_FOUND, accociated_pkg_entity, full_report);
+            }
+            HealthScoreReport partial_report = new HealthScoreReport(
+                    report.getId(),
+                    accociated_pkg_entity.getId(),
+                    can_analyze,
+                    report.getAggregate_score().doubleValue(),
+                    report.getActivity_score().doubleValue(),
+                    report.getMaintenance_score().doubleValue(),
+                    report.getAdoption_score().doubleValue(),
+                    report.getRisk_score().doubleValue(),
+                    null
+                );
+            return new PackageLookUpResult(LookupStatus.RAW_SIGNALS_MISSING, accociated_pkg_entity, partial_report);
+        }
+        return new PackageLookUpResult(LookupStatus.REPORT_NOT_GENERATED, null, null);
+    }
     public PackageLookUpResult getLatestHealthScore(String pkgName){
         Optional<PackagesEntity> queriedPkg = pkgRepo.findByPackageNameAndEcosystem_id(pkgName, 1);
         if(!queriedPkg.isPresent()){
@@ -91,7 +131,7 @@ public class PlatyPulse_DB_Service {
             return new PackageLookUpResult(LookupStatus.REPORT_NOT_GENERATED, pkg, null);
         }
         Optional<RawSignals_Entity> raw_signals = rawSignalsRepo.findBypkgHealthSnapShot_id(latest_snapShot.getId());
-        boolean can_analyze = (Duration.between(latest_snapShot.getCreatedAt(), Instant.now()).toHours() > time_between_analysis) ? true: false;
+        boolean can_analyze = canGenerateNewReport(latest_snapShot.getCreatedAt());
         if(!raw_signals.isPresent()){
             //Raw Signals Missing or unretreivable
             HealthScoreReport partialReport = new HealthScoreReport(
@@ -180,5 +220,12 @@ public class PlatyPulse_DB_Service {
         pkgRepo.save(pkg);
         
         return new PackageAndSnapShotIDs(report_id, package_id);
+    }
+
+    private boolean canGenerateNewReport(Instant latest_snapshot_creation_Date){
+        if(Duration.between(latest_snapshot_creation_Date, Instant.now()).toHours() > time_between_analysis){
+            return true;
+        }
+        return false;
     }
 }

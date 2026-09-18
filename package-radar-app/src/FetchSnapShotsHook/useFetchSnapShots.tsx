@@ -17,13 +17,8 @@ function useFetchSnapShots(){
             let response = null;
             response = await fetch(`/bend/api/package/${packageId}/snapshots`);
             if(response.status == 200){
-                console.log("Response was 200");
                 const data = await response.json();
-                console.log("Raw snapshot data:", data);
-                console.log("ABOUT TO PARSE");
                 const snapshots = SnapShotsTimelineSchema.parse(data);
-                console.log("Parsed snapshots:", snapshots);
-                console.log("FINISHED PARSE");
                 setFetchedSnapShots(snapshots);
 
                 console.log("setFetchedSnapShots called");

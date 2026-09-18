@@ -1,4 +1,5 @@
 export interface SearchContextStructure{
     search_term: string[],
-    ecosystem: string | undefined
+    ecosystem: string | undefined,
+    report_id: string|undefined,
 }
