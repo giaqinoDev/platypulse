@@ -9,8 +9,8 @@ function App() {
       <Route path="/home" element={<Home/>}/>
       <Route path="/package/:ecosystem/:packageName/latest" element={<ReportPage/>}/>
       <Route path="/package/:ecosystem/:scope/:packageName/latest" element={<ReportPage/>}/>
-      <Route path="/package/:ecosystem/:scope/:packageName/id/:report_id" element={<ReportPage/>}/>
-      <Route path="/package/:ecosystem/:packageName/id/:report_id" element={<ReportPage/>}/>
+      <Route path="/package/:ecosystem/:scope/:packageName/id/:reportId" element={<ReportPage/>}/>
+      <Route path="/package/:ecosystem/:packageName/id/:reportId" element={<ReportPage/>}/>
 
       <Route path="*" element={<Home/>}/>
     </Routes>

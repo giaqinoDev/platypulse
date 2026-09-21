@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction } from "react";
+import { useEffect, type Dispatch, type SetStateAction } from "react";
 import "./ReportDashboardNav.css"
 interface ReportDashboardNavInterface{
     // pkg_id : string|null|undefined;
@@ -15,6 +15,10 @@ function ReportDashboardNav({handleSnapShotRetreival, setReportActiveNav}: Repor
     //         setSnapshotsRetrieved(true);
     //     }
     // }
+
+    useEffect(() => {
+        setReportActiveNav(1);
+    },[]);
     
     return(
         <div id="dashboard-nav-container">

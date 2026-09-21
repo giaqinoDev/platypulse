@@ -14,15 +14,17 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
         }
 
         const fetchFromBackend = async () => {
+            console.log("NPM FETCH EFFECT", queriedSearch);
             setLoading(true);
             let api_root = `/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}`;
-            let api_branch = "/latest";
+            let api_branch = `/latest`;
             try{
                 let response = null;
                 if(queriedSearch.search_term.length == 2){
                     api_root = `/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}/${queriedSearch.search_term[1]}`;
                 }
-                if(queriedSearch.report_id !== undefined){
+                if(queriedSearch.report_id !== undefined &&  queriedSearch.report_id !== null){
+                    console.log("INSIDE IF: " + queriedSearch.report_id);
                     api_branch = `/id/${queriedSearch.report_id}`;
                 }
 

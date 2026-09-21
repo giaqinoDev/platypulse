@@ -2,7 +2,7 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import MenuHeader from "../util-components/MenuHeader/MenuHeader";
 import "./ReportPage.css"
 import useNPMFetch from "../NPMFetchHook/useNPMFetch";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import SideNavBar from "./SideNavBarComponents/SideNavBar";
 import HealthScoreRadialChart from "../util-components/ReportVisuals/HealthScoreRadialChart";
@@ -27,12 +27,14 @@ import useGenerateSnapShot from "../generateSnapShotHook/useGenerateSnapShotHook
 
 
 function ReportPage(){
-    const {ecosystem, scope, packageName, report_id} = useParams();
+    console.log("REPORT PAGE RENDER");
+    const {ecosystem, scope, packageName, reportId} = useParams();
     const location = useLocation();
     const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
     const [reportActiveNav, setReportActiveNav] = useState<number>(1);
 
-    const [snapshotsRetrieved, setSnapshotsRetrieved] = useState<boolean>(false);
+    //const [snapshotsRetrieved, setSnapshotsRetrieved] = useState<boolean>(false);
+    const snapshotsRetrievedFor = useRef<string | null>(null);
     const {getSnapShots, snapShotsLoading, fetchError, fetchedSnapShots} = useFetchSnapShots();
     const {generateNewReport, generatingReport, generationError, generatedReportId} = useGenerateSnapShot();
 
@@ -46,22 +48,30 @@ function ReportPage(){
         return {
             search_term: scope ? ["@" + scope, packageName] : [packageName],
             ecosystem: ecosystem,
-            report_id: report_id
+            reportId: reportId
         };
-    }, [ecosystem, scope, packageName, report_id]);
+    }, [ecosystem, scope, packageName, reportId]);
     const reportFetchResponse = useNPMFetch(query);
 
     async function handleSnapShotRetreival(){
-        console.log("handleSnapShotRetreival called");
-        console.log(
-            "package ID:",
-            reportFetchResponse.packageData?.package_id
-        );
-        if(!snapshotsRetrieved){
-            await getSnapShots(reportFetchResponse.packageData?.package_id);
-            console.log("get snap shot request made")
-            setSnapshotsRetrieved(true);
+        const packageId = reportFetchResponse.packageData?.package_id;
+
+        if(!packageId){
+            return;
         }
+
+        //Only allow one request for this route
+        if(snapshotsRetrievedFor.current === location.pathname){
+            return;
+        }
+
+        if(snapShotsLoading){
+            return;
+        }
+        await getSnapShots(reportFetchResponse.packageData?.package_id);
+        console.log("get snap shot request made")
+        
+        snapshotsRetrievedFor.current = location.pathname;
     }
 
     async function handleNewReportGen(){
@@ -72,6 +82,9 @@ function ReportPage(){
     }
 
     useEffect(() => {
+        if(!generatedReportId){
+            return;
+        }
         if(query?.search_term.length == 2){
             console.log(generatedReportId);
             navigate(`/package/${query.ecosystem}/${query.search_term[0].replace("@", "")}/${query.search_term[1]}/id/${generatedReportId}`);
@@ -85,11 +98,6 @@ function ReportPage(){
     function viewPortSetter(){
         setViewPortWidth(window.innerWidth)
     }
-
-    useEffect(() => {
-        console.log("--Fetched Snap Shots--");
-        console.log(fetchedSnapShots);
-    }, [fetchedSnapShots]);
 
     useEffect(() => {
         //load: waits to execute when windows resources are finished loading
@@ -113,6 +121,7 @@ function ReportPage(){
             }
         }
     }, [location.hash])
+
     return(
         <div className="report-page-root">
             {viewPortWidth > 600 && <SideNavBar/>}
