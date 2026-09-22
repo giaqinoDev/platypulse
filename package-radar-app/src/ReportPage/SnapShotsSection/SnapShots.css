@@ -1,0 +1,40 @@
+.snap-shot-entry{
+    margin: 10px 0px;
+    background-color: #e9f2ff;
+    padding: 10px;
+    border-style: none;
+    border-radius: 5px;
+    
+    box-shadow: 0 0 0 1px #b3c0d2; 
+    transition: box-shadow 0.2s ease;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+}
+
+.snap-shot-entry:hover{
+    box-shadow: 0 0 0 1px #304765;
+    border-width: 2px;
+}
+
+.report-icon{
+    width: 20px;
+    height: auto;
+    margin-right: 5px;
+}
+.snap-shot-detail{
+    margin: 8px 5px;
+}
+
+#creation-date-time{
+    font-size: smaller;
+    background-color: #cfe2ff;
+    padding: 8px;
+    border-style: none;
+    border-radius: 5px;
+}
+
+#overall-score{
+    margin-left: auto;
+}

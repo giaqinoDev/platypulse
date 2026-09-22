@@ -21,6 +21,7 @@ import ReportDashboardNav from "./ReportDashboardNav/ReportDashboardNav";
 import { BsBarChartFill } from "react-icons/bs";
 import useFetchSnapShots from "../FetchSnapShotsHook/useFetchSnapShots";
 import useGenerateSnapShot from "../generateSnapShotHook/useGenerateSnapShotHook";
+import SnapShots from "./SnapShotsSection/SnapShots";
 
 
 
@@ -193,13 +194,7 @@ function ReportPage(){
                                 </div>
                                 }
                                 {reportActiveNav == 2 &&
-                                    <div>
-                                        {fetchedSnapShots?.map((snapshot) => (
-                                            <div>
-                                                {snapshot.overall_score}
-                                            </div>
-                                        ))}
-                                    </div>
+                                    <SnapShots fetchedSnapShots={fetchedSnapShots}/>
                                 }
                             </div>
                         }

@@ -23,9 +23,9 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
                 if(queriedSearch.search_term.length == 2){
                     api_root = `/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}/${queriedSearch.search_term[1]}`;
                 }
-                if(queriedSearch.report_id !== undefined &&  queriedSearch.report_id !== null){
-                    console.log("INSIDE IF: " + queriedSearch.report_id);
-                    api_branch = `/id/${queriedSearch.report_id}`;
+                if(queriedSearch.reportId !== undefined &&  queriedSearch.reportId !== null){
+                    console.log("INSIDE IF: " + queriedSearch.reportId);
+                    api_branch = `/id/${queriedSearch.reportId}`;
                 }
 
 

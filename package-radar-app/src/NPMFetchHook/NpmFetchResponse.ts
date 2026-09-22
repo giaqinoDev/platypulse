@@ -56,7 +56,7 @@ export const NpmFetchResponseSchema = z.object({
                     directory: z.string().nullable().optional()
                 }).nullable(),
                 npm_version: z.string().nullable(),
-                dependencies: z.array(DependencySchema).nullable(),
+                dependencies: z.array(DependencySchema.nullable()).nullable(),
                 node_version: z.string().nullable(),
                 dependency_tree: DependencyTreeSchema.nullable().optional()
                 // dependency_tree: z.object({

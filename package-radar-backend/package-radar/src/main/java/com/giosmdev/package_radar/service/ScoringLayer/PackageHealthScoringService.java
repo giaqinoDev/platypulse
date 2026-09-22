@@ -13,10 +13,10 @@ public class PackageHealthScoringService {
     ObjectMapper objMapper = new ObjectMapper();
     public HealthScoreReport score(UniversalPackageFeatures features, RawNpmPayload payload){
 
-        double activity = calculateActivityScore(features);
-        double maintenance = calculateMaintenanceScore(features);
-        double adoption = calculateAdoptionScore(features);
-        double risk =calculateRiskScore(features);
+        double activity = Math.max(0.0, calculateActivityScore(features));
+        double maintenance = Math.max(0.0, calculateMaintenanceScore(features));
+        double adoption = Math.max(0.0, calculateAdoptionScore(features));
+        double risk = Math.max(0.0, calculateRiskScore(features));
 
         //Overall signal categorization weights
         double overall = weightedAverage(

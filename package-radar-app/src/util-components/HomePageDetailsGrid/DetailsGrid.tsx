@@ -24,7 +24,7 @@ function DetailsGrid(){
             <div className="grid-row">
                 <div className="grid-element element3">
                     <div style={{"display": "flex", "alignItems": "center"}}>
-                        <h3 className="grid-element-header">Ship With Confidence</h3>
+                        <h3 className="grid-element-header">Build Safe</h3>
                         <TbStack2Filled className="stack-icon"/>
                     </div>
                     <p className="grid-element-p">Reduce dependency risk by identifying well-maintained libraries before they become part of your stack.</p>

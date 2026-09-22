@@ -203,7 +203,13 @@ public class PlatyPulse_DB_Service {
         else{
             pkg = queried_pkg.get();
         }
-
+        System.out.println("Snap shot: ");
+        System.out.println(snapShot.getActivity_score());
+        System.out.println(snapShot.getAdoption_score());
+        System.out.println(snapShot.getAggregate_score());
+        System.out.println(snapShot.getMaintenance_score());
+        System.out.println(snapShot.getRisk_score());
+        
         pkg = pkgRepo.save(pkg);
         snapShot.setPkg(pkg);
         snapShot = pkgHealthRepo.save(snapShot);
