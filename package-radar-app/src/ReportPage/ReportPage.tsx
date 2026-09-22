@@ -128,8 +128,8 @@ function ReportPage(){
             {viewPortWidth > 600 && <SideNavBar/>}
             <div className="report-page-body">
                 <MenuHeader/>
-                    <div className="report-body" style={{"justifyContent": (reportFetchResponse.loading || snapShotsLoading) ? "center": "initial"}}>
-                        {(reportFetchResponse.loading == false) && 
+                    <div className="report-body" style={{"justifyContent": (reportFetchResponse.loading || snapShotsLoading || generatingReport) ? "center": "initial"}}>
+                        {(reportFetchResponse.loading == false && generatingReport == false) && 
                             <div className="report-content">
                                 <ReportDashboardNav handleSnapShotRetreival={handleSnapShotRetreival} setReportActiveNav={setReportActiveNav}/>
                                 {reportActiveNav == 1 && 
@@ -198,7 +198,7 @@ function ReportPage(){
                                 }
                             </div>
                         }
-                        {reportFetchResponse.loading == true &&
+                        {(reportFetchResponse.loading == true || generatingReport == true) &&
                             <div id="loading-visual">
                                 <p style={{"color": "#293241"}}>Grabbing Package...</p>
                                 <BarLoader color="#ff6139"/>

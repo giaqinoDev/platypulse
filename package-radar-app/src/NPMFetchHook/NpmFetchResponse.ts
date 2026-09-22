@@ -50,11 +50,11 @@ export const NpmFetchResponseSchema = z.object({
                 license: z.string().nullable().optional(),
                 homepage: z.string().nullable().optional(),
                 keywords: z.array(z.string()).nullable(),
-                repository: z.object({
+                repository: z.union([z.object({
                     url: z.string().nullable().optional(),
                     type: z.string().nullable().optional(),
                     directory: z.string().nullable().optional()
-                }).nullable(),
+                }), z.string(), z.null()]),
                 npm_version: z.string().nullable(),
                 dependencies: z.array(DependencySchema.nullable()).nullable(),
                 node_version: z.string().nullable(),
