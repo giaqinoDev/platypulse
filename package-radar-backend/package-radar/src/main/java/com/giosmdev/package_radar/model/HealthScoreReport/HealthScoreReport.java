@@ -1,5 +1,6 @@
 package com.giosmdev.package_radar.model.HealthScoreReport;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import tools.jackson.databind.JsonNode;
 public class HealthScoreReport {
     private UUID report_id;
     private UUID package_id;
+    private Instant creation_date_time;
     private Boolean can_analyze;
     private double overall;
     private double activity;
