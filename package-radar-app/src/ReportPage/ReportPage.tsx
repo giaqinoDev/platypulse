@@ -194,7 +194,7 @@ function ReportPage(){
                                 </div>
                                 }
                                 {reportActiveNav == 2 &&
-                                    <SnapShots fetchedSnapShots={fetchedSnapShots}/>
+                                    <SnapShots fetchedSnapShots={fetchedSnapShots} query={query}/>
                                 }
                             </div>
                         }
