@@ -144,6 +144,10 @@ function ReportPage(){
                                                 </button>
                                             </div>
                                         }
+
+                                        <div id="generation-info">
+                                            <p id="generation-info-text">Report generated on {reportFetchResponse.packageData?.creation_date_time.toDateString()}, {reportFetchResponse.packageData?.creation_date_time.toLocaleTimeString()}</p>
+                                        </div>
                                         <div className="report-overview-header">
                                             <div className="overview-header-container">
                                                 <h1 id="overview-header-title">{reportFetchResponse.packageData?.raw_signals?.package_info?.pkge_name}</h1>

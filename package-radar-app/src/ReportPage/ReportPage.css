@@ -150,6 +150,21 @@ body{
     transition: color 0.25s ease;
 }
 
+#generation-info{
+    display: flex;
+    align-items: center;
+    font-size: smaller;
+    background-color: #cfe2ff;
+    padding: 8px;
+    border-style: none;
+    border-radius: 5px;
+    width: fit-content;
+    margin-top: 10px;
+}
+#generation-info-text{
+    margin: 0px;
+}
+
 #loading-visual{
     display: flex;
     flex-direction: column;

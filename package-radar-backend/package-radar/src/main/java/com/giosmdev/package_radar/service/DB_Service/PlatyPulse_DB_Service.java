@@ -92,7 +92,7 @@ public class PlatyPulse_DB_Service {
                 HealthScoreReport full_report = new HealthScoreReport(
                     report.getId(),
                     accociated_pkg_entity.getId(),
-                    latest_snapShot.getCreatedAt(),
+                    report.getCreatedAt(),
                     can_analyze,
                     report.getAggregate_score().doubleValue(),
                     report.getActivity_score().doubleValue(),
@@ -107,7 +107,7 @@ public class PlatyPulse_DB_Service {
             HealthScoreReport partial_report = new HealthScoreReport(
                     report.getId(),
                     accociated_pkg_entity.getId(),
-                    latest_snapShot.getCreatedAt(),
+                    report.getCreatedAt(),
                     can_analyze,
                     report.getAggregate_score().doubleValue(),
                     report.getActivity_score().doubleValue(),
@@ -229,6 +229,7 @@ public class PlatyPulse_DB_Service {
         pkg.setLatest_report(snapShot);
         pkgRepo.save(pkg);
         
+        generated_report.setCreation_date_time(timeInstant);
         return new PackageAndSnapShotIDs(report_id, package_id);
     }
 
