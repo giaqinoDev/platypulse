@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import { NpmFetchResponseSchema, type NpmFetchResponse } from "./NpmFetchResponse";
 
-function useNPMFetch(queriedSearch: SearchContextStructure|null){
+function useNPMFetch(queriedSearch: SearchContextStructure|null, signal: AbortSignal|null|undefined){
     //const [queryResult, setQueryResult] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
     const [packageData, setPackageData] = useState<NpmFetchResponse | null>(null);
     useEffect(() => {
 
-        if(!queriedSearch){
+        if(!queriedSearch || (signal == null || signal == undefined)){
             return;
         }
 
@@ -29,14 +29,15 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
                 }
 
 
-                response = await fetch(api_root + api_branch);
+                response = await fetch(api_root + api_branch, {signal,}); //Listens to signal object
+                if(signal?.aborted){
+                    return;
+                }
                 if(response?.status == 200){
                     try{
                         console.log(response?.status);
                         const info = await response.json();
-                        const packageData = NpmFetchResponseSchema.parse(info);
-                        console.log(packageData);
-                        
+                        const packageData = NpmFetchResponseSchema.parse(info);                        
                         setPackageData(packageData);
                     }
                     catch(error){
@@ -59,7 +60,11 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null){
         }
 
         fetchFromBackend();
-    }, [queriedSearch])
+    }, [queriedSearch, signal])
+
+    useEffect(() => {
+        console.log("Loading: " + loading);
+    }, [loading])
 
     return {packageData, loading, fetchError}
 }

@@ -1,21 +1,24 @@
 import { useState } from "react";
 import { SnapShotsTimelineSchema, type SnapShotTimeline } from "./SnapShot";
 
-function useFetchSnapShots(){
+function useFetchSnapShots(signal: AbortSignal|null|undefined){
     const [snapShotsLoading, setSnapShotsLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
     const [fetchedSnapShots, setFetchedSnapShots] = useState<SnapShotTimeline|null>(null);
 
     async function getSnapShots(packageId: string|null|undefined){
 
-        if(!packageId){
+        if(!packageId || signal == null || signal == undefined){
             return;
         }
         setSnapShotsLoading(true);
 
         try{
             let response = null;
-            response = await fetch(`/bend/api/package/${packageId}/snapshots`);
+            response = await fetch(`/bend/api/package/${packageId}/snapshots`, {signal,});
+            if(signal?.aborted){
+                return;
+            }
             if(response.status == 200){
                 const data = await response.json();
                 const snapshots = SnapShotsTimelineSchema.parse(data);

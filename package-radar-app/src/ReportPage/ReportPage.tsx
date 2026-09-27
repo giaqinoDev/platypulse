@@ -28,31 +28,60 @@ import SnapShots from "./SnapShotsSection/SnapShots";
 
 
 function ReportPage(){
-    console.log("REPORT PAGE RENDER");
     const {ecosystem, scope, packageName, reportId} = useParams();
     const location = useLocation();
+    const navigate = useNavigate();
+
     const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
     const [reportActiveNav, setReportActiveNav] = useState<number>(1);
 
-    //const [snapshotsRetrieved, setSnapshotsRetrieved] = useState<boolean>(false);
-    const snapshotsRetrievedFor = useRef<string | null>(null);
-    const {getSnapShots, snapShotsLoading, fetchError, fetchedSnapShots} = useFetchSnapShots();
-    const {generateNewReport, generatingReport, generationError, generatedReportId} = useGenerateSnapShot();
+    const abortControllerRef = useRef<AbortController | null>(null); /*Persists across renders*/
+    const [abortSignal, setAbortSignal] = useState<AbortSignal|null>(null);
 
-    const navigate = useNavigate();
+    const {
+        getSnapShots, 
+        snapShotsLoading, 
+        fetchError, 
+        fetchedSnapShots
+    } = useFetchSnapShots(abortSignal);
+
+    const {
+        generateNewReport, 
+        generatingReport, 
+        generationError, 
+        generatedReportId
+    } = useGenerateSnapShot(abortSignal);
+
+    const snapshotsRetrievedFor = useRef<string | null>(null);
+
+
+    useEffect(() => {
+        //Cancel the previous request session
+        abortControllerRef.current?.abort();
+
+        //Create a new controller for the new request session
+        const abortController = new AbortController();
+
+        abortControllerRef.current = abortController;
+        setAbortSignal(abortController.signal);
+        //Component dismount
+        return () => {
+            abortController.abort();
+        }
+    }, [location.pathname]);
 
     const query = useMemo<SearchContextStructure | null>(() => { //useMemo lets you store the result of a calculation between renders
         if (!ecosystem || !packageName) {
             return null;
         }
-
+        setAbortSignal(null);
         return {
             search_term: scope ? ["@" + scope, packageName] : [packageName],
             ecosystem: ecosystem,
             reportId: reportId
         };
     }, [ecosystem, scope, packageName, reportId]);
-    const reportFetchResponse = useNPMFetch(query);
+    const reportFetchResponse = useNPMFetch(query, abortSignal);
 
     async function handleSnapShotRetreival(){
         const packageId = reportFetchResponse.packageData?.package_id;
