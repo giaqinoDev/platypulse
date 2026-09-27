@@ -66,6 +66,7 @@ body{
 .report-content{
     width: 80%;
     max-width: 1500px;
+    height: 100%;
 }
 
 .report-overview-header{
