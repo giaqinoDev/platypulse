@@ -152,13 +152,18 @@ function ReportPage(){
         }
     }, [location.hash])
 
+    useEffect(() => {
+        console.log(reportFetchResponse.api_response?.success);
+        console.log(reportFetchResponse.fetchError);
+    }, [reportFetchResponse.api_response, reportFetchResponse.fetchError])
+
     return(
         <div className="report-page-root">
             {viewPortWidth > 600 && <SideNavBar/>}
             <div className="report-page-body">
                 <MenuHeader/>
                     <div className="report-body" style={{"justifyContent": (reportFetchResponse.loading || snapShotsLoading || generatingReport) ? "center": "initial"}}>
-                        {(reportFetchResponse.loading == false && generatingReport == false) && 
+                        {(reportFetchResponse.loading == false && generatingReport == false && reportFetchResponse?.api_response?.success && reportFetchResponse.fetchError == null) && 
                             <div className="report-content">
                                 <ReportDashboardNav handleSnapShotRetreival={handleSnapShotRetreival} setReportActiveNav={setReportActiveNav}/>
                                 {reportActiveNav == 1 && 
@@ -232,13 +237,18 @@ function ReportPage(){
                             </div>
                         }
                         {(reportFetchResponse.loading == true || generatingReport == true) &&
-                            <div id="loading-visual">
+                            <div className="loading-visual">
                                 <p style={{"color": "#293241"}}>Grabbing Package...</p>
                                 <BarLoader color="#ff6139"/>
                             </div>
                         }
+                        {(reportFetchResponse.loading == false && (reportFetchResponse.api_response?.success == false || reportFetchResponse.fetchError != null)) &&
+                            <div className="loading-visual">
+                                <p style={{"color": "#293241"}}>Package does not exist...</p>
+                            </div>
+                        }
                         {snapShotsLoading == true &&
-                            <div id="loading-visual">
+                            <div className="loading-visual">
                                 <p style={{"color": "#293241"}}>Grabbing Snap Shots...</p>
                                 <BarLoader color="#ff6139"/>
                             </div>

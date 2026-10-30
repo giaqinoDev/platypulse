@@ -3,10 +3,10 @@ import { DependencyTreeSchema } from "./DependencyTree";
 import { DownloadDPSchema } from "./DownloadDP"
 import { z } from "zod";
 
-export const NpmFetchResponseSchema = z.object({
+export const NpmFetchSuccessResponseSchema = z.object({
     success: z.boolean(),
     report_id: z.string(),
-    message: z.string(),
+    message: z.string().nullable(),
     data: z.object({
         report_id: z.uuid(),
         package_id: z.uuid(),
@@ -88,7 +88,7 @@ export const NpmFetchResponseSchema = z.object({
         debugMessage: z.string()
     }).nullable(),
     timestamp: z.string(),
-    origin: z.string()
+    origin: z.string().nullable()
 }).nullable();
 
-export type NpmFetchResponse = z.infer<typeof NpmFetchResponseSchema>;
+export type NpmFetchSuccessResponse = z.infer<typeof NpmFetchSuccessResponseSchema>;

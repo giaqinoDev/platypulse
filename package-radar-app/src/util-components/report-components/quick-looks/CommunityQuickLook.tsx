@@ -1,11 +1,11 @@
 import { HiMiniUserGroup } from "react-icons/hi2";
 import "../quick-looks/QuickLookStyles.css";
-import type { NpmFetchResponse } from "../../../NPMFetchHook/NpmFetchResponse";
+import type { NpmFetchSuccessResponse } from "../../../NPMFetchHook/NpmFetchSuccessResponse";
 import type { DownloadDP } from "../../../NPMFetchHook/DownloadDP";
 import formatNumber from "../../NumFormatter";
 
 interface CommunityQuickLookProps{
-    data: NpmFetchResponse|undefined;
+    data: NpmFetchSuccessResponse|undefined;
 }
 function CommunityQuickLook({data}: CommunityQuickLookProps){
     const github_stars: number|undefined = data?.raw_signals?.git_hub_reg?.repo_info?.stars_count;

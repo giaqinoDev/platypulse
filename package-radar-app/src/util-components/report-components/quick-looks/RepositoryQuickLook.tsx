@@ -1,10 +1,10 @@
 import { FaGitAlt } from "react-icons/fa";
 import "../quick-looks/QuickLookStyles.css";
-import type { NpmFetchResponse } from "../../../NPMFetchHook/NpmFetchResponse";
+import type { NpmFetchSuccessResponse } from "../../../NPMFetchHook/NpmFetchSuccessResponse";
 import formatNumber from "../../NumFormatter";
 
 interface RepositoryQuickLookProps{
-    data: NpmFetchResponse|undefined;
+    data: NpmFetchSuccessResponse|undefined;
 }
 function RepositoryQuickLook({data}: RepositoryQuickLookProps){
     const open_issues: number|undefined = data?.raw_signals?.git_hub_reg?.repo_info?.open_issues_count;

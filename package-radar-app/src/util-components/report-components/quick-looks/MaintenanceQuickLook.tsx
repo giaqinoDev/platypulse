@@ -1,10 +1,10 @@
 import { PiWrenchFill } from "react-icons/pi";
 import "../quick-looks/QuickLookStyles.css";
-import type { NpmFetchResponse } from "../../../NPMFetchHook/NpmFetchResponse";
+import type { NpmFetchSuccessResponse } from "../../../NPMFetchHook/NpmFetchSuccessResponse";
 import formatNumber from "../../NumFormatter";
 
 interface MaintenanceQuickLookProps{
-    data: NpmFetchResponse|undefined;
+    data: NpmFetchSuccessResponse|undefined;
 }
 function MaintenanceQuickLook({data}: MaintenanceQuickLookProps){
     const commits_last_90_days: number|undefined = data?.raw_signals?.git_hub_reg?.commit_info?.commits_last_90_days;

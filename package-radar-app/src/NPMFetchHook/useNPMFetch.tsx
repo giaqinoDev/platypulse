@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
-import { NpmFetchResponseSchema, type NpmFetchResponse } from "./NpmFetchResponse";
+import { NpmFetchSuccessResponseSchema, type NpmFetchSuccessResponse } from "./NpmFetchSuccessResponse";
 
 function useNPMFetch(queriedSearch: SearchContextStructure|null, signal: AbortSignal|null|undefined){
     //const [queryResult, setQueryResult] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
-    const [api_response, setApi_Response] = useState<NpmFetchResponse | null>(null);
+    const [api_response, setApi_Response] = useState<NpmFetchSuccessResponse | null>(null);
     useEffect(() => {
 
         if(!queriedSearch || (signal == null || signal == undefined)){
@@ -37,8 +37,9 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null, signal: AbortSi
                     try{
                         console.log(response?.status);
                         const info = await response.json();
-                        const packageData = NpmFetchResponseSchema.parse(info);                        
+                        const packageData = NpmFetchSuccessResponseSchema.parse(info);                        
                         setApi_Response(packageData);
+                        setFetchError(null);
                     }
                     catch(error){
                         console.log("Zod Error:", error)

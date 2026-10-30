@@ -1,10 +1,10 @@
 import { FaLaptopCode } from "react-icons/fa6";
 import "../quick-looks/QuickLookStyles.css";
-import type { NpmFetchResponse } from "../../../NPMFetchHook/NpmFetchResponse";
+import type { NpmFetchSuccessResponse } from "../../../NPMFetchHook/NpmFetchSuccessResponse";
 import formatNumber from "../../NumFormatter";
 
 interface ContributorsQuickLookProps{
-    data: NpmFetchResponse|undefined;
+    data: NpmFetchSuccessResponse|undefined;
 }
 function ContributorsQuickLook({data}: ContributorsQuickLookProps){
     const total_commits: number|undefined = data?.raw_signals?.git_hub_reg?.contributors_info?.total_commits;
