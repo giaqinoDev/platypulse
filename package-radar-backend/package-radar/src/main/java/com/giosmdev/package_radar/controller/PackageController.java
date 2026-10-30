@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.github.bucket4j.Bucket;
 import reactor.core.publisher.Mono;
 
+import com.giosmdev.package_radar.dto.ApiResponse;
 import com.giosmdev.package_radar.model.HealthScoreReport.HealthScoreReport;
 //import com.giosmdev.package_radar.model.NPMRegistry.RawNpmPayload;
 //import com.giosmdev.package_radar.model.universal.UniversalPackageFeatures;
@@ -32,19 +33,19 @@ public class PackageController {
     }
 
     @GetMapping("/npm/{pkgName}/latest")
-    public Mono<ResponseEntity<HealthScoreReport>> getLatestReport(@PathVariable String pkgName){
+    public Mono<ResponseEntity<ApiResponse<HealthScoreReport>>> getLatestReport(@PathVariable String pkgName){
         return condensedGetLatest(pkgName);
     }
 
     @GetMapping("/npm/{scope}/{pkgName}/latest")
-    public Mono<ResponseEntity<HealthScoreReport>> getLatestReport(@PathVariable String scope, @PathVariable String pkgName){
+    public Mono<ResponseEntity<ApiResponse<HealthScoreReport>>> getLatestReport(@PathVariable String scope, @PathVariable String pkgName){
         System.out.println("Scoped Package");
         String concatenatedQuery = scope + "/" + pkgName;
         return condensedGetLatest(concatenatedQuery);
     }
 
     @GetMapping("/npm/{pkgName}/id/{report_id}")
-    public Mono<ResponseEntity<HealthScoreReport>> getReportbyId(@PathVariable String pkgName, @PathVariable UUID report_id){
+    public Mono<ResponseEntity<ApiResponse<HealthScoreReport>>> getReportbyId(@PathVariable String pkgName, @PathVariable UUID report_id){
         return npmService.getReportById(report_id).map((response) -> {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         })
@@ -52,7 +53,7 @@ public class PackageController {
     }
 
     @GetMapping("/npm/{scope}/{pkgName}/id/{report_id}")
-    public Mono<ResponseEntity<HealthScoreReport>> getReportbyId(@PathVariable String scope, @PathVariable String pkgName, @PathVariable UUID report_id){
+    public Mono<ResponseEntity<ApiResponse<HealthScoreReport>>> getReportbyId(@PathVariable String scope, @PathVariable String pkgName, @PathVariable UUID report_id){
         return npmService.getReportById(report_id).map((response) -> {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         })
@@ -64,14 +65,14 @@ public class PackageController {
         System.out.println("GENERATING NEW REPORT!!!");
         if(requestBucket.tryConsume(1)){
             return npmService.genReportByPkgId(pkgId).map(response -> {
-                return ResponseEntity.status(HttpStatus.OK).body(response.getReport_id());
+                return ResponseEntity.status(HttpStatus.OK).body(response.getData().getReport_id());
             })
             .defaultIfEmpty(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
         }
         return Mono.just(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null));
     }
 
-    private Mono<ResponseEntity<HealthScoreReport>> condensedGetLatest(String concatenatedQuery){
+    private Mono<ResponseEntity<ApiResponse<HealthScoreReport>>> condensedGetLatest(String concatenatedQuery){
         if(requestBucket.tryConsume(1)){
             return npmService.getLatestReport(concatenatedQuery).map(response -> {
                 return ResponseEntity.status(HttpStatus.OK).body(response);

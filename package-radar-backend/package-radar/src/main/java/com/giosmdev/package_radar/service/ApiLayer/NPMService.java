@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.giosmdev.package_radar.dto.ApiResponse;
 import com.giosmdev.package_radar.dto.PackageAndSnapShotIDs;
 import com.giosmdev.package_radar.exceptions.DataBaseExceptions.EcosystemNotFoundException;
 import com.giosmdev.package_radar.model.DB_Entities.EcosystemEntity;
@@ -62,28 +63,30 @@ public class NPMService {
         this.pkg_repo = pkg_repo;
     }
 
-    public Mono<HealthScoreReport> getLatestReport(String pkgName){
+    public Mono<ApiResponse<HealthScoreReport>> getLatestReport(String pkgName){
 
         PackageLookUpResult latest_report = plp_db_service.getLatestHealthScore(pkgName);
         if(latest_report.status() == LookupStatus.REPORT_FOUND || latest_report.status() == LookupStatus.RAW_SIGNALS_MISSING){
-            return Mono.just(latest_report.report());
+            ApiResponse<HealthScoreReport> api_response = ApiResponse.success(latest_report.report().getReport_id().toString(), latest_report.report(), "success");
+            return Mono.just(api_response);
         }
-        Mono<HealthScoreReport> generated_report = genReportByPkgName(pkgName);
+        Mono<ApiResponse<HealthScoreReport>> generated_report = genReportByPkgName(pkgName);
         return generated_report;
     }
 
-    public Mono<HealthScoreReport> getReportById(UUID report_id){
+    public Mono<ApiResponse<HealthScoreReport>> getReportById(UUID report_id){
         if(report_id == null){
             return Mono.empty();
         }
         PackageLookUpResult report = plp_db_service.getReportById(report_id);
         if(report.status() == LookupStatus.REPORT_FOUND || report.status() == LookupStatus.RAW_SIGNALS_MISSING){
-            return Mono.just(report.report());
+            ApiResponse<HealthScoreReport> api_response = ApiResponse.success(report.report().getReport_id().toString(), report.report(), "success");
+            return Mono.just(api_response);
         }
         return Mono.empty();
     }
 
-    public Mono<HealthScoreReport> genReportByPkgId(UUID pkgId){
+    public Mono<ApiResponse<HealthScoreReport>> genReportByPkgId(UUID pkgId){
         Optional<PackagesEntity> package_entity = pkg_repo.findById(pkgId);
         if(package_entity.isPresent()){
             System.out.println("pkgName exists");
@@ -95,7 +98,7 @@ public class NPMService {
         }
         return Mono.empty();
     }
-    public Mono<HealthScoreReport> genReportByPkgName(String pkgName){
+    public Mono<ApiResponse<HealthScoreReport>> genReportByPkgName(String pkgName){
         System.out.println("GENERATING REPORT");
         PackageLookUpResult latest_report = plp_db_service.getLatestHealthScore(pkgName);
         boolean can_generate_new_report = true;
@@ -108,7 +111,7 @@ public class NPMService {
         }
 
         Mono<RawNpmPayload> raw_response = rawNPMRegResponse.genRawNPMResponse(pkgName);
-        Mono<HealthScoreReport> score_report_javaScript = raw_response.map((response) -> {
+        Mono<ApiResponse<HealthScoreReport>> score_report_javaScript = raw_response.map((response) -> {
             Optional<EcosystemEntity> ecosystem = ecosystem_repo.findById(1); //npm entry
             if(!ecosystem.isPresent()){
                 System.out.println("Ecosystem Does not Exist");
@@ -122,7 +125,8 @@ public class NPMService {
 
             generated_report.setReport_id(ids.getReport_id());
             generated_report.setPackage_id(ids.getPackage_id());
-            return generated_report;
+            ApiResponse<HealthScoreReport> api_response = ApiResponse.success(ids.getReport_id().toString(), generated_report, "success");
+            return api_response; //generated_report;
         });
 
         return score_report_javaScript;
