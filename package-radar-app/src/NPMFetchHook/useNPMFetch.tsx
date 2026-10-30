@@ -6,7 +6,7 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null, signal: AbortSi
     //const [queryResult, setQueryResult] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
-    const [packageData, setPackageData] = useState<NpmFetchResponse | null>(null);
+    const [api_response, setApi_Response] = useState<NpmFetchResponse | null>(null);
     useEffect(() => {
 
         if(!queriedSearch || (signal == null || signal == undefined)){
@@ -38,7 +38,7 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null, signal: AbortSi
                         console.log(response?.status);
                         const info = await response.json();
                         const packageData = NpmFetchResponseSchema.parse(info);                        
-                        setPackageData(packageData);
+                        setApi_Response(packageData);
                     }
                     catch(error){
                         console.log("Zod Error:", error)
@@ -66,6 +66,6 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null, signal: AbortSi
         console.log("Loading: " + loading);
     }, [loading])
 
-    return {packageData, loading, fetchError}
+    return {api_response, loading, fetchError}
 }
 export default useNPMFetch;

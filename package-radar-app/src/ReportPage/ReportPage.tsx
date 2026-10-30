@@ -84,7 +84,7 @@ function ReportPage(){
     const reportFetchResponse = useNPMFetch(query, abortSignal);
 
     async function handleSnapShotRetreival(){
-        const packageId = reportFetchResponse.packageData?.package_id;
+        const packageId = reportFetchResponse.api_response?.data?.package_id;
 
         if(!packageId){
             return;
@@ -98,14 +98,14 @@ function ReportPage(){
         if(snapShotsLoading){
             return;
         }
-        await getSnapShots(reportFetchResponse.packageData?.package_id);
+        await getSnapShots(reportFetchResponse.api_response?.data?.package_id);
         console.log("get snap shot request made")
         
         snapshotsRetrievedFor.current = location.pathname;
     }
 
     async function handleNewReportGen(){
-        const package_id = reportFetchResponse?.packageData?.package_id;
+        const package_id = reportFetchResponse?.api_response?.data?.package_id;
         if(package_id){
             await generateNewReport(package_id);
         }
@@ -164,7 +164,7 @@ function ReportPage(){
                                 {reportActiveNav == 1 && 
                                 <div>
                                     <section id="overview-section">
-                                        {reportFetchResponse.packageData?.can_analyze &&
+                                        {reportFetchResponse.api_response?.data?.can_analyze &&
                                             <div id="generate-new-report-container">
                                                 <BsBarChartFill style={{"marginRight": "5px"}}/>
                                                 <p>A new report is ready to generate!</p>                                                
@@ -175,54 +175,54 @@ function ReportPage(){
                                         }
 
                                         <div id="generation-info">
-                                            <p id="generation-info-text">Report generated on {reportFetchResponse.packageData?.creation_date_time.toDateString()}, {reportFetchResponse.packageData?.creation_date_time.toLocaleTimeString()}</p>
+                                            <p id="generation-info-text">Report generated on {reportFetchResponse.api_response?.data?.creation_date_time.toDateString()}, {reportFetchResponse.api_response?.data?.creation_date_time.toLocaleTimeString()}</p>
                                         </div>
                                         <div className="report-overview-header">
                                             <div className="overview-header-container">
-                                                <h1 id="overview-header-title">{reportFetchResponse.packageData?.raw_signals?.package_info?.pkge_name}</h1>
-                                                <p id="overview-sub-header">{reportFetchResponse.packageData?.raw_signals?.package_info?.description}</p>
+                                                <h1 id="overview-header-title">{reportFetchResponse.api_response?.data?.raw_signals?.package_info?.pkge_name}</h1>
+                                                <p id="overview-sub-header">{reportFetchResponse.api_response?.data?.raw_signals?.package_info?.description}</p>
                                                 <div className="icons-header">
-                                                    <a href={"https://www.npmjs.com/package/" + reportFetchResponse.packageData?.raw_signals?.package_info?.pkge_name} target="_blank">
+                                                    <a href={"https://www.npmjs.com/package/" + reportFetchResponse.api_response?.data?.raw_signals?.package_info?.pkge_name} target="_blank">
                                                         <FaNpm className="reg-icon" id="npm-icon"/>
                                                     </a>
-                                                    {reportFetchResponse.packageData?.raw_signals?.package_info?.latest_version_info?.repository?.url &&
-                                                        <a href={"https://github.com" + reportFetchResponse.packageData?.raw_signals?.package_info?.latest_version_info?.repository?.url.split("github.com")[1]} target="_blank">
+                                                    {reportFetchResponse.api_response?.data?.raw_signals?.package_info?.latest_version_info?.repository?.url &&
+                                                        <a href={"https://github.com" + reportFetchResponse.api_response?.data?.raw_signals?.package_info?.latest_version_info?.repository?.url.split("github.com")[1]} target="_blank">
                                                             <FaSquareGithub className="reg-icon" id="github-icon"/>
                                                         </a>
                                                     }
                                                 </div>
                                             </div>
                                             <div className="health-score-container">
-                                                <HealthScoreRadialChart input={reportFetchResponse.packageData?.["overall"]}/>
+                                                <HealthScoreRadialChart input={reportFetchResponse.api_response?.data?.["overall"]}/>
                                             </div>
                                         </div>
                                         <div className="quick-look-container">
                                             <div className="container-one">
                                                 <div id="sub-scores">
-                                                    <SubScoreChart category={"Activity"} score={reportFetchResponse.packageData?.["activity"]}/>
-                                                    <SubScoreChart category={"Maintenence"} score={reportFetchResponse.packageData?.["maintenance"]}/>
-                                                    <SubScoreChart category={"Adoption"} score={reportFetchResponse.packageData?.["adoption"]}/>
-                                                    <SubScoreChart category={"Risk"} score={reportFetchResponse.packageData?.["risk"]}/>
+                                                    <SubScoreChart category={"Activity"} score={reportFetchResponse.api_response?.data?.["activity"]}/>
+                                                    <SubScoreChart category={"Maintenence"} score={reportFetchResponse.api_response?.data?.["maintenance"]}/>
+                                                    <SubScoreChart category={"Adoption"} score={reportFetchResponse.api_response?.data?.["adoption"]}/>
+                                                    <SubScoreChart category={"Risk"} score={reportFetchResponse.api_response?.data?.["risk"]}/>
                                                 </div>
-                                                <MaintenanceQuickLook data={reportFetchResponse.packageData}/>
+                                                <MaintenanceQuickLook data={reportFetchResponse.api_response}/>
                                             </div>
                                             <div className="container-two">
-                                                <CommunityQuickLook data={reportFetchResponse.packageData}/>
+                                                <CommunityQuickLook data={reportFetchResponse.api_response}/>
                                             </div>
                                         </div>
                                     </section>
                                     <section id="community-section">
-                                        <DownloadsChart data={reportFetchResponse.packageData?.raw_signals?.downloads_timeline}/>
+                                        <DownloadsChart data={reportFetchResponse.api_response?.data?.raw_signals?.downloads_timeline}/>
                                     </section>
                                     <section id="maintenance-section">
-                                        <CommitsChart data={reportFetchResponse.packageData?.raw_signals?.git_hub_reg?.commit_info?.commit_timeline_volume}/>
+                                        <CommitsChart data={reportFetchResponse.api_response?.data?.raw_signals?.git_hub_reg?.commit_info?.commit_timeline_volume}/>
                                         <div className="quick-look-container">
-                                            <ContributorsQuickLook data={reportFetchResponse.packageData}/>
-                                            <RepositoryQuickLook data={reportFetchResponse.packageData}/>
+                                            <ContributorsQuickLook data={reportFetchResponse.api_response}/>
+                                            <RepositoryQuickLook data={reportFetchResponse.api_response}/>
                                         </div>
                                     </section>
                                     <section id="dependencies-section">
-                                        <DependencyGraph dependencies={reportFetchResponse.packageData?.raw_signals?.package_info.latest_version_info?.dependency_tree}/>
+                                        <DependencyGraph dependencies={reportFetchResponse.api_response?.data?.raw_signals?.package_info.latest_version_info?.dependency_tree}/>
                                     </section>
                                 </div>
                                 }
