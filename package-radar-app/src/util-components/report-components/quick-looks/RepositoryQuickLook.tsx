@@ -4,13 +4,13 @@ import type { NpmFetchSuccessResponse } from "../../../NPMFetchHook/NpmFetchSucc
 import formatNumber from "../../NumFormatter";
 
 interface RepositoryQuickLookProps{
-    data: NpmFetchSuccessResponse|undefined;
+    response: NpmFetchSuccessResponse|undefined;
 }
-function RepositoryQuickLook({data}: RepositoryQuickLookProps){
-    const open_issues: number|undefined = data?.raw_signals?.git_hub_reg?.repo_info?.open_issues_count;
-    const closed_issues: number|undefined = data?.raw_signals?.git_hub_reg?.repo_info?.closed_issues_count;
+function RepositoryQuickLook({response}: RepositoryQuickLookProps){
+    const open_issues: number|undefined = response?.data?.raw_signals?.git_hub_reg?.repo_info?.open_issues_count;
+    const closed_issues: number|undefined = response?.data?.raw_signals?.git_hub_reg?.repo_info?.closed_issues_count;
 
-    const days_since_last_push: number|undefined = data?.raw_signals?.git_hub_reg?.repo_info?.days_since_last_push;
+    const days_since_last_push: number|undefined = response?.data?.raw_signals?.git_hub_reg?.repo_info?.days_since_last_push;
     
     return(
         <div className="quick-look-widget">

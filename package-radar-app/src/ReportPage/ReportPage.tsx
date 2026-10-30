@@ -99,7 +99,6 @@ function ReportPage(){
             return;
         }
         await getSnapShots(reportFetchResponse.api_response?.data?.package_id);
-        console.log("get snap shot request made")
         
         snapshotsRetrievedFor.current = location.pathname;
     }
@@ -116,11 +115,9 @@ function ReportPage(){
             return;
         }
         if(query?.search_term.length == 2){
-            console.log(generatedReportId);
             navigate(`/package/${query.ecosystem}/${query.search_term[0].replace("@", "")}/${query.search_term[1]}/id/${generatedReportId}`);
         }
         else if(query?.search_term.length == 1){
-            console.log(generatedReportId);
             navigate(`/package/${query.ecosystem}/${query.search_term[0]}/id/${generatedReportId}`);
         }
     }, [generatedReportId])
@@ -144,18 +141,12 @@ function ReportPage(){
 
     useEffect(() => {
         if(location.hash){
-            console.log(location.hash);
             const element = document.getElementById(location.hash.split("#")[1]);
             if(element){
                 element.scrollIntoView();
             }
         }
     }, [location.hash])
-
-    useEffect(() => {
-        console.log(reportFetchResponse.api_response?.success);
-        console.log(reportFetchResponse.fetchError);
-    }, [reportFetchResponse.api_response, reportFetchResponse.fetchError])
 
     return(
         <div className="report-page-root">
@@ -190,7 +181,9 @@ function ReportPage(){
                                                     <a href={"https://www.npmjs.com/package/" + reportFetchResponse.api_response?.data?.raw_signals?.package_info?.pkge_name} target="_blank">
                                                         <FaNpm className="reg-icon" id="npm-icon"/>
                                                     </a>
-                                                    {reportFetchResponse.api_response?.data?.raw_signals?.package_info?.latest_version_info?.repository?.url &&
+                                                    {(typeof reportFetchResponse.api_response?.data?.raw_signals?.package_info?.latest_version_info?.repository === "object" && 
+                                                        reportFetchResponse.api_response?.data?.raw_signals?.package_info?.latest_version_info?.repository !== null) &&
+                                                        reportFetchResponse.api_response?.data?.raw_signals?.package_info?.latest_version_info?.repository?.url &&
                                                         <a href={"https://github.com" + reportFetchResponse.api_response?.data?.raw_signals?.package_info?.latest_version_info?.repository?.url.split("github.com")[1]} target="_blank">
                                                             <FaSquareGithub className="reg-icon" id="github-icon"/>
                                                         </a>
@@ -209,10 +202,10 @@ function ReportPage(){
                                                     <SubScoreChart category={"Adoption"} score={reportFetchResponse.api_response?.data?.["adoption"]}/>
                                                     <SubScoreChart category={"Risk"} score={reportFetchResponse.api_response?.data?.["risk"]}/>
                                                 </div>
-                                                <MaintenanceQuickLook data={reportFetchResponse.api_response}/>
+                                                <MaintenanceQuickLook response={reportFetchResponse.api_response}/>
                                             </div>
                                             <div className="container-two">
-                                                <CommunityQuickLook data={reportFetchResponse.api_response}/>
+                                                <CommunityQuickLook response={reportFetchResponse.api_response}/>
                                             </div>
                                         </div>
                                     </section>
@@ -222,8 +215,8 @@ function ReportPage(){
                                     <section id="maintenance-section">
                                         <CommitsChart data={reportFetchResponse.api_response?.data?.raw_signals?.git_hub_reg?.commit_info?.commit_timeline_volume}/>
                                         <div className="quick-look-container">
-                                            <ContributorsQuickLook data={reportFetchResponse.api_response}/>
-                                            <RepositoryQuickLook data={reportFetchResponse.api_response}/>
+                                            <ContributorsQuickLook response={reportFetchResponse.api_response}/>
+                                            <RepositoryQuickLook response={reportFetchResponse.api_response}/>
                                         </div>
                                     </section>
                                     <section id="dependencies-section">

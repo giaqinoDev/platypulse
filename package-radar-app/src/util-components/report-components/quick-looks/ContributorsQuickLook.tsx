@@ -4,13 +4,13 @@ import type { NpmFetchSuccessResponse } from "../../../NPMFetchHook/NpmFetchSucc
 import formatNumber from "../../NumFormatter";
 
 interface ContributorsQuickLookProps{
-    data: NpmFetchSuccessResponse|undefined;
+    response: NpmFetchSuccessResponse|undefined;
 }
-function ContributorsQuickLook({data}: ContributorsQuickLookProps){
-    const total_commits: number|undefined = data?.raw_signals?.git_hub_reg?.contributors_info?.total_commits;
-    const top_commits: number|undefined = data?.raw_signals?.git_hub_reg?.contributors_info?.top_contributor_commits;
+function ContributorsQuickLook({response}: ContributorsQuickLookProps){
+    const total_commits: number|undefined = response?.data?.raw_signals?.git_hub_reg?.contributors_info?.total_commits;
+    const top_commits: number|undefined = response?.data?.raw_signals?.git_hub_reg?.contributors_info?.top_contributor_commits;
 
-    const top_commits_ratio: number|undefined = data?.raw_signals?.git_hub_reg?.contributors_info?.top_commits_ratio;
+    const top_commits_ratio: number|undefined = response?.data?.raw_signals?.git_hub_reg?.contributors_info?.top_commits_ratio;
     
     return(
         <div className="quick-look-widget">

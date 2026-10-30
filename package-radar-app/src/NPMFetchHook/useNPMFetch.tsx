@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { SearchContextStructure } from "../contexts/RegistrySearch/SearchContextStructure";
 import { NpmFetchSuccessResponseSchema, type NpmFetchSuccessResponse } from "./NpmFetchSuccessResponse";
+import API_BASE_URL from "../config/api";
 
 function useNPMFetch(queriedSearch: SearchContextStructure|null, signal: AbortSignal|null|undefined){
     //const [queryResult, setQueryResult] = useState(null);
@@ -14,17 +15,15 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null, signal: AbortSi
         }
 
         const fetchFromBackend = async () => {
-            console.log("NPM FETCH EFFECT", queriedSearch);
             setLoading(true);
-            let api_root = `/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}`;
+            let api_root = `${API_BASE_URL}/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}`;
             let api_branch = `/latest`;
             try{
                 let response = null;
                 if(queriedSearch.search_term.length == 2){
-                    api_root = `/bend/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}/${queriedSearch.search_term[1]}`;
+                    api_root = `${API_BASE_URL}/api/package/${queriedSearch.ecosystem}/${queriedSearch.search_term[0]}/${queriedSearch.search_term[1]}`;
                 }
                 if(queriedSearch.reportId !== undefined &&  queriedSearch.reportId !== null){
-                    console.log("INSIDE IF: " + queriedSearch.reportId);
                     api_branch = `/id/${queriedSearch.reportId}`;
                 }
 
@@ -35,7 +34,6 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null, signal: AbortSi
                 }
                 if(response?.status == 200){
                     try{
-                        console.log(response?.status);
                         const info = await response.json();
                         const packageData = NpmFetchSuccessResponseSchema.parse(info);                        
                         setApi_Response(packageData);
@@ -62,10 +60,6 @@ function useNPMFetch(queriedSearch: SearchContextStructure|null, signal: AbortSi
 
         fetchFromBackend();
     }, [queriedSearch, signal])
-
-    useEffect(() => {
-        console.log("Loading: " + loading);
-    }, [loading])
 
     return {api_response, loading, fetchError}
 }

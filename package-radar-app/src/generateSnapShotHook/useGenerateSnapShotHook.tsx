@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { GenReportResponseSchema } from "./GenReportResponse";
+import API_BASE_URL from "../config/api";
 
 function useGenerateSnapShot(signal: AbortSignal|null|undefined){
     const [generatingReport, setGeneratingReport] = useState<boolean>(false);
@@ -14,7 +15,7 @@ function useGenerateSnapShot(signal: AbortSignal|null|undefined){
         setGeneratingReport(true);
         try{
             let response = null;
-            response = await fetch(`/bend/api/package/npm/${packageId}/generateReport`, {method: "POST", signal,});
+            response = await fetch(`${API_BASE_URL}/api/package/npm/${packageId}/generateReport`, {method: "POST", signal,});
             if(signal?.aborted){
                 return;
             }
@@ -29,7 +30,6 @@ function useGenerateSnapShot(signal: AbortSignal|null|undefined){
             }
         }
         catch(responseError: unknown){
-            console.log("Snapshot request threw an error:", responseError);
             
             if(responseError instanceof Error){
                 setGenerationError("Backend Error: " + responseError);

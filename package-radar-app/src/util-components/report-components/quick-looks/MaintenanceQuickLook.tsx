@@ -4,11 +4,11 @@ import type { NpmFetchSuccessResponse } from "../../../NPMFetchHook/NpmFetchSucc
 import formatNumber from "../../NumFormatter";
 
 interface MaintenanceQuickLookProps{
-    data: NpmFetchSuccessResponse|undefined;
+    response: NpmFetchSuccessResponse|undefined;
 }
-function MaintenanceQuickLook({data}: MaintenanceQuickLookProps){
-    const commits_last_90_days: number|undefined = data?.raw_signals?.git_hub_reg?.commit_info?.commits_last_90_days;
-    const commits_last_30_days: number|undefined = data?.raw_signals?.git_hub_reg?.commit_info?.commits_last_30_days;
+function MaintenanceQuickLook({response}: MaintenanceQuickLookProps){
+    const commits_last_90_days: number|undefined = response?.data?.raw_signals?.git_hub_reg?.commit_info?.commits_last_90_days;
+    const commits_last_30_days: number|undefined = response?.data?.raw_signals?.git_hub_reg?.commit_info?.commits_last_30_days;
     const historicalRate: number|undefined = typeof commits_last_90_days == 'number' ? (commits_last_90_days/3): undefined;
     const commit_frequency: string = deriveCommitFreq();
     const commit_momentum: string = dervieCommitMomentum();
@@ -74,7 +74,7 @@ function MaintenanceQuickLook({data}: MaintenanceQuickLookProps){
                 <p className="section-hero">{commit_momentum}</p>
 
                 <p className="section-title">Open Issues</p>
-                <p className="section-hero">{formatNumber(data?.raw_signals?.git_hub_reg?.repo_info?.open_issues_count) ?? "Not Available"}</p>
+                <p className="section-hero">{formatNumber(response?.data?.raw_signals?.git_hub_reg?.repo_info?.open_issues_count) ?? "Not Available"}</p>
             </div>
         </div>
     );

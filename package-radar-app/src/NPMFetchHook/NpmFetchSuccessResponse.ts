@@ -76,7 +76,7 @@ export const NpmFetchSuccessResponseSchema = z.object({
             dependents_count: z.object({
                 dependent_repo_count: z.number().nullable().optional(),
                 dependent_packages_count: z.number().nullable().optional()
-            })
+            }).nullable()
         }).nullable()
     }).nullable(),
     error: z.object({

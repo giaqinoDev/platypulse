@@ -1,29 +1,49 @@
 import '@xyflow/react/dist/style.css';
 import type { DependencyTree } from '../../../NPMFetchHook/DependencyTree.ts';
-import Tree from 'react-d3-tree';
 import { useEffect, useRef, useState } from 'react';
 import "../dependency-graph/DependencyGraph.css";
 import NodeTreeVert from "../../../assets/DependencyTreeAssets/NodeTree_vert.svg";
 import NodeTreeHorz from "../../../assets/DependencyTreeAssets/NodeTree_Horz.svg";
 import {HoverToolTip} from "../../ToolTip/HoverToolTip.tsx";
 import { BiSad } from "react-icons/bi";
-
+import Tree, { type Orientation, type RawNodeDatum } from 'react-d3-tree';
+import type { Dependency } from '../../../NPMFetchHook/Dependency';
 
 interface DependencyGraphProps{
   dependencies: DependencyTree | null| undefined;
 }
- 
+
+function normalizeDependencies(dependencies: Dependency[]): RawNodeDatum[] {
+    return dependencies.map(dependency => ({
+        name: dependency.name,
+        attributes: dependency.attributes
+            ? {
+                dependency_version: dependency.attributes.dependency_version ?? "Unknown",
+                deprecated: dependency.attributes.deprecated
+            }
+            : undefined,
+        children: dependency.children
+            ? normalizeDependencies(dependency.children)
+            : undefined
+    }));
+}
 export default function DependencyGraph({dependencies}: DependencyGraphProps) {
   const tree_container_ref = useRef<HTMLDivElement>(null);
-  const [renderOrientation, setRenderOrientation] = useState<string>('vertical');
+  const [renderOrientation, setRenderOrientation] = useState<Orientation>('vertical');
   const [position, setPosition] = useState({
     x: 0,
     y: 0
   });
-  const dependency_data = {
-    name: dependencies?.package_name,
+  // const dependency_data = {
+  //   name: dependencies?.package_name ?? "Unknown",
+  //   children: dependencies?.dependencies ?? []
+  // }
+  const dependency_data: RawNodeDatum = {
+    name: dependencies?.package_name ?? "Unknown",
     children: dependencies?.dependencies
-  }
+        ? normalizeDependencies(dependencies.dependencies)
+        : undefined
+  };
 
   useEffect(() => {
     if(tree_container_ref.current){

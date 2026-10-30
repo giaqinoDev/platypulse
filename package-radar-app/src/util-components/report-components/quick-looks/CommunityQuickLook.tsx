@@ -5,15 +5,15 @@ import type { DownloadDP } from "../../../NPMFetchHook/DownloadDP";
 import formatNumber from "../../NumFormatter";
 
 interface CommunityQuickLookProps{
-    data: NpmFetchSuccessResponse|undefined;
+    response: NpmFetchSuccessResponse|undefined;
 }
-function CommunityQuickLook({data}: CommunityQuickLookProps){
-    const github_stars: number|undefined = data?.raw_signals?.git_hub_reg?.repo_info?.stars_count;
-    const github_forks: number|undefined = data?.raw_signals?.git_hub_reg?.repo_info?.forks_count;
+function CommunityQuickLook({response}: CommunityQuickLookProps){
+    const github_stars: number|undefined = response?.data?.raw_signals?.git_hub_reg?.repo_info?.stars_count;
+    const github_forks: number|undefined = response?.data?.raw_signals?.git_hub_reg?.repo_info?.forks_count;
     const monthly_downloads: number| undefined = dervieMonthlyDownloads();
 
     function dervieMonthlyDownloads(){
-        const downloads_timeline: DownloadDP[]|null|undefined = data?.raw_signals?.downloads_timeline;
+        const downloads_timeline: DownloadDP[]|null|undefined = response?.data?.raw_signals?.downloads_timeline;
         if(typeof downloads_timeline == 'undefined' || downloads_timeline == null){
             return undefined;
         }

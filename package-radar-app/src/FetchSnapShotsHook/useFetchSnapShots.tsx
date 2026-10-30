@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SnapShotsTimelineSchema, type SnapShotTimeline } from "./SnapShot";
-
+import API_BASE_URL from "../config/api";
 function useFetchSnapShots(signal: AbortSignal|null|undefined){
     const [snapShotsLoading, setSnapShotsLoading] = useState<boolean>(false);
     const [fetchError, setFetchError] = useState<string|null|Error>(null);
@@ -15,7 +15,7 @@ function useFetchSnapShots(signal: AbortSignal|null|undefined){
 
         try{
             let response = null;
-            response = await fetch(`/bend/api/package/${packageId}/snapshots`, {signal,});
+            response = await fetch(`${API_BASE_URL}/api/package/${packageId}/snapshots`, {signal,});
             if(signal?.aborted){
                 return;
             }
@@ -23,15 +23,12 @@ function useFetchSnapShots(signal: AbortSignal|null|undefined){
                 const data = await response.json();
                 const snapshots = SnapShotsTimelineSchema.parse(data);
                 setFetchedSnapShots(snapshots);
-
-                console.log("setFetchedSnapShots called");
             }
             else{
                 setFetchError("Response was empty");
             }
         }
         catch(responseError: unknown){
-            console.log("Snapshot request threw an error:", responseError);
             
             if(responseError instanceof Error){
                 setFetchError("Backend Error: " + responseError);
