@@ -4,7 +4,7 @@
 
 By aggregating data from multiple sources and applying a weighted scoring model, Platypulse provides developers with a consolidated overview of package health to help inform dependency selection and management decisions.
 
-Live Demo: https://platypulse-frontend.onrender.com/home
+<a href="https://platypulse-frontend.onrender.com/home" target="_blank" rel="noopener noreferrer">Live Demo</a>
 
 ## Key Features
 
