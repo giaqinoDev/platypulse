@@ -4,6 +4,8 @@
 
 By aggregating data from multiple sources and applying a weighted scoring model, Platypulse provides developers with a consolidated overview of package health to help inform dependency selection and management decisions.
 
+Live Demo: https://platypulse-frontend.onrender.com/home
+
 ## Key Features
 
 - **Package Health Scoring:** Generates an aggregate health score (0–100) based on four categories: Activity, Maintenance, Adoption, and Risk.
